@@ -669,13 +669,13 @@
                 </div>
                 <div class="narrative-tension">
                     <div class="tension-label">Analysis</div>
-                    <div class="waveform">
-                        <div class="wave-bar" style="height: 25px;"></div>
-                        <div class="wave-bar" style="height: 20px;"></div>
-                        <div class="wave-bar" style="height: 28px;"></div>
-                        <div class="wave-bar" style="height: 22px;"></div>
-                        <div class="wave-bar" style="height: 26px;"></div>
-                        <div class="wave-bar" style="height: 24px;"></div>
+                    <div class="waveform" id="resultWaveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
                     </div>
                 </div>
             </div>
@@ -1395,7 +1395,19 @@
             document.getElementById('resultText').textContent = resultText;
             document.getElementById('resultStory').textContent = resultStoryText;
             document.getElementById('finalReality').textContent = realityIntegrity + '%';
+
+            // Update result waveform with varying bar heights
+            updateResultWaveform();
+
             switchScreen('quizScreen', 'resultScreen');
+        }
+
+        function updateResultWaveform() {
+            const resultBars = document.querySelectorAll('#resultWaveform .wave-bar');
+            resultBars.forEach(bar => {
+                const height = Math.random() * 20 + 10; // Random height between 10-30px
+                bar.style.height = height + 'px';
+            });
         }
 
         function shareResult() {
