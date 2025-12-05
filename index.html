@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Am I in a Story? – The Narrative Diagnostic</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
         * {
             margin: 0;
             padding: 0;
@@ -13,34 +15,93 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a0033;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
             color: #333;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Dynamic Background with Script Snippets */
+        .background-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            transition: background 1s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .script-text {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+            animation: float 60s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            from { transform: translateY(100vh) translateX(0); }
+            to { transform: translateY(-100vh) translateX(50px); }
         }
 
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        inset 0 0 20px rgba(102, 126, 234, 0.1);
+            max-width: 700px;
             width: 100%;
             padding: 40px;
             animation: fadeIn 0.5s ease-in;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* CRT/Terminal Effect */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03),
+                rgba(0, 0, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            border-radius: 16px;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(20px) scale(0.98);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
         }
 
         .screen {
@@ -49,6 +110,12 @@
 
         .screen.active {
             display: block;
+            animation: screenFadeIn 0.4s ease-out;
+        }
+
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         h1 {
@@ -56,6 +123,9 @@
             margin-bottom: 20px;
             color: #667eea;
             text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
         }
 
         .tagline {
@@ -66,90 +136,318 @@
             line-height: 1.6;
         }
 
-        .progress {
-            background: #e0e0e0;
-            height: 8px;
-            border-radius: 4px;
-            margin-bottom: 10px;
-            overflow: hidden;
+        /* HUD Elements */
+        .hud-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
         }
 
-        .progress-bar {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        .reality-integrity {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .reality-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .reality-value {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .reality-value.critical {
+            color: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .reality-warning {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #ff4444;
+            margin-top: 3px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .reality-warning.active {
+            opacity: 1;
+        }
+
+        .narrative-tension {
+            width: 120px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            text-align: center;
+        }
+
+        .tension-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .waveform {
+            display: flex;
+            gap: 2px;
+            height: 30px;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: #667eea;
+            transition: height 0.2s ease;
+            border-radius: 2px;
+        }
+
+        /* Timeline Progress Bar */
+        .progress-timeline {
+            position: relative;
+            height: 40px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: visible;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .timeline-track {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e0e0e0;
+            transform: translateY(-50%);
+        }
+
+        .timeline-progress {
+            position: absolute;
             height: 100%;
-            width: 0%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
             transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .timeline-playhead {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border: 3px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: left 0.3s ease;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .timeline-notches {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .timeline-notch {
+            width: 2px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .progress-text {
             text-align: center;
-            font-size: 0.9rem;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
         }
 
         .question-text {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             margin-bottom: 30px;
-            color: #333;
+            color: #222;
             line-height: 1.6;
             text-align: center;
+            font-weight: 500;
+            padding: 20px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
         }
 
         .options {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
+            margin-top: 30px;
         }
 
         button {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            border-radius: 8px;
+            padding: 20px 30px;
+            font-size: 1.2rem;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
         }
 
         button:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .option-btn {
             background: white;
             color: #667eea;
-            border: 2px solid #667eea;
+            border: 3px solid #667eea;
+            position: relative;
         }
 
         .option-btn:hover {
             background: #667eea;
             color: white;
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        /* Hover Flavor Text */
+        .flavor-text {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: #667eea;
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .option-btn:hover .flavor-text {
+            opacity: 1;
+        }
+
+        /* Script Overlay Effect */
+        .script-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .script-overlay.active {
+            opacity: 1;
+        }
+
+        .script-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: #00ff00;
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            line-height: 1.8;
         }
 
         .result-title {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             color: #667eea;
             margin-bottom: 20px;
             text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            animation: resultGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes resultGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+            50% { text-shadow: 0 0 30px rgba(102, 126, 234, 0.8); }
         }
 
         .result-text {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             line-height: 1.8;
             color: #555;
             margin-bottom: 30px;
             text-align: center;
+            padding: 25px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
         }
 
         .result-actions {
@@ -160,11 +458,19 @@
 
         @media (max-width: 600px) {
             .container {
-                padding: 30px 20px;
+                padding: 25px 20px;
             }
 
             h1 {
                 font-size: 1.5rem;
+            }
+
+            .hud-container {
+                flex-direction: column;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
             }
 
             .question-text {
@@ -173,12 +479,20 @@
 
             button {
                 font-size: 1rem;
-                padding: 12px 24px;
+                padding: 15px 20px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Dynamic Background -->
+    <div class="background-layer" id="backgroundLayer"></div>
+
+    <!-- Script Overlay -->
+    <div class="script-overlay" id="scriptOverlay">
+        <div class="script-content" id="scriptContent"></div>
+    </div>
+
     <div class="container">
         <!-- Landing Screen -->
         <div id="landingScreen" class="screen active">
@@ -189,16 +503,54 @@
 
         <!-- Quiz Screen -->
         <div id="quizScreen" class="screen">
-            <div class="progress">
-                <div id="progressBar" class="progress-bar"></div>
+            <!-- HUD Elements -->
+            <div class="hud-container">
+                <div class="reality-integrity">
+                    <div class="reality-label">Reality Integrity</div>
+                    <div class="reality-value" id="realityValue">100%</div>
+                    <div class="reality-warning" id="realityWarning">⚠ Plot Armor Detected</div>
+                </div>
+                <div class="narrative-tension">
+                    <div class="tension-label">Tension</div>
+                    <div class="waveform" id="waveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
             </div>
-            <p id="progressText" class="progress-text">Question 1 of 26</p>
+
+            <!-- Timeline Progress -->
+            <div class="progress-timeline">
+                <div class="timeline-notches" id="timelineNotches"></div>
+                <div class="timeline-track">
+                    <div class="timeline-progress" id="timelineProgress"></div>
+                </div>
+                <div class="timeline-playhead" id="timelinePlayhead"></div>
+            </div>
+            <p id="progressText" class="progress-text">ACT I - SCENE 1 / 26</p>
+
             <p id="questionText" class="question-text"></p>
             <div class="options">
-                <button class="option-btn" onclick="answerQuestion('often')">Often</button>
-                <button class="option-btn" onclick="answerQuestion('sometimes')">Sometimes</button>
-                <button class="option-btn" onclick="answerQuestion('not really')">Not Really</button>
-                <button class="option-btn" onclick="answerQuestion('never')">Never</button>
+                <button class="option-btn" onclick="answerQuestion('often')" onmouseenter="showWaveform()">
+                    <span>Often</span>
+                    <div class="flavor-text">The plot thickens...</div>
+                </button>
+                <button class="option-btn" onclick="answerQuestion('sometimes')" onmouseenter="showWaveform()">
+                    <span>Sometimes</span>
+                    <div class="flavor-text">Cue dramatic music...</div>
+                </button>
+                <button class="option-btn" onclick="answerQuestion('not really')" onmouseenter="showWaveform()">
+                    <span>Not Really</span>
+                    <div class="flavor-text">The writers are lazy...</div>
+                </button>
+                <button class="option-btn" onclick="answerQuestion('never')" onmouseenter="showWaveform()">
+                    <span>Never</span>
+                    <div class="flavor-text">Boring. Cut to commercial...</div>
+                </button>
             </div>
         </div>
 
@@ -219,6 +571,132 @@
         let selectedQuestions = [];
         let scores = {};
         let currentResult = null;
+        let totalTropePoints = 0;
+        let realityIntegrity = 100;
+
+        // Script text snippets for background
+        const scriptSnippets = [
+            "INT. REALITY - DAY",
+            "EXT. LIFE - CONTINUOUS",
+            "FADE IN:",
+            "CUT TO:",
+            "[THE PROTAGONIST enters]",
+            "FADE OUT.",
+            "[Dramatic pause]",
+            "THE END?",
+            "ACT I",
+            "DISSOLVE TO:",
+            "[Music swells]",
+            "SMASH CUT:",
+            "[Beat]",
+            "CLOSE ON:",
+            "MATCH CUT:",
+            "[The camera pans]",
+            "FLASHBACK:",
+            "VOICE OVER:",
+            "[Thunder rumbles]",
+            "MONTAGE:"
+        ];
+
+        // Category background colors
+        const categoryThemes = {
+            1: { bg: 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)', name: 'fantasy' },  // Fantasy - brown/amber
+            2: { bg: 'linear-gradient(135deg, #2c3e50 0%, #607d8b 100%)', name: 'dystopian' },  // Dystopian - dark gray
+            3: { bg: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)', name: 'anime' },  // Anime - bright/vibrant
+            4: { bg: 'linear-gradient(135deg, #a8dadc 0%, #457b9d 100%)', name: 'slice-of-life' },  // Slice of Life - calm blue
+            5: { bg: 'linear-gradient(135deg, #DC143C 0%, #1E90FF 100%)', name: 'superhero' },  // Superhero - red/blue
+            6: { bg: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', name: 'sitcom' },  // Sitcom - bright yellow
+            7: { bg: 'linear-gradient(135deg, #8B0000 0%, #2C0000 100%)', name: 'horror' },  // Horror - dark red
+            8: { bg: 'linear-gradient(135deg, #36454F 0%, #708090 100%)', name: 'mystery' },  // Mystery - slate gray
+            9: { bg: 'linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%)', name: 'romance' },  // Romance - pink
+            10: { bg: 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)', name: 'tarantino' },  // Tarantino - brown/sepia
+            11: { bg: 'linear-gradient(135deg, #87CEEB 0%, #4682B4 100%)', name: 'spielberg' },  // Spielberg - sky blue
+            12: { bg: 'linear-gradient(135deg, #000000 0%, #1a1a2e 100%)', name: 'space-opera' },  // Space Opera - dark/starry
+            13: { bg: 'linear-gradient(135deg, #2F4F4F 0%, #1C1C1C 100%)', name: 'mafia' }  // Mafia - dark/shadowy
+        };
+
+        // Initialize floating script text
+        function initBackground() {
+            const bg = document.getElementById('backgroundLayer');
+            for (let i = 0; i < 15; i++) {
+                const scriptEl = document.createElement('div');
+                scriptEl.className = 'script-text';
+                scriptEl.textContent = scriptSnippets[Math.floor(Math.random() * scriptSnippets.length)];
+                scriptEl.style.left = Math.random() * 100 + '%';
+                scriptEl.style.animationDelay = Math.random() * 60 + 's';
+                scriptEl.style.animationDuration = (40 + Math.random() * 40) + 's';
+                bg.appendChild(scriptEl);
+            }
+        }
+
+        // Change background based on category
+        function updateBackgroundTheme(categoryId) {
+            const bg = document.getElementById('backgroundLayer');
+            const theme = categoryThemes[categoryId];
+            if (theme) {
+                bg.style.background = theme.bg;
+            }
+        }
+
+        // Initialize timeline notches
+        function initTimeline() {
+            const notchesContainer = document.getElementById('timelineNotches');
+            for (let i = 0; i < 26; i++) {
+                const notch = document.createElement('div');
+                notch.className = 'timeline-notch';
+                notchesContainer.appendChild(notch);
+            }
+        }
+
+        // Update reality integrity
+        function updateRealityIntegrity(points) {
+            realityIntegrity = Math.max(0, 100 - (totalTropePoints * 3));
+            const valueEl = document.getElementById('realityValue');
+            const warningEl = document.getElementById('realityWarning');
+
+            valueEl.textContent = realityIntegrity + '%';
+
+            if (realityIntegrity < 50) {
+                valueEl.classList.add('critical');
+                warningEl.classList.add('active');
+            } else {
+                valueEl.classList.remove('critical');
+                warningEl.classList.remove('active');
+            }
+        }
+
+        // Animate waveform
+        function showWaveform() {
+            const bars = document.querySelectorAll('.wave-bar');
+            bars.forEach(bar => {
+                const height = Math.random() * 20 + 10;
+                bar.style.height = height + 'px';
+            });
+        }
+
+        function spikeWaveform() {
+            const bars = document.querySelectorAll('.wave-bar');
+            bars.forEach(bar => {
+                bar.style.height = (Math.random() * 25 + 15) + 'px';
+            });
+            setTimeout(() => {
+                bars.forEach(bar => {
+                    bar.style.height = '10px';
+                });
+            }, 500);
+        }
+
+        // Show script overlay
+        function showScriptOverlay(text) {
+            const overlay = document.getElementById('scriptOverlay');
+            const content = document.getElementById('scriptContent');
+            content.textContent = text;
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 1500);
+        }
 
         // Categories Database
         const categories = {
@@ -403,6 +881,34 @@
             { text: "Are deals in your world always described as 'offers you can't refuse,' yet you really wish you could?", categoryId: 13 }
         ];
 
+        // Script overlay texts based on answer
+        const scriptTexts = {
+            'often': [
+                "[CHARACTER nods solemnly. The audience gasps.]",
+                "[CLOSE UP: A knowing look. The music swells.]",
+                "[CUT TO: The protagonist's face. They know the truth now.]",
+                "[DRAMATIC PAUSE. Thunder rumbles in the distance.]"
+            ],
+            'sometimes': [
+                "[CHARACTER hesitates. The plot thickens.]",
+                "[ZOOM IN: A moment of uncertainty.]",
+                "[The camera lingers. Something is not right.]",
+                "[BEAT. The tension builds.]"
+            ],
+            'not really': [
+                "[CHARACTER shrugs. The writers scramble.]",
+                "[CUT TO: An empty room. Budget cuts.]",
+                "[DISSOLVE TO: Nothing much happening.]",
+                "[The subplot dies. Roll credits.]"
+            ],
+            'never': [
+                "[CHARACTER looks directly at camera. \"Really?\"]",
+                "[SMASH CUT TO: A boring Tuesday.]",
+                "[VOICE OVER: \"This character is not interesting.\"]",
+                "[FADE TO BLACK. The end. Just kidding.]"
+            ]
+        };
+
         // Utility Functions
         function shuffle(array) {
             const shuffled = [...array];
@@ -415,15 +921,11 @@
 
         function selectQuestions() {
             const selected = [];
-
-            // Select 2 questions from each category
             for (let categoryId = 1; categoryId <= 13; categoryId++) {
                 const categoryQuestions = questions.filter(q => q.categoryId === categoryId);
                 const shuffledCategory = shuffle(categoryQuestions);
                 selected.push(...shuffledCategory.slice(0, 2));
             }
-
-            // Shuffle the final question set
             return shuffle(selected);
         }
 
@@ -434,9 +936,12 @@
 
         function updateProgress() {
             const progress = ((currentQuestionIndex + 1) / selectedQuestions.length) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('timelineProgress').style.width = progress + '%';
+            document.getElementById('timelinePlayhead').style.left = progress + '%';
+
+            const act = currentQuestionIndex < 9 ? 'I' : currentQuestionIndex < 18 ? 'II' : 'III';
             document.getElementById('progressText').textContent =
-                `Question ${currentQuestionIndex + 1} of ${selectedQuestions.length}`;
+                `ACT ${act} - SCENE ${currentQuestionIndex + 1} / ${selectedQuestions.length}`;
         }
 
         function displayQuestion() {
@@ -444,6 +949,7 @@
                 const question = selectedQuestions[currentQuestionIndex];
                 document.getElementById('questionText').textContent = question.text;
                 updateProgress();
+                updateBackgroundTheme(question.categoryId);
             } else {
                 showResult();
             }
@@ -451,15 +957,18 @@
 
         // Game Functions
         function startQuiz() {
-            // Initialize
             currentQuestionIndex = 0;
             selectedQuestions = selectQuestions();
             scores = {};
+            totalTropePoints = 0;
+            realityIntegrity = 100;
+
             for (let i = 1; i <= 13; i++) {
                 scores[i] = 0;
             }
 
-            // Switch to quiz screen
+            initBackground();
+            initTimeline();
             switchScreen('landingScreen', 'quizScreen');
             displayQuestion();
         }
@@ -467,29 +976,43 @@
         function answerQuestion(answer) {
             const question = selectedQuestions[currentQuestionIndex];
 
+            // Show script overlay
+            const scriptOptions = scriptTexts[answer];
+            const scriptText = scriptOptions[Math.floor(Math.random() * scriptOptions.length)];
+            showScriptOverlay(scriptText);
+
             // Update score based on answer
+            let points = 0;
             switch(answer) {
                 case 'often':
-                    scores[question.categoryId] += 1;
+                    points = 1;
                     break;
                 case 'sometimes':
-                    scores[question.categoryId] += 0.75;
+                    points = 0.75;
                     break;
                 case 'not really':
-                    scores[question.categoryId] += 0.5;
+                    points = 0.5;
                     break;
                 case 'never':
-                    // No points
+                    points = 0;
                     break;
             }
 
-            // Move to next question
-            currentQuestionIndex++;
-            displayQuestion();
+            scores[question.categoryId] += points;
+            totalTropePoints += points;
+
+            // Update HUD
+            updateRealityIntegrity(points);
+            spikeWaveform();
+
+            // Move to next question after overlay
+            setTimeout(() => {
+                currentQuestionIndex++;
+                displayQuestion();
+            }, 1600);
         }
 
         function showResult() {
-            // Find max score
             let maxScore = 0;
             let winningCategories = [];
 
@@ -502,22 +1025,19 @@
                 }
             }
 
-            // Determine result
             let resultTitle, resultText;
 
             if (maxScore <= 1) {
-                // Default result
                 resultTitle = "Regular Miserable Person";
                 resultText = "You are just a regular miserable person in real life. No prophecies, no epic soundtrack, and no cinematic lighting. Just emails, laundry, mild back pain, and the crushing weight of reality. Sorry.";
                 currentResult = { title: resultTitle, text: resultText };
             } else if (winningCategories.length === 1) {
-                // Single winner
                 const category = categories[winningCategories[0]];
                 resultTitle = category.name;
                 resultText = category.result;
                 currentResult = { title: resultTitle, text: resultText };
+                updateBackgroundTheme(winningCategories[0]);
             } else {
-                // Tie-breaker: find which category's question appeared last
                 let lastCategoryId = null;
                 for (let i = selectedQuestions.length - 1; i >= 0; i--) {
                     if (winningCategories.includes(selectedQuestions[i].categoryId)) {
@@ -529,9 +1049,9 @@
                 resultTitle = category.name;
                 resultText = category.result;
                 currentResult = { title: resultTitle, text: resultText };
+                updateBackgroundTheme(lastCategoryId);
             }
 
-            // Display result
             document.getElementById('resultTitle').textContent = resultTitle;
             document.getElementById('resultText').textContent = resultText;
             switchScreen('quizScreen', 'resultScreen');
@@ -547,7 +1067,6 @@
                     url: window.location.href
                 }).catch(err => console.log('Error sharing:', err));
             } else {
-                // Fallback: copy to clipboard
                 navigator.clipboard.writeText(shareText).then(() => {
                     alert('Result copied to clipboard!');
                 }).catch(err => {
@@ -558,6 +1077,9 @@
 
         function playAgain() {
             switchScreen('resultScreen', 'landingScreen');
+            // Reset background
+            document.getElementById('backgroundLayer').innerHTML = '';
+            document.getElementById('backgroundLayer').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
         }
     </script>
 </body>
