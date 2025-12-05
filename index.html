@@ -308,11 +308,79 @@
             border-left: 4px solid #667eea;
         }
 
+        .quiz-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .quiz-main {
+            min-width: 0;
+        }
+
         .options {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
             margin-top: 30px;
+        }
+
+        /* Story Box */
+        .story-box {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.02),
+                rgba(0, 0, 0, 0.02) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+        }
+
+        .story-genre {
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .story-content {
+            font-family: Georgia, serif;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #444;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .story-page {
+            font-family: 'Courier New', monospace;
+            font-size: 0.65rem;
+            color: #999;
+            text-align: center;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
         }
 
         button {
@@ -371,25 +439,6 @@
             border-color: #667eea;
         }
 
-        /* Hover Flavor Text */
-        .flavor-text {
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'Courier New', monospace;
-            font-size: 0.75rem;
-            color: #667eea;
-            font-style: italic;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            white-space: nowrap;
-            pointer-events: none;
-        }
-
-        .option-btn:hover .flavor-text {
-            opacity: 1;
-        }
 
         /* Script Overlay Effect */
         .script-overlay {
@@ -454,6 +503,17 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .quiz-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .story-box {
+                order: -1;
+                margin-bottom: 20px;
+            }
         }
 
         @media (max-width: 600px) {
@@ -533,24 +593,23 @@
             </div>
             <p id="progressText" class="progress-text">ACT I - SCENE 1 / 26</p>
 
-            <p id="questionText" class="question-text"></p>
-            <div class="options">
-                <button class="option-btn" onclick="answerQuestion('often')" onmouseenter="showWaveform()">
-                    <span>Often</span>
-                    <div class="flavor-text">The plot thickens...</div>
-                </button>
-                <button class="option-btn" onclick="answerQuestion('sometimes')" onmouseenter="showWaveform()">
-                    <span>Sometimes</span>
-                    <div class="flavor-text">Cue dramatic music...</div>
-                </button>
-                <button class="option-btn" onclick="answerQuestion('not really')" onmouseenter="showWaveform()">
-                    <span>Not Really</span>
-                    <div class="flavor-text">The writers are lazy...</div>
-                </button>
-                <button class="option-btn" onclick="answerQuestion('never')" onmouseenter="showWaveform()">
-                    <span>Never</span>
-                    <div class="flavor-text">Boring. Cut to commercial...</div>
-                </button>
+            <div class="quiz-layout">
+                <div class="quiz-main">
+                    <p id="questionText" class="question-text"></p>
+                    <div class="options">
+                        <button class="option-btn" onclick="answerQuestion('yes')" onmouseenter="showWaveform()">
+                            <span>YES</span>
+                        </button>
+                        <button class="option-btn" onclick="answerQuestion('no')" onmouseenter="showWaveform()">
+                            <span>NO</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="story-box">
+                    <div class="story-genre" id="storyGenre">FANTASY EPIC</div>
+                    <div class="story-content" id="storyContent">The ancient prophecy had been clear: a child would be born under the blood moon, marked by destiny...</div>
+                    <div class="story-page" id="storyPage">— Page 47 —</div>
+                </div>
             </div>
         </div>
 
@@ -881,32 +940,125 @@
             { text: "Are deals in your world always described as 'offers you can't refuse,' yet you really wish you could?", categoryId: 13 }
         ];
 
-        // Script overlay texts based on answer
-        const scriptTexts = {
-            'often': [
-                "[CHARACTER nods solemnly. The audience gasps.]",
-                "[CLOSE UP: A knowing look. The music swells.]",
-                "[CUT TO: The protagonist's face. They know the truth now.]",
-                "[DRAMATIC PAUSE. Thunder rumbles in the distance.]"
-            ],
-            'sometimes': [
-                "[CHARACTER hesitates. The plot thickens.]",
-                "[ZOOM IN: A moment of uncertainty.]",
-                "[The camera lingers. Something is not right.]",
-                "[BEAT. The tension builds.]"
-            ],
-            'not really': [
-                "[CHARACTER shrugs. The writers scramble.]",
-                "[CUT TO: An empty room. Budget cuts.]",
-                "[DISSOLVE TO: Nothing much happening.]",
-                "[The subplot dies. Roll credits.]"
-            ],
-            'never': [
-                "[CHARACTER looks directly at camera. \"Really?\"]",
-                "[SMASH CUT TO: A boring Tuesday.]",
-                "[VOICE OVER: \"This character is not interesting.\"]",
-                "[FADE TO BLACK. The end. Just kidding.]"
-            ]
+        // Genre story excerpts
+        const genreStories = {
+            1: {
+                genre: "FANTASY EPIC",
+                stories: [
+                    "The ancient prophecy had been clear: a child would be born under the blood moon, marked by destiny and bearing the sign of the Chosen.",
+                    "The sword felt impossibly light in their hand, as if it had been waiting centuries for this very moment. The runes along its blade began to glow.",
+                    "\"The prophecy speaks of you,\" the old woman whispered, her eyes milky with age but somehow seeing everything. \"You cannot run from what you are.\"",
+                    "In the dusty corner of the attic, wrapped in cloth that had not been touched in generations, the artifact pulsed with an otherworldly light."
+                ]
+            },
+            2: {
+                genre: "DYSTOPIAN CHRONICLE",
+                stories: [
+                    "The city walls loomed gray and endless. Beyond them, they said, was death. But she had begun to suspect that was a lie.",
+                    "The uniform was the same as everyone else's—regulation gray, regulation cut. Yet somehow, the Enforcers always seemed to know which face to watch.",
+                    "\"You're one of us now,\" he said, his rebel insignia barely visible in the dim light. \"There's no going back to who you were.\"",
+                    "The announcement crackled through every speaker: \"Citizen 4719, report for sorting.\" Her blood ran cold. Today was the day everything would change."
+                ]
+            },
+            3: {
+                genre: "SHONEN SAGA",
+                stories: [
+                    "The power surged through their body like lightning. Friends. That's what gave them strength. That's what made them unbeatable.",
+                    "\"You have potential,\" the master said, though his student had just destroyed the entire training ground. \"Raw, uncontrollable, catastrophic potential.\"",
+                    "The rival stood atop the building, silhouetted against the moon, his coat billowing dramatically. They locked eyes. This battle had been inevitable.",
+                    "They fell to their knees, wounds that should have killed them three times over somehow... not mattering. The tournament had to continue. Their friends were watching."
+                ]
+            },
+            4: {
+                genre: "INDIE DRAMA",
+                stories: [
+                    "The coffee was getting cold, but the conversation had hit that perfect moment where time didn't seem to matter anymore.",
+                    "It was Tuesday again. Same walk, same thoughts, same melancholy. But somehow, today, it all felt significant.",
+                    "The sunset painted the ordinary street in extraordinary colors. They stood there, phone in hand, wondering if this moment was worth photographing or just... feeling.",
+                    "\"You always do this,\" their friend said with a knowing smile. \"You turn nothing into something profound.\" They weren't wrong."
+                ]
+            },
+            5: {
+                genre: "SUPERHERO CHRONICLE",
+                stories: [
+                    "The mask went on. The person disappeared. What remained was something else—something the city needed but would never truly understand.",
+                    "\"Where were you?\" The question hung in the air, heavy with suspicion. If only they knew that saving the world and making it to dinner on time were mutually exclusive.",
+                    "The accident should have killed them. Instead, it had given them something impossible. Power. Responsibility. A double life that would cost them everything.",
+                    "The villain smiled from behind bars. \"See you next week,\" they said. And somehow, terrifyingly, that was always true."
+                ]
+            },
+            6: {
+                genre: "SITCOM SCRIPT",
+                stories: [
+                    "The door swung open without a knock. Again. How did they even afford this apartment? And why did problems that should take weeks always resolve themselves by Friday?",
+                    "The misunderstanding spiraled beautifully out of control. One simple sentence could fix it. But where was the fun in that?",
+                    "\"Remember when—\" they started, and suddenly the whole gang was there, as if summoned by the power of nostalgia and convenient timing.",
+                    "The problem was ridiculous. The solution was even more ridiculous. But somehow, it would all work out in exactly 22 minutes."
+                ]
+            },
+            7: {
+                genre: "HORROR NOVEL",
+                stories: [
+                    "The house was too cheap. The realtor had been too eager. And now, alone in the darkness, they understood why.",
+                    "The children's song drifted through the empty street: \"One, two, he's coming for you...\" How did they all know the same rhyme?",
+                    "\"We should split up,\" someone said. The words hung in the air like a death sentence. And yet, somehow, everyone agreed.",
+                    "The reflection in the mirror moved a fraction of a second too late. They tried to convince themselves it was their imagination. It wasn't."
+                ]
+            },
+            8: {
+                genre: "MYSTERY THRILLER",
+                stories: [
+                    "The clue had been there all along, hidden in plain sight. Everyone else had looked right past it. But they had a gift for seeing what others missed.",
+                    "The invitation arrived on cream-colored cardstock: \"You are cordially invited to Blackwood Manor.\" Three days later, the first body would be found.",
+                    "\"You're the only one who can solve this,\" they said, despite a room full of qualified detectives. Perhaps they were right. Perhaps that was the problem.",
+                    "The red string connected the photos like a spider's web. To anyone else, it looked like madness. To them, it was the only thing that made sense."
+                ]
+            },
+            9: {
+                genre: "ROMANTIC COMEDY",
+                stories: [
+                    "The coffee spilled in slow motion, papers flying, eyes meeting in that suspended moment of disaster that somehow felt like fate.",
+                    "\"I can't stand you,\" they said, thinking about him constantly. The universe had a funny way of making people eat their words.",
+                    "The rain started right on cue, as if the weather itself was conspiring to create the perfect moment for a confession that would change everything.",
+                    "\"They were right in front of you this whole time,\" her best friend said with an exasperated smile. \"How could you not see it?\""
+                ]
+            },
+            10: {
+                genre: "TARANTINO SCREENPLAY",
+                stories: [
+                    "They talked about nothing—the usual burger philosophy—for fifteen minutes. Then the guns came out. That's how it always went.",
+                    "The briefcase glowed. Nobody asked what was inside. Smart people in this world learned not to ask questions that might get them killed.",
+                    "\"You know what they call this in Paris?\" The conversation was casual. The weapon in his lap was not. This was how business got done.",
+                    "The timeline jumped. Again. What happened yesterday would be shown next Tuesday. What happened ten years ago was happening now. It all made sense if you stopped trying."
+                ]
+            },
+            11: {
+                genre: "SPIELBERG ADVENTURE",
+                stories: [
+                    "The child pointed at the sky with absolute certainty. The adults exchanged worried glances. Kids always knew first.",
+                    "The bicycle flew over the moon—or at least it felt that way. Magic was real, adventure was calling, and suburbia would never be the same.",
+                    "The creature was gentle, misunderstood, terrifying to everyone except the small group who saw the truth. They would protect it, no matter the cost.",
+                    "The sunset was impossibly perfect, painting everything gold. Somewhere, a violin swelled. This was the moment that would define everything."
+                ]
+            },
+            12: {
+                genre: "SPACE OPERA",
+                stories: [
+                    "\"I am your father,\" the figure said, and the galaxy suddenly felt impossibly small and personal. Family drama on a cosmic scale.",
+                    "The mystical energy flowed through them—definitely not magic, absolutely science-based, trust us—as they lifted the starship with their mind.",
+                    "The cantina was loud, dangerous, and absolutely the kind of place where every conversation could start a war or forge an alliance.",
+                    "\"I have a bad feeling about this,\" they muttered, for the seventeenth time this week. Their instincts were always right. That was the problem."
+                ]
+            },
+            13: {
+                genre: "MAFIA DRAMA",
+                stories: [
+                    "The family gathered around the table. Business would be discussed. Loyalty would be tested. And someone would not leave this room.",
+                    "\"It's not personal,\" he said quietly, \"it's strictly business.\" But they both knew that was a lie. It was always personal.",
+                    "The rain fell like judgment itself. Church bells echoed in the distance. Moral choices were being made in the shadows, and there were no good options.",
+                    "\"I'm going to make him an offer he can't refuse,\" he said, and everyone in the room understood exactly what that meant."
+                ]
+            }
         };
 
         // Utility Functions
@@ -950,9 +1102,20 @@
                 document.getElementById('questionText').textContent = question.text;
                 updateProgress();
                 updateBackgroundTheme(question.categoryId);
+                updateStoryBox(question.categoryId);
             } else {
                 showResult();
             }
+        }
+
+        function updateStoryBox(categoryId) {
+            const genreData = genreStories[categoryId];
+            const randomStory = genreData.stories[Math.floor(Math.random() * genreData.stories.length)];
+            const randomPage = Math.floor(Math.random() * 200) + 1;
+
+            document.getElementById('storyGenre').textContent = genreData.genre;
+            document.getElementById('storyContent').textContent = randomStory;
+            document.getElementById('storyPage').textContent = `— Page ${randomPage} —`;
         }
 
         // Game Functions
@@ -976,27 +1139,12 @@
         function answerQuestion(answer) {
             const question = selectedQuestions[currentQuestionIndex];
 
-            // Show script overlay
-            const scriptOptions = scriptTexts[answer];
-            const scriptText = scriptOptions[Math.floor(Math.random() * scriptOptions.length)];
-            showScriptOverlay(scriptText);
-
             // Update score based on answer
             let points = 0;
-            switch(answer) {
-                case 'often':
-                    points = 1;
-                    break;
-                case 'sometimes':
-                    points = 0.75;
-                    break;
-                case 'not really':
-                    points = 0.5;
-                    break;
-                case 'never':
-                    points = 0;
-                    break;
+            if (answer === 'yes') {
+                points = 1;
             }
+            // 'no' = 0 points
 
             scores[question.categoryId] += points;
             totalTropePoints += points;
@@ -1005,11 +1153,11 @@
             updateRealityIntegrity(points);
             spikeWaveform();
 
-            // Move to next question after overlay
+            // Brief pause for effect
             setTimeout(() => {
                 currentQuestionIndex++;
                 displayQuestion();
-            }, 1600);
+            }, 300);
         }
 
         function showResult() {
