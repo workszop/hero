@@ -494,9 +494,10 @@
         }
 
         .result-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
         }
 
         @media (max-width: 900px) {
@@ -524,6 +525,10 @@
             }
 
             .options {
+                grid-template-columns: 1fr;
+            }
+
+            .result-actions {
                 grid-template-columns: 1fr;
             }
 
@@ -609,11 +614,36 @@
 
         <!-- Result Screen -->
         <div id="resultScreen" class="screen">
-            <h1 id="resultTitle" class="result-title"></h1>
-            <p id="resultText" class="result-text"></p>
-            <div class="result-actions">
-                <button onclick="shareResult()">Share Result</button>
-                <button onclick="playAgain()">Play Again</button>
+            <div class="hud-container">
+                <div class="reality-integrity">
+                    <div class="reality-label">Final Diagnosis</div>
+                    <div class="reality-value" id="finalReality">Complete</div>
+                </div>
+                <div class="narrative-tension">
+                    <div class="tension-label">Analysis</div>
+                    <div class="waveform">
+                        <div class="wave-bar" style="height: 25px;"></div>
+                        <div class="wave-bar" style="height: 20px;"></div>
+                        <div class="wave-bar" style="height: 28px;"></div>
+                        <div class="wave-bar" style="height: 22px;"></div>
+                        <div class="wave-bar" style="height: 26px;"></div>
+                        <div class="wave-bar" style="height: 24px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-layout">
+                <div class="quiz-main">
+                    <p id="resultText" class="question-text"></p>
+                    <div class="result-actions">
+                        <button onclick="shareResult()">Share Result</button>
+                        <button onclick="playAgain()">Play Again</button>
+                    </div>
+                </div>
+                <div class="story-box">
+                    <div class="story-content" id="resultStory"></div>
+                    <div class="story-page">— The End —</div>
+                </div>
             </div>
         </div>
     </div>
@@ -1055,6 +1085,35 @@
             }
         };
 
+        // Expanded story excerpts for results
+        const resultStories = {
+            1: "You wake each morning with the weight of destiny pressing against your chest. The mirror shows someone ordinary, but you know better now. Ancient forces stir in the shadows, whispering your name in languages you've never learned but somehow understand. Objects that seemed mundane suddenly pulse with significance. Strangers look at you with recognition and fear. The prophecy was written centuries ago, but it speaks of today, of now, of you. Every choice ripples outward into fate itself. The quest has already begun—it began the moment you were born.",
+
+            2: "The walls that define your world were built to protect you, they said. But protection feels remarkably like a cage. You've started to notice the cracks in the narrative they've been feeding you since birth. The gray uniforms, the regulated speech, the careful smiles of those who enforce the order—it's all a performance. And you, somehow, have stepped out of your assigned role. There's a resistance forming in the spaces between the propaganda. Your love interest should be your enemy, but the regime makes strange bedfellows of its victims. The truth about the outside world is nothing like they told you. Everything is about to change.",
+
+            3: "Your power level has been rising steadily, though you've barely scratched the surface of your true potential. When you think about your friends, about the bonds you've forged through shared struggle, energy courses through your body like lightning made manifest. The rival who haunts your every move? They're not trying to defeat you—they're trying to push you to evolve. Your tragic backstory fuels your determination, mentioned only when dramatically appropriate. The tournament arc of your existence continues, each battle flashier than the last, each victory earned through the power of friendship and refusing to stay down. You've unlocked forms you didn't know existed. This isn't even your final evolution.",
+
+            4: "Nothing happens. Everything happens. You exist in the space between dramatic events, where the real story lives in glances and coffee going cold and conversations that meander toward meaning. Your internal monologue is rich, complex, narrated by someone who sounds like they host a podcast about the human condition. Every mundane moment somehow becomes profound when you're the one experiencing it. The sunset doesn't just happen—it paints your ordinary world in extraordinary light. Your hairstyle changes and everyone notices, treating it like a season premiere. You are the protagonist of a slow-burn indie film, and every bottle episode of your life matters.",
+
+            5: "The double life is exhausting. There's who you are—masked, capable, powerful—and who you pretend to be. The city needs one; your relationships need the other. Both are crumbling. The accident that should have killed you instead birthed something impossible, gifting you abilities that feel like burden as much as blessing. Great power, great responsibility—the words echo in every decision, every consequence. Your boss asks where you were during the attack, their suspicion mounting as you stand there bandaged, lying through your teeth. The arch-nemesis escapes again. They always escape. Your romantic relationship suffers another interruption. You have to step out for a minute. The city is calling.",
+
+            6: "Your life resets every week. Problems escalate beautifully into chaos, then resolve themselves by Friday night. The apartment is inexplicably nice considering what you earn. Friends drop by without knocking—constantly, inappropriately—and somehow this is normal. Misunderstandings spiral out of control because nobody will explain the simple sentence that would fix everything, but that would ruin the fun. Your workplace has exactly six recurring characters and nobody else exists. Exes appear exactly when needed for dramatic tension. People pause and look into the distance, waiting for laughter that you can't quite hear but definitely feel. Everything is ridiculous. Everything works out in twenty-two minutes.",
+
+            7: "You should have known better. The house was too cheap, the rent suspiciously low, the realtor too eager to close. Now you're here, in the darkness, and things move that shouldn't move. Children sing rhymes about local tragedies in minor keys. The suggestion to split up was obviously, catastrophically stupid, yet everyone agreed like it was reasonable. Mirrors reflect moments that haven't happened yet. Basements call to you with sounds that can't be explained by wind or plumbing. The legend everyone dismissed as superstition turns out to be documentary evidence. You have two choices: leave now, or become part of the story the next residents will be warned about.",
+
+            8: "You notice things. Small details everyone else somehow misses—the thread out of place, the inconsistent timeline, the lie hiding in plain sight. People turn to you when mysteries need solving, despite rooms full of qualified professionals, because you have a gift. Or perhaps a curse. The bulletin board in your mind connects red strings between facts that seem unrelated. You're always getting invited to isolated locations right before crimes occur. Your friend group includes a comic-relief sidekick who keeps almost dying. You've dramatically announced solutions in front of gathered crowds more times than you can count. The clues are always there. You just have to look.",
+
+            9: "The coffee spilled in perfect slow motion, papers flying, eyes meeting in that suspended moment of catastrophe that felt somehow like destiny. There's someone you can't stand, which means you think about them constantly—the universe has a sense of humor about these things. Rain appears on cue for dramatic confessions. Your best friend has been telling you the obvious for months: the person you've been looking for was right here all along. You're choosing between the stable, kind option and the chaotic, charming disaster. A misunderstanding at the sixty-minute mark is inevitable. A sprint through an airport may be required. Public gestures of affection keep working out, somehow, against all odds. You're living in a romantic comedy, and it's almost time for the climax.",
+
+            10: "You have philosophical conversations about nothing—burgers, tipping, the little differences—right up until the moment violence erupts. The soundtrack of your existence consists of obscure but incredibly cool retro tracks that somehow always play at exactly the right moment. Your timeline is non-linear; what happened yesterday might be shown next week, what happened ten years ago is happening now. People around you deliver calm, five-minute speeches while visibly armed. The briefcase glows. Nobody asks what's inside. You've danced in diners for no clear reason, and it felt essential to the plot. Everyone talks like they're competing for coolest dialogue. You might not make it to the credits, but at least you'll look good trying.",
+
+            11: "There's magic in the suburbs, if you know where to look. Children see it first—they always do—pointing at the sky with absolute certainty while adults exchange worried glances. Bicycles achieve flight, at least in the way that matters. Ordinary streets become stages for extraordinary events: UFOs, dinosaurs, visitors from elsewhere. The creature everyone fears is gentle, misunderstood, and you're part of the small group sworn to protect it. Improvised gadgets and walkie-talkies play a suspicious role in your survival. Important moments happen at sunset with suspiciously perfect lighting. Somewhere, a violin swells. You look up at something huge and mysterious, awe written across your face, while the camera zooms in. This is the moment that defines everything.",
+
+            12: "The villain's revelation hit like a physical blow: family, impossibly, inconveniently entangled with your destiny. Your world contains a massive authoritarian empire, a scrappy rebellion, and a moon-sized superweapon—standard cosmic drama. An old cryptic mentor told you to trust your feelings instead of providing clear, actionable instructions. The mystical energy you wield is definitely science-based—definitely—even though it looks and acts exactly like magic. Cantinas are loud and dangerous and full of beings conducting illegal business in the open. You've piloted, or desperately want to pilot, ridiculously unsafe vehicles at high speeds through impossible obstacles. Bad feelings are your most reliable instinct. They're always right. The Force, destiny, whatever you call it—it's with you. It's always been with you.",
+
+            13: "Family is everything. Loyalty matters more than law, more than right, more than the lives it costs. Decisions happen around large dining tables in hushed tones, everyone pretending nothing is wrong while betrayal simmers beneath the surface. 'It's not personal, it's strictly business'—the lie you've been told, the lie you've told others, knowing full well everything is personal. You're becoming the parent you swore you'd never resemble, slowly, inevitably. Sacred ceremonies coincide with acts of extreme betrayal: weddings, baptisms, funerals. Rain falls like judgment. Church organs play during moral choices. Deals are described as offers you can't refuse, and you desperately wish you could refuse, but you can't. You made your choice when you sat down at that table. This is who you are now."
+        };
+
         // Utility Functions
         function shuffle(array) {
             const shuffled = [...array];
@@ -1167,18 +1226,19 @@
                 }
             }
 
-            let resultTitle, resultText;
+            let resultText, resultStoryText, categoryId;
 
             if (maxScore <= 1) {
-                resultTitle = "Regular Miserable Person";
                 resultText = "You are just a regular miserable person in real life. No prophecies, no epic soundtrack, and no cinematic lighting. Just emails, laundry, mild back pain, and the crushing weight of reality. Sorry.";
-                currentResult = { title: resultTitle, text: resultText };
+                resultStoryText = "The alarm goes off. You hit snooze. Eventually, you get up. Coffee is made, emails are checked, minor inconveniences are navigated with quiet resignation. There are no prophecies about you, no cryptic mentors offering quests, no chosen-one narratives lurking in your periphery. Your reflection in the mirror is just you—tired, ordinary, unadorned by destiny. The bills need paying. The laundry needs folding. Your back hurts for no cinematic reason. This is it. This is the whole story. Reality, in all its weight, its mundanity, its crushing, relentless ordinariness. No plot armor. No character arc. Just the regular, miserable trudge forward. You're not in a story. You're just here.";
+                currentResult = { title: "Regular Miserable Person", text: resultText };
             } else if (winningCategories.length === 1) {
-                const category = categories[winningCategories[0]];
-                resultTitle = category.name;
+                categoryId = winningCategories[0];
+                const category = categories[categoryId];
                 resultText = category.result;
-                currentResult = { title: resultTitle, text: resultText };
-                updateBackgroundTheme(winningCategories[0]);
+                resultStoryText = resultStories[categoryId];
+                currentResult = { title: category.name, text: resultText };
+                updateBackgroundTheme(categoryId);
             } else {
                 let lastCategoryId = null;
                 for (let i = selectedQuestions.length - 1; i >= 0; i--) {
@@ -1187,15 +1247,17 @@
                         break;
                     }
                 }
+                categoryId = lastCategoryId;
                 const category = categories[lastCategoryId];
-                resultTitle = category.name;
                 resultText = category.result;
-                currentResult = { title: resultTitle, text: resultText };
+                resultStoryText = resultStories[categoryId];
+                currentResult = { title: category.name, text: resultText };
                 updateBackgroundTheme(lastCategoryId);
             }
 
-            document.getElementById('resultTitle').textContent = resultTitle;
             document.getElementById('resultText').textContent = resultText;
+            document.getElementById('resultStory').textContent = resultStoryText;
+            document.getElementById('finalReality').textContent = realityIntegrity + '%';
             switchScreen('quizScreen', 'resultScreen');
         }
 
