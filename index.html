@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Am I in a Story? – The Narrative Diagnostic</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-align: center;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .progress {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #333;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .option-btn {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .option-btn:hover {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-title {
+            font-size: 1.8rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Landing Screen -->
+        <div id="landingScreen" class="screen active">
+            <h1>Am I in a Story?</h1>
+            <p class="tagline">Are you a hero or is the struggle just real? Take this diagnostic to find out if you're living in a fictional narrative or just another regular miserable person.</p>
+            <button onclick="startQuiz()">Start Diagnostic</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="screen">
+            <div class="progress">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <p id="progressText" class="progress-text">Question 1 of 26</p>
+            <p id="questionText" class="question-text"></p>
+            <div class="options">
+                <button class="option-btn" onclick="answerQuestion('often')">Often</button>
+                <button class="option-btn" onclick="answerQuestion('sometimes')">Sometimes</button>
+                <button class="option-btn" onclick="answerQuestion('not really')">Not Really</button>
+                <button class="option-btn" onclick="answerQuestion('never')">Never</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="screen">
+            <h1 id="resultTitle" class="result-title"></h1>
+            <p id="resultText" class="result-text"></p>
+            <div class="result-actions">
+                <button onclick="shareResult()">Share Result</button>
+                <button onclick="playAgain()">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let currentQuestionIndex = 0;
+        let selectedQuestions = [];
+        let scores = {};
+        let currentResult = null;
+
+        // Categories Database
+        const categories = {
+            1: {
+                name: "Destiny / Fantasy Hero",
+                result: "You are the Chosen One. Stop ignoring the old man in the tavern; he has a quest for you. Also, check your attic for legendary swords."
+            },
+            2: {
+                name: "Young Adult Dystopian Hero",
+                result: "You are the protagonist of a YA Dystopian novel. You're likely wearing combat boots and are about to overthrow a government using only angst and a bow and arrow."
+            },
+            3: {
+                name: "Anime / Manga Protagonist",
+                result: "You are a Shonen Protagonist. Your power level is rising. If you start glowing or screaming for more than 30 seconds, please move to an open field to avoid property damage."
+            },
+            4: {
+                name: "Main Character Energy (Slice of Life)",
+                result: "You have Main Character Energy. Your life is a slow-burn indie film where small moments feel profound. Enjoy the aesthetic melancholy."
+            },
+            5: {
+                name: "Superhero / Comic Book Lead",
+                result: "You are a Superhero. Your double life is exhausting, your costume is impractical, and your loved ones are in constant danger. But at least you look cool."
+            },
+            6: {
+                name: "Sitcom Character",
+                result: "You are a Sitcom Character. Your problems are easily solved in 22 minutes, your apartment is inexplicably nice, and laugh tracks follow you everywhere."
+            },
+            7: {
+                name: "Horror Movie Survivor (or Victim)",
+                result: "You are in a Horror Movie. Stop investigating strange noises. Stop going into basements. Just leave. Now. While you still can."
+            },
+            8: {
+                name: "Mystery / Detective Protagonist",
+                result: "You are a Detective. You see clues where others see trash. You probably look great in a trench coat, but your personal life is likely a shambles."
+            },
+            9: {
+                name: "Romantic Comedy Lead",
+                result: "You are in a Rom-Com. That clumsiness is charming, not dangerous. Prepare for a misunderstanding at the 60-minute mark, followed by a sprint through an airport."
+            },
+            10: {
+                name: "Tarantino Universe Character",
+                result: "You are in a Tarantino movie. Your life is cool, violent, and non-linear. Enjoy the witty dialogue, but watch out—statistically, you might not make it to the credits."
+            },
+            11: {
+                name: "Spielberg Adventure Hero",
+                result: "You are in a Spielberg Adventure. Look at the horizon with awe. Something magical is coming, and it's going to make grown men cry."
+            },
+            12: {
+                name: "Lucas Space Opera Hero",
+                result: "You are in a Space Opera Myth. You have a grand destiny, daddy issues, and a high probability of losing a hand. May the Force be with you."
+            },
+            13: {
+                name: "Coppola Family Epic Character",
+                result: "You are in a Mafia Family Drama. It's strictly business. Don't go fishing, don't accept favors on your daughter's wedding day, and stay away from the cannoli."
+            }
+        };
+
+        // Questions Database
+        const questions = [
+            // Category 1: Destiny / Fantasy Hero
+            { text: "Does anyone around you keep muttering something when you enter a room?", categoryId: 1 },
+            { text: "Have you recently discovered you can read an ancient language despite never studying it?", categoryId: 1 },
+            { text: "Did a talking animal, tree, or sword give you life advice in the last 48 hours?", categoryId: 1 },
+            { text: "Is there a local cult whose members seems oddly focused on you?", categoryId: 1 },
+            { text: "Have you learned that an object you've had since childhood is actually 'the object'?", categoryId: 1 },
+            { text: "Do elderly people stare at you, whisper, and then refuse to explain what they know?", categoryId: 1 },
+            { text: "Has a mentor figure died immediately after giving you one really important speech?", categoryId: 1 },
+            { text: "Are you inexplicably good at swordfighting / archery despite zero training?", categoryId: 1 },
+            { text: "Has anyone told you that 'your power is unstable'?", categoryId: 1 },
+
+            // Category 2: Young Adult Dystopian Hero
+            { text: "Are you forced to wear the same gray or beige outfit every day?", categoryId: 2 },
+            { text: "Is your love interest on the opposite side of the regime, yet weirdly bad at arresting you?", categoryId: 2 },
+            { text: "Have you discovered that the 'outside world' is not what everyone claims it is?", categoryId: 2 },
+
+            // Category 3: Anime / Manga Protagonist
+            { text: "Do strangers frequently comment on your 'incredible potential' despite overwhelming evidence to the contrary?", categoryId: 3 },
+            { text: "Did your tragic childhood only get mentioned halfway through conversations?", categoryId: 3 },
+            { text: "Does your power level dramatically increase whenever you think about friendship?", categoryId: 3 },
+            { text: "Has a mysterious rival appeared whose sole purpose is to glare at you from rooftops?", categoryId: 3 },
+            { text: "Do you regularly survive injuries that should require at least three funerals?", categoryId: 3 },
+            { text: "Is there a tournament arc in your life where absolutely everything must be decided by a flashy battle?", categoryId: 3 },
+            { text: "Do enemies politely wait for you to finish long speeches before attacking?", categoryId: 3 },
+            { text: "Have you ever unlocked a new form/state by screaming for an uncomfortably long time?", categoryId: 3 },
+            { text: "Did you die and wake up in another world with a menu screen and inventory?", categoryId: 3 },
+            { text: "Is there a mascot creature nearby whose main abilities are being adorable and selling merch?", categoryId: 3 },
+
+            // Category 4: Main Character Energy
+            { text: "Has anyone ever told you, 'You always learn the lesson right before the credits roll'?", categoryId: 4 },
+            { text: "Do you bump into the same three strangers in wildly different parts of town for no reason?", categoryId: 4 },
+            { text: "Does your alarm clock ring exactly when something dramatic happens?", categoryId: 4 },
+            { text: "Is your local coffee shop staff weirdly invested in your love life?", categoryId: 4 },
+            { text: "Does your internal monologue sound like it's narrated by someone with a podcast?", categoryId: 4 },
+            { text: "Do heartfelt conversations conveniently happen during sunsets with perfect lighting?", categoryId: 4 },
+            { text: "Does every big life event happen on weekends or evenings—never during boring office hours?", categoryId: 4 },
+            { text: "When you change your hairstyle, does everyone react like it's a season premiere?", categoryId: 4 },
+            { text: "Do you often say 'I have a bad feeling about this' right before something important happens?", categoryId: 4 },
+            { text: "Does your life seem to have 'bottle episodes' where everything happens in one location?", categoryId: 4 },
+
+            // Category 5: Superhero / Comic Book Lead
+            { text: "Do you have a secret second wardrobe made mostly of spandex, leather, or capes?", categoryId: 5 },
+            { text: "Did a freak accident (lab, spider, radiation, alien artifact) give you abilities instead of a lawsuit?", categoryId: 5 },
+            { text: "Is your city's crime rate mysteriously correlated with your availability?", categoryId: 5 },
+            { text: "Does no one recognize you when you put on a small mask or different glasses?", categoryId: 5 },
+            { text: "Is there an arch-nemesis who somehow escapes prison every other week?", categoryId: 5 },
+            { text: "Does your boss keep saying 'Where were you during the attack?!' while you're bandaged up?", categoryId: 5 },
+            { text: "Have you dramatically whispered 'With great power comes great responsibility' at least once?", categoryId: 5 },
+            { text: "Is your romantic relationship constantly ruined by you having to 'step out for a minute'?", categoryId: 5 },
+
+            // Category 6: Sitcom Character
+            { text: "Do people around you pause and stare into the distance as if waiting for laughter?", categoryId: 6 },
+            { text: "Does every problem in your life escalate absurdly and then reset by next week?", categoryId: 6 },
+            { text: "Do you live in an apartment far nicer than your salary can realistically explain?", categoryId: 6 },
+            { text: "Is your neighbor/friend always dropping by without knocking, yet no one calls the police?", categoryId: 6 },
+            { text: "Do minor misunderstandings spiral into chaos because no one will explain a simple sentence?", categoryId: 6 },
+            { text: "Have you pretended to be someone's partner/boss/parent to get out of an awkward situation?", categoryId: 6 },
+            { text: "Does your workplace have exactly 5–8 recurring characters and nobody else?", categoryId: 6 },
+            { text: "Do your exes or old classmates reappear exactly when the episode needs drama?", categoryId: 6 },
+
+            // Category 7: Horror Movie Survivor
+            { text: "Do you currently live near a cemetery, old asylum, or house described as 'having history'?", categoryId: 7 },
+            { text: "Have you heard a noise in the basement and thought, 'I should investigate alone, unarmed'?", categoryId: 7 },
+            { text: "Does your town have a legend everyone knows but no one takes seriously until it's too late?", categoryId: 7 },
+            { text: "Has someone suggested splitting up, and you agreed like that was a good idea?", categoryId: 7 },
+            { text: "Do children in your area quietly sing creepy rhymes about local tragedies?", categoryId: 7 },
+            { text: "Has a mirror, TV, or doll ever stared back at you in a way that felt… too intentional?", categoryId: 7 },
+            { text: "Does the weather dramatically shift to thunder and lightning whenever secrets are revealed?", categoryId: 7 },
+            { text: "Did you recently move into a place where the rent is suspiciously cheap?", categoryId: 7 },
+
+            // Category 8: Mystery / Detective
+            { text: "Do you routinely notice tiny details that everyone else somehow missed?", categoryId: 8 },
+            { text: "Have you ever dramatically announced the solution to a problem in front of a gathered crowd?", categoryId: 8 },
+            { text: "Do you get invited to isolated mansions, trains, or islands right before a crime happens?", categoryId: 8 },
+            { text: "Has someone said, 'You're the only one who can figure this out' despite many qualified professionals?", categoryId: 8 },
+            { text: "Does your friend group include at least one comic-relief sidekick who keeps almost dying?", categoryId: 8 },
+            { text: "Do you keep a bulletin board full of photos and red string, and call it 'thinking'?", categoryId: 8 },
+
+            // Category 9: Romantic Comedy Lead
+            { text: "Have you literally collided with a stranger while carrying coffee, groceries, or paperwork?", categoryId: 9 },
+            { text: "Is there someone you 'can't stand' but also think about constantly for no good reason?", categoryId: 9 },
+            { text: "Does terrible weather appear exactly when you need a dramatic confession scene?", categoryId: 9 },
+            { text: "Have you had to choose between a stable, kind person and a chaotic, charming disaster?", categoryId: 9 },
+            { text: "Do you make big life decisions based on overhearing half a conversation?", categoryId: 9 },
+            { text: "Has your best friend ever said, 'The person you're looking for has been right here all along'?", categoryId: 9 },
+            { text: "Do grand public gestures of affection keep happening around you—and somehow work out?", categoryId: 9 },
+
+            // Category 10: Tarantino Universe
+            { text: "Do you frequently have long, philosophical conversations about trivial topics (like burgers or tipping) right before something violent happens?", categoryId: 10 },
+            { text: "Is the soundtrack of your life made of obscure but incredibly cool retro tracks that start playing at oddly tense moments?", categoryId: 10 },
+            { text: "Has anyone ever delivered a calm, five-minute speech while clearly holding a weapon?", categoryId: 10 },
+            { text: "Do arguments in your world escalate from 'casual banter' to 'life-threatening situation' instantly?", categoryId: 10 },
+            { text: "Does your story keep jumping back and forth in time, revealing that actually you already saw this scene… from a different angle?", categoryId: 10 },
+            { text: "Have you recently opened a briefcase, seen a mysterious glowing light, and nobody will tell you what it is?", categoryId: 10 },
+            { text: "Have you ever danced in a diner, bar, or living room for no clear reason, but it somehow felt extremely important to the plot?", categoryId: 10 },
+            { text: "Does everyone talk like they're trying to win a 'Coolest Dialogue' competition?", categoryId: 10 },
+
+            // Category 11: Spielberg Adventure
+            { text: "Are you or one of your closest companions a child who knows way more than the adults about what's going on?", categoryId: 11 },
+            { text: "Do ordinary suburban streets around you frequently become scenes of extraordinary events (UFOs, dinosaurs)?", categoryId: 11 },
+            { text: "Have you recently touched something otherworldly while soft, emotional music played in the background?", categoryId: 11 },
+            { text: "Do your most important moments happen at sunset with a suspiciously perfect glowing sky?", categoryId: 11 },
+            { text: "Is there a gentle, misunderstood creature/being that everyone fears except you and your small group of friends?", categoryId: 11 },
+            { text: "Do bicycles, walkie-talkies, and improvised gadgets play a suspiciously large role in your survival?", categoryId: 11 },
+            { text: "Have you looked up into the sky in awe at something huge and mysterious while the camera zooms in on your face?", categoryId: 11 },
+
+            // Category 12: Lucas Space Opera
+            { text: "Have you ever learned that the main villain is secretly related to you in a very inconvenient way?", categoryId: 12 },
+            { text: "Does your world contain a giant authoritarian empire, a scrappy rebellion, and a moon-sized superweapon?", categoryId: 12 },
+            { text: "Did an old, cryptic mentor tell you to 'trust your feelings' instead of giving clear instructions?", categoryId: 12 },
+            { text: "Do people around you casually use mystical energy, but insist it's also kind of science?", categoryId: 12 },
+            { text: "Is there a noisy alien bar/cantina where everyone seems to be doing illegal business in the open?", categoryId: 12 },
+            { text: "Have you piloted, or wanted to pilot, a ridiculously unsafe vehicle through impossible obstacles at high speed?", categoryId: 12 },
+            { text: "Do you have a bad feeling about things so often it might as well be your catchphrase?", categoryId: 12 },
+
+            // Category 13: Coppola Family Epic
+            { text: "Is your life heavily influenced by a powerful family, clan, or organization where loyalty matters more than the law?", categoryId: 13 },
+            { text: "Do major decisions get made around large dining tables, in hushed tones, while everyone pretends nothing is wrong?", categoryId: 13 },
+            { text: "Have you ever been told, 'It's not personal, it's strictly business' right before something very personal happened?", categoryId: 13 },
+            { text: "Do you find yourself slowly becoming more like a parent or elder you swore you'd never resemble?", categoryId: 13 },
+            { text: "Do weddings, baptisms, or other sacred ceremonies in your world suspiciously coincide with acts of extreme betrayal?", categoryId: 13 },
+            { text: "Does rain, dim light, or church organs play whenever major moral choices are made?", categoryId: 13 },
+            { text: "Are deals in your world always described as 'offers you can't refuse,' yet you really wish you could?", categoryId: 13 }
+        ];
+
+        // Utility Functions
+        function shuffle(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function selectQuestions() {
+            const selected = [];
+
+            // Select 2 questions from each category
+            for (let categoryId = 1; categoryId <= 13; categoryId++) {
+                const categoryQuestions = questions.filter(q => q.categoryId === categoryId);
+                const shuffledCategory = shuffle(categoryQuestions);
+                selected.push(...shuffledCategory.slice(0, 2));
+            }
+
+            // Shuffle the final question set
+            return shuffle(selected);
+        }
+
+        function switchScreen(hideId, showId) {
+            document.getElementById(hideId).classList.remove('active');
+            document.getElementById(showId).classList.add('active');
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / selectedQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent =
+                `Question ${currentQuestionIndex + 1} of ${selectedQuestions.length}`;
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex < selectedQuestions.length) {
+                const question = selectedQuestions[currentQuestionIndex];
+                document.getElementById('questionText').textContent = question.text;
+                updateProgress();
+            } else {
+                showResult();
+            }
+        }
+
+        // Game Functions
+        function startQuiz() {
+            // Initialize
+            currentQuestionIndex = 0;
+            selectedQuestions = selectQuestions();
+            scores = {};
+            for (let i = 1; i <= 13; i++) {
+                scores[i] = 0;
+            }
+
+            // Switch to quiz screen
+            switchScreen('landingScreen', 'quizScreen');
+            displayQuestion();
+        }
+
+        function answerQuestion(answer) {
+            const question = selectedQuestions[currentQuestionIndex];
+
+            // Update score based on answer
+            switch(answer) {
+                case 'often':
+                    scores[question.categoryId] += 1;
+                    break;
+                case 'sometimes':
+                    scores[question.categoryId] += 0.75;
+                    break;
+                case 'not really':
+                    scores[question.categoryId] += 0.5;
+                    break;
+                case 'never':
+                    // No points
+                    break;
+            }
+
+            // Move to next question
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        function showResult() {
+            // Find max score
+            let maxScore = 0;
+            let winningCategories = [];
+
+            for (let categoryId in scores) {
+                if (scores[categoryId] > maxScore) {
+                    maxScore = scores[categoryId];
+                    winningCategories = [parseInt(categoryId)];
+                } else if (scores[categoryId] === maxScore) {
+                    winningCategories.push(parseInt(categoryId));
+                }
+            }
+
+            // Determine result
+            let resultTitle, resultText;
+
+            if (maxScore <= 1) {
+                // Default result
+                resultTitle = "Regular Miserable Person";
+                resultText = "You are just a regular miserable person in real life. No prophecies, no epic soundtrack, and no cinematic lighting. Just emails, laundry, mild back pain, and the crushing weight of reality. Sorry.";
+                currentResult = { title: resultTitle, text: resultText };
+            } else if (winningCategories.length === 1) {
+                // Single winner
+                const category = categories[winningCategories[0]];
+                resultTitle = category.name;
+                resultText = category.result;
+                currentResult = { title: resultTitle, text: resultText };
+            } else {
+                // Tie-breaker: find which category's question appeared last
+                let lastCategoryId = null;
+                for (let i = selectedQuestions.length - 1; i >= 0; i--) {
+                    if (winningCategories.includes(selectedQuestions[i].categoryId)) {
+                        lastCategoryId = selectedQuestions[i].categoryId;
+                        break;
+                    }
+                }
+                const category = categories[lastCategoryId];
+                resultTitle = category.name;
+                resultText = category.result;
+                currentResult = { title: resultTitle, text: resultText };
+            }
+
+            // Display result
+            document.getElementById('resultTitle').textContent = resultTitle;
+            document.getElementById('resultText').textContent = resultText;
+            switchScreen('quizScreen', 'resultScreen');
+        }
+
+        function shareResult() {
+            const shareText = `I just took the Narrative Diagnostic and I'm a ${currentResult.title}! Are you living in a story or just miserable? Find out: ${window.location.href}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Am I in a Story?',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('Result copied to clipboard!');
+                }).catch(err => {
+                    alert('Share text: ' + shareText);
+                });
+            }
+        }
+
+        function playAgain() {
+            switchScreen('resultScreen', 'landingScreen');
+        }
+    </script>
+</body>
+</html>
