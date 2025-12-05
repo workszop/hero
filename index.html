@@ -626,7 +626,7 @@
                 </div>
                 <div class="timeline-playhead" id="timelinePlayhead"></div>
             </div>
-            <p id="progressText" class="progress-text">ACT I - SCENE 1 / 26</p>
+            <p id="progressText" class="progress-text">ACT I - SCENE 1 / 30</p>
 
             <div class="quiz-layout">
                 <div class="quiz-main">
@@ -729,7 +729,8 @@
             10: { bg: 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)', name: 'tarantino' },  // Tarantino - brown/sepia
             11: { bg: 'linear-gradient(135deg, #87CEEB 0%, #4682B4 100%)', name: 'spielberg' },  // Spielberg - sky blue
             12: { bg: 'linear-gradient(135deg, #000000 0%, #1a1a2e 100%)', name: 'space-opera' },  // Space Opera - dark/starry
-            13: { bg: 'linear-gradient(135deg, #2F4F4F 0%, #1C1C1C 100%)', name: 'mafia' }  // Mafia - dark/shadowy
+            13: { bg: 'linear-gradient(135deg, #2F4F4F 0%, #1C1C1C 100%)', name: 'mafia' },  // Mafia - dark/shadowy
+            14: { bg: 'linear-gradient(135deg, #808080 0%, #A9A9A9 100%)', name: 'reality' }  // Reality - flat gray
         };
 
         // Initialize floating script text
@@ -758,7 +759,8 @@
         // Initialize timeline notches
         function initTimeline() {
             const notchesContainer = document.getElementById('timelineNotches');
-            for (let i = 0; i < 26; i++) {
+            notchesContainer.innerHTML = ''; // Clear any existing notches
+            for (let i = 0; i < 30; i++) {
                 const notch = document.createElement('div');
                 notch.className = 'timeline-notch';
                 notchesContainer.appendChild(notch);
@@ -868,6 +870,10 @@
             13: {
                 name: "Coppola Family Epic Character",
                 result: "You are in a Mafia Family Drama. It's strictly business. Don't go fishing, don't accept favors on your daughter's wedding day, and stay away from the cannoli."
+            },
+            14: {
+                name: "Regular Miserable Person",
+                result: "You are an NPC in a Simulation. Or just a person. You have no plot armor, your dialogue is unscripted and awkward, and your 'character arc' is just you trying to pay off a credit card. Go drink some water."
             }
         };
 
@@ -995,7 +1001,17 @@
             { text: "Do you find yourself slowly becoming more like a parent or elder you swore you'd never resemble?", categoryId: 13 },
             { text: "Do weddings, baptisms, or other sacred ceremonies in your world suspiciously coincide with acts of extreme betrayal?", categoryId: 13 },
             { text: "Does rain, dim light, or church organs play whenever major moral choices are made?", categoryId: 13 },
-            { text: "Are deals in your world always described as 'offers you can't refuse,' yet you really wish you could?", categoryId: 13 }
+            { text: "Are deals in your world always described as 'offers you can't refuse,' yet you really wish you could?", categoryId: 13 },
+
+            // Category 14: Regular Miserable Person (Reality Control)
+            { text: "Do you wake up feeling slightly worse than when you went to sleep, despite having no battle injuries?", categoryId: 14 },
+            { text: "If a stranger approached you in a tavern/bar with a 'quest,' would you assume they are drunk or trying to sell you crypto?", categoryId: 14 },
+            { text: "Is the most 'mysterious object' in your possession a plastic container lid that doesn't match any of your bowls?", categoryId: 14 },
+            { text: "Do your conversations often involve saying 'What?' three times, then just awkwardly laughing because you still didn't hear them?", categoryId: 14 },
+            { text: "Is your current 'Arch-Nemesis' a printer, a neighbor, or nonspecific lower back pain?", categoryId: 14 },
+            { text: "If you fell off a roof, are you 100% certain you would die immediately rather than landing in a convenient dumpster?", categoryId: 14 },
+            { text: "Has a 'bottle episode' (stuck in traffic, DMV waiting room) lasted 4 hours with absolutely no character development?", categoryId: 14 },
+            { text: "Is the 'soundtrack' of your life mostly just the hum of a refrigerator or mild tinnitus?", categoryId: 14 }
         ];
 
         // Genre story excerpts
@@ -1116,6 +1132,15 @@
                     "The rain fell like judgment itself. Church bells echoed in the distance. Moral choices were being made in the shadows, and there were no good options.",
                     "\"I'm going to make him an offer he can't refuse,\" he said, and everyone in the room understood exactly what that meant."
                 ]
+            },
+            14: {
+                genre: "REALITY",
+                stories: [
+                    "The alarm went off. Again. She hit snooze. The coffee was lukewarm. There was no dramatic reason for it. Just bad timing and a microwave that beeped too soon.",
+                    "\"What?\" he said for the third time. His friend repeated the sentence. He still didn't catch it. They both laughed awkwardly and moved on.",
+                    "The printer jammed. Of course it did. The IT ticket would take three days. This was his arch-nemesis now. Not a villain. Just... this.",
+                    "He opened the tupperware drawer. Seventeen lids. None of them matched. This was the mystery he was solving today. There would be no resolution."
+                ]
             }
         };
 
@@ -1145,7 +1170,9 @@
 
             12: "\"No. No, that's not true. That's impossible.\" The words came out strangled, broken. The mask tilted, mechanical breathing filling the chamber. \"Search your feelings. You know it to be true.\" Father. The word rewrote everything—the rebellion, the war, the impossible choices. Outside the viewport, stars wheeled past, indifferent to family drama playing out on cosmic scales. The old mentor's voice echoed from beyond death: \"Trust your feelings.\" The mystical energy—definitely-not-magic, absolutely-science—hummed through the station. \"I have a bad feeling about this,\" had been the last words before everything changed. That feeling was always right.",
 
-            13: "The family gathered around the table. Sunday dinner. Michael smiled at his children, his wife, the normalcy of it all. Underneath, his father's voice: \"It's not personal. It's strictly business.\" But it was personal. It was always personal. The wedding was next week. Someone at this table wouldn't see it. The organization demanded loyalty above all—above law, above love, above the person he'd sworn he'd never become. Rain fell outside. Church bells echoed from downtown. His son looked at him with eyes too knowing for his age. \"Papa?\" Michael smiled. Poured the wine. Made the choice he'd already made when he sat down at this table years ago."
+            13: "The family gathered around the table. Sunday dinner. Michael smiled at his children, his wife, the normalcy of it all. Underneath, his father's voice: \"It's not personal. It's strictly business.\" But it was personal. It was always personal. The wedding was next week. Someone at this table wouldn't see it. The organization demanded loyalty above all—above law, above love, above the person he'd sworn he'd never become. Rain fell outside. Church bells echoed from downtown. His son looked at him with eyes too knowing for his age. \"Papa?\" Michael smiled. Poured the wine. Made the choice he'd already made when he sat down at this table years ago.",
+
+            14: "The alarm screamed at 6:30 AM. There was no foreshadowing, no dramatic lighting, just the gray reality of a Tuesday. I looked at the pile of laundry on the chair—it hadn't moved. It wasn't a metaphor for my internal struggles; it was just dirty socks. I made coffee. It was lukewarm. I drank it anyway. The email from my boss arrived: \"Can you hop on a call?\" No. I could not hop. I could barely walk. My back hurt for no heroic reason. At lunch, I tried to open a plastic container. The lid didn't match. It never matched. This was my quest now. There would be no resolution, no character growth, no third-act transformation. Just this. Tuesday becoming Wednesday. The endless, magnificent banality of being alive and unremarkable."
         };
 
         // Utility Functions
@@ -1160,11 +1187,17 @@
 
         function selectQuestions() {
             const selected = [];
+            // Select 2 questions from categories 1-13
             for (let categoryId = 1; categoryId <= 13; categoryId++) {
                 const categoryQuestions = questions.filter(q => q.categoryId === categoryId);
                 const shuffledCategory = shuffle(categoryQuestions);
                 selected.push(...shuffledCategory.slice(0, 2));
             }
+            // Select 4 questions from category 14 (Reality Control)
+            const category14Questions = questions.filter(q => q.categoryId === 14);
+            const shuffledCategory14 = shuffle(category14Questions);
+            selected.push(...shuffledCategory14.slice(0, 4));
+
             return shuffle(selected);
         }
 
@@ -1213,7 +1246,7 @@
             totalTropePoints = 0;
             realityIntegrity = 100;
 
-            for (let i = 1; i <= 13; i++) {
+            for (let i = 1; i <= 14; i++) {
                 scores[i] = 0;
             }
 
