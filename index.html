@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Am I in a Story? – The Narrative Diagnostic</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Landing Screen -->
+    <div id="landing-screen" class="screen active">
+        <div class="container">
+            <h1 class="title">Am I in a Story?</h1>
+            <p class="subtitle">The Narrative Diagnostic</p>
+            <p class="intro">Are you actually in a movie, anime, or tragic YA dystopia? Or are you just another regular miserable person navigating the crushing weight of reality?</p>
+            <p class="intro">Answer 10 simple questions and discover your narrative destiny.</p>
+            <button id="start-btn" class="btn btn-primary">Start Diagnostic</button>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="screen">
+        <div class="container">
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <p id="progress-text" class="progress-text">Question 1 of 10</p>
+            <div class="question-card">
+                <p id="question-text" class="question-text"></p>
+                <div class="button-group">
+                    <button id="yes-btn" class="btn btn-answer btn-yes">Yes</button>
+                    <button id="no-btn" class="btn btn-answer btn-no">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen">
+        <div class="container">
+            <h2 id="result-title" class="result-title">Your Diagnosis</h2>
+            <div class="result-card">
+                <p id="result-text" class="result-text"></p>
+            </div>
+            <div class="button-group">
+                <button id="play-again-btn" class="btn btn-primary">Play Again</button>
+                <button id="share-btn" class="btn btn-secondary">Share Result</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
