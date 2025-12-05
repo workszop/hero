@@ -43,13 +43,7 @@
             font-size: 14px;
             color: rgba(255, 255, 255, 0.1);
             white-space: nowrap;
-            animation: float 60s linear infinite;
             pointer-events: none;
-        }
-
-        @keyframes float {
-            from { transform: translateY(100vh) translateX(0); }
-            to { transform: translateY(-100vh) translateX(50px); }
         }
 
         .container {
@@ -710,6 +704,8 @@
             "[Dramatic pause]",
             "THE END?",
             "ACT I",
+            "ACT II",
+            "ACT III",
             "DISSOLVE TO:",
             "[Music swells]",
             "SMASH CUT:",
@@ -720,7 +716,63 @@
             "FLASHBACK:",
             "VOICE OVER:",
             "[Thunder rumbles]",
-            "MONTAGE:"
+            "MONTAGE:",
+            "INT. COFFEE SHOP - MORNING",
+            "EXT. CITY STREET - NIGHT",
+            "ESTABLISHING SHOT:",
+            "TRACKING SHOT:",
+            "[Silence]",
+            "JUMP CUT:",
+            "CROSS CUT:",
+            "POV SHOT:",
+            "[Off screen]",
+            "LATER:",
+            "MEANWHILE:",
+            "EARLIER:",
+            "INT. APARTMENT - CONTINUOUS",
+            "EXT. ROOFTOP - DUSK",
+            "[SFX: Door slams]",
+            "[We hear footsteps]",
+            "ANGLE ON:",
+            "PUSH IN ON:",
+            "PULL BACK TO REVEAL:",
+            "TIME CUT:",
+            "[Long pause]",
+            "INTERCUT:",
+            "[Rain falls]",
+            "[Footsteps echo]",
+            "TITLE CARD:",
+            "SUPER:",
+            "[Wind howls]",
+            "INT. OFFICE - DAY",
+            "EXT. PARKING LOT - AFTERNOON",
+            "[Glass shatters]",
+            "[Phone rings]",
+            "OVERHEAD SHOT:",
+            "LOW ANGLE:",
+            "DUTCH ANGLE:",
+            "[Distant sirens]",
+            "SLOW MOTION:",
+            "[Clock ticking]",
+            "HARD CUT:",
+            "WHIP PAN:",
+            "[Crowd murmurs]",
+            "INT. HALLWAY - NIGHT",
+            "EXT. BRIDGE - DAWN",
+            "[Breathing heavily]",
+            "REVERSE ANGLE:",
+            "[Credits roll]",
+            "PRELAP:",
+            "[Car horn]",
+            "TWO SHOT:",
+            "OVER THE SHOULDER:",
+            "[Laughter fades]",
+            "CRANE SHOT:",
+            "[Lightning flashes]",
+            "SPLIT SCREEN:",
+            "[Typing sounds]",
+            "FREEZE FRAME:",
+            "[Elevator dings]"
         ];
 
         // Category background colors
@@ -741,16 +793,16 @@
             14: { bg: 'linear-gradient(135deg, #808080 0%, #A9A9A9 100%)', name: 'reality' }  // Reality - flat gray
         };
 
-        // Initialize floating script text
+        // Initialize static script text
         function initBackground() {
             const bg = document.getElementById('backgroundLayer');
-            for (let i = 0; i < 15; i++) {
+            bg.innerHTML = ''; // Clear existing text
+            for (let i = 0; i < 50; i++) {
                 const scriptEl = document.createElement('div');
                 scriptEl.className = 'script-text';
                 scriptEl.textContent = scriptSnippets[Math.floor(Math.random() * scriptSnippets.length)];
-                scriptEl.style.left = Math.random() * 100 + '%';
-                scriptEl.style.animationDelay = Math.random() * 60 + 's';
-                scriptEl.style.animationDuration = (40 + Math.random() * 40) + 's';
+                scriptEl.style.left = Math.random() * 95 + '%';
+                scriptEl.style.top = Math.random() * 95 + '%';
                 bg.appendChild(scriptEl);
             }
         }
@@ -1357,9 +1409,14 @@
         function playAgain() {
             switchScreen('resultScreen', 'landingScreen');
             // Reset background
-            document.getElementById('backgroundLayer').innerHTML = '';
             document.getElementById('backgroundLayer').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            initBackground();
         }
+
+        // Initialize background on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            initBackground();
+        });
     </script>
 </body>
 </html>
