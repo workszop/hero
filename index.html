@@ -1400,17 +1400,20 @@
             document.getElementById('resultStory').textContent = resultStoryText;
             document.getElementById('finalReality').textContent = realityIntegrity + '%';
 
-            // Update result waveform with varying bar heights
-            updateResultWaveform();
-
             switchScreen('quizScreen', 'resultScreen');
+
+            // Update result waveform with varying bar heights after screen switch
+            setTimeout(() => {
+                updateResultWaveform();
+            }, 50);
         }
 
         function updateResultWaveform() {
             const resultBars = document.querySelectorAll('#resultWaveform .wave-bar');
-            resultBars.forEach(bar => {
-                const height = Math.random() * 18 + 12; // Random height between 12-30px
+            resultBars.forEach((bar, index) => {
+                const height = 12 + Math.random() * 18; // Random height between 12-30px
                 bar.style.height = height + 'px';
+                bar.style.transition = 'height 0.3s ease';
             });
         }
 
