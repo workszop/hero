@@ -53,13 +53,22 @@
                         inset 0 0 20px rgba(102, 126, 234, 0.1);
             max-width: 900px;
             width: 100%;
-            min-height: 600px;
             padding: 40px;
             margin: 40px auto;
             animation: fadeIn 0.5s ease-in;
             position: relative;
             z-index: 1;
             border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* Fixed size only for quiz screen */
+        #quizScreen.active ~ .container,
+        .container:has(#quizScreen.active) {
+            min-height: 600px;
+        }
+
+        #quizScreen {
+            min-height: 600px;
         }
 
         /* CRT/Terminal Effect */
