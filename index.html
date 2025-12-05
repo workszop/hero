@@ -318,6 +318,10 @@
             background: rgba(255, 255, 255, 0.95);
             border-radius: 12px;
             border: 3px solid #667eea;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .quiz-layout {
@@ -1405,7 +1409,7 @@
         function updateResultWaveform() {
             const resultBars = document.querySelectorAll('#resultWaveform .wave-bar');
             resultBars.forEach(bar => {
-                const height = Math.random() * 20 + 10; // Random height between 10-30px
+                const height = Math.random() * 18 + 12; // Random height between 12-30px
                 bar.style.height = height + 'px';
             });
         }
