@@ -694,6 +694,414 @@
             }
         }
 
+        /* Epic Results Dashboard */
+        .results-dashboard {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .dashboard-title {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .dashboard-title::before,
+        .dashboard-title::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+        }
+
+        /* Winner Badge */
+        .winner-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 16px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .winner-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(102, 126, 234, 0.1), transparent, rgba(118, 75, 162, 0.1), transparent);
+            animation: winnerGlow 8s linear infinite;
+        }
+
+        @keyframes winnerGlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .winner-badge {
+            position: relative;
+            z-index: 1;
+        }
+
+        .winner-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .winner-genre {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            margin-bottom: 5px;
+        }
+
+        .winner-score {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* Genre Breakdown Chart */
+        .genre-breakdown {
+            margin-bottom: 30px;
+        }
+
+        .breakdown-header {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breakdown-header .indicator {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .genre-breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .breakdown-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .breakdown-bar-row:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .breakdown-bar-row.winner {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .breakdown-name {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            color: #555;
+            width: 75px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .breakdown-track {
+            flex: 1;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .breakdown-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .breakdown-score {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            color: #888;
+            width: 16px;
+            text-align: right;
+        }
+
+        /* Cryptic Metrics Grid */
+        .cryptic-metrics {
+            margin-bottom: 25px;
+        }
+
+        .metrics-header {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metrics-header .indicator {
+            width: 8px;
+            height: 8px;
+            background: #764ba2;
+            border-radius: 50%;
+            animation: metricPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes metricPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent);
+        }
+
+        .metric-name {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.55rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .metric-value {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        .metric-bar {
+            height: 4px;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease-out;
+        }
+
+        /* Panic Curve Chart */
+        .panic-curve-section {
+            margin-bottom: 25px;
+        }
+
+        .panic-header {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panic-header .indicator {
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            border-radius: 2px;
+            animation: panicBlink 0.8s ease-in-out infinite;
+        }
+
+        @keyframes panicBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .panic-curve-container {
+            background: rgba(0, 0, 0, 0.04);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .panic-curve {
+            display: flex;
+            align-items: flex-end;
+            height: 60px;
+            gap: 3px;
+        }
+
+        .panic-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #ff6b6b 0%, #ffa07a 100%);
+            border-radius: 2px 2px 0 0;
+            transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .panic-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.5rem;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        /* Compatibility Matrix */
+        .compat-section {
+            margin-bottom: 20px;
+        }
+
+        .compat-header {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compat-header .indicator {
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+        }
+
+        .compat-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+        }
+
+        .compat-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            transition: transform 0.2s ease;
+        }
+
+        .compat-cell:hover {
+            transform: scale(1.1);
+            z-index: 1;
+        }
+
+        .compat-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.5rem;
+            color: #888;
+        }
+
+        .compat-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .compat-legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+        }
+
+        /* Dashboard Footer */
+        .dashboard-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            margin-top: 20px;
+        }
+
+        .dashboard-footer-text {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.55rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .dashboard-id {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.5rem;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 900px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .genre-breakdown-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 25px 20px;
@@ -722,6 +1130,22 @@
             button {
                 font-size: 1rem;
                 padding: 15px 20px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .metric-card {
+                padding: 10px;
+            }
+
+            .metric-value {
+                font-size: 1.1rem;
+            }
+
+            .winner-genre {
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -835,6 +1259,84 @@
                 <div class="result-actions">
                     <button onclick="shareResult()">Share Result</button>
                     <button onclick="playAgain()">Play Again</button>
+                </div>
+
+                <!-- Epic Results Dashboard -->
+                <div class="results-dashboard" id="resultsDashboard">
+                    <div class="dashboard-title">Narrative Analysis Complete</div>
+
+                    <!-- Winner Section -->
+                    <div class="winner-section">
+                        <div class="winner-badge">
+                            <div class="winner-label">Dominant Narrative Pattern</div>
+                            <div class="winner-genre" id="winnerGenre">Fantasy Hero</div>
+                            <div class="winner-score" id="winnerScore">Confidence: 87%</div>
+                        </div>
+                    </div>
+
+                    <!-- Genre Breakdown -->
+                    <div class="genre-breakdown">
+                        <div class="breakdown-header">
+                            <span class="indicator"></span>
+                            Genre Signal Distribution
+                        </div>
+                        <div class="genre-breakdown-grid" id="genreBreakdownGrid"></div>
+                    </div>
+
+                    <!-- Cryptic Metrics -->
+                    <div class="cryptic-metrics">
+                        <div class="metrics-header">
+                            <span class="indicator"></span>
+                            Protagonist Metrics Analysis
+                        </div>
+                        <div class="metrics-grid" id="metricsGrid"></div>
+                    </div>
+
+                    <!-- Panic Curve -->
+                    <div class="panic-curve-section">
+                        <div class="panic-header">
+                            <span class="indicator"></span>
+                            Narrative Tension Curve
+                        </div>
+                        <div class="panic-curve-container">
+                            <div class="panic-curve" id="panicCurve"></div>
+                            <div class="panic-labels">
+                                <span>Exposition</span>
+                                <span>Rising Action</span>
+                                <span>Climax</span>
+                                <span>Resolution</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Compatibility Matrix -->
+                    <div class="compat-section">
+                        <div class="compat-header">
+                            <span class="indicator"></span>
+                            Trope Compatibility Matrix
+                        </div>
+                        <div class="compat-grid" id="compatGrid"></div>
+                        <div class="compat-legend">
+                            <div class="compat-legend-item">
+                                <div class="compat-legend-color" style="background: #2ecc71;"></div>
+                                <span>High</span>
+                            </div>
+                            <div class="compat-legend-item">
+                                <div class="compat-legend-color" style="background: #f1c40f;"></div>
+                                <span>Medium</span>
+                            </div>
+                            <div class="compat-legend-item">
+                                <div class="compat-legend-color" style="background: #e74c3c;"></div>
+                                <span>Low</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Footer -->
+                    <div class="dashboard-footer">
+                        <div class="dashboard-footer-text">Analysis powered by Narrative Intelligence Engine v2.7.4</div>
+                        <div class="dashboard-id" id="dashboardId">Session ID: NRR-0000000</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1547,13 +2049,16 @@
             }
 
             let resultText, resultStoryText, categoryId;
+            let winningCategoryId = 14; // Default to Reality
 
             if (maxScore <= 1) {
                 resultText = "You are just a regular miserable person in real life. No prophecies, no epic soundtrack, and no cinematic lighting. Just emails, laundry, mild back pain, and the crushing weight of reality. Sorry.";
                 resultStoryText = "The alarm went off. She hit snooze. Twenty minutes later, it went off again. Coffee was made with hands that knew the routine too well. The email from her boss arrived at 7:43 AM, as it always did. Subject: Urgent. It was never actually urgent. Outside, people walked to jobs they tolerated, lived in apartments they couldn't quite afford, made small talk about weather that didn't matter. Her back hurt. There was no reason for it—no dramatic battle, no heroic sacrifice. Just the accumulated weight of existing. The mirror showed exactly what was there: tired eyes, ordinary face, a person unadorned by destiny. The bills needed paying. The laundry needed folding. This was it. The whole story. Tuesday becoming Wednesday becoming Thursday. No plot. No arc. Just the regular, relentless machinery of being alive.";
                 currentResult = { title: "Regular Miserable Person", text: resultText };
+                winningCategoryId = 14;
             } else if (winningCategories.length === 1) {
                 categoryId = winningCategories[0];
+                winningCategoryId = categoryId;
                 const category = categories[categoryId];
                 resultText = category.result;
                 resultStoryText = resultStories[categoryId];
@@ -1568,6 +2073,7 @@
                     }
                 }
                 categoryId = lastCategoryId;
+                winningCategoryId = lastCategoryId;
                 const category = categories[lastCategoryId];
                 resultText = category.result;
                 resultStoryText = resultStories[categoryId];
@@ -1584,6 +2090,7 @@
             // Update result waveform with varying bar heights after screen switch
             setTimeout(() => {
                 updateResultWaveform();
+                renderResultsDashboard(winningCategoryId, maxScore);
             }, 50);
         }
 
@@ -1637,6 +2144,133 @@
                 bar.style.height = height + 'px';
                 bar.style.transition = 'height 0.3s ease';
             });
+        }
+
+        // Cryptic metric definitions
+        const crypticMetrics = [
+            { name: 'Luck Quotient', color: '#2ecc71' },
+            { name: 'Action Intelligence', color: '#3498db' },
+            { name: 'Romantic Pull', color: '#e91e63' },
+            { name: 'Chaos Compatibility', color: '#9b59b6' },
+            { name: 'Plot Armor Index', color: '#f39c12' },
+            { name: 'Dramatic Timing', color: '#1abc9c' },
+            { name: 'Sidekick Magnetism', color: '#e74c3c' },
+            { name: 'Exposition Density', color: '#34495e' },
+            { name: 'Cliffhanger Resilience', color: '#16a085' }
+        ];
+
+        function renderResultsDashboard(winningCategoryId, maxScore) {
+            // Set winner info
+            const winnerName = categoryShortNames[winningCategoryId] || 'Unknown';
+            const confidence = Math.min(95, Math.max(45, 50 + (maxScore * 8) + Math.floor(Math.random() * 15)));
+            document.getElementById('winnerGenre').textContent = winnerName;
+            document.getElementById('winnerScore').textContent = `Confidence: ${confidence}%`;
+
+            // Generate session ID
+            const sessionId = 'NRR-' + Math.random().toString(36).substr(2, 7).toUpperCase();
+            document.getElementById('dashboardId').textContent = `Session ID: ${sessionId}`;
+
+            // Render all dashboard components
+            renderGenreBreakdown(winningCategoryId);
+            renderCrypticMetrics();
+            renderPanicCurve();
+            renderCompatMatrix();
+        }
+
+        function renderGenreBreakdown(winningId) {
+            const grid = document.getElementById('genreBreakdownGrid');
+            const maxScore = Math.max(...Object.values(scores), 1);
+
+            let html = '';
+            for (let id = 1; id <= 14; id++) {
+                const score = scores[id];
+                const pct = Math.round((score / maxScore) * 100);
+                const color = categoryBarColors[id];
+                const name = categoryShortNames[id];
+                const isWinner = id === winningId && score > 0;
+
+                html += `<div class="breakdown-bar-row ${isWinner ? 'winner' : ''}">
+                    <span class="breakdown-name">${name}</span>
+                    <div class="breakdown-track">
+                        <div class="breakdown-fill" style="width:${pct}%; background:${color};"></div>
+                    </div>
+                    <span class="breakdown-score">${score}</span>
+                </div>`;
+            }
+            grid.innerHTML = html;
+
+            // Animate bars in
+            setTimeout(() => {
+                grid.querySelectorAll('.breakdown-fill').forEach((fill, i) => {
+                    fill.style.width = fill.style.width; // Trigger reflow
+                });
+            }, 100);
+        }
+
+        function renderCrypticMetrics() {
+            const grid = document.getElementById('metricsGrid');
+            // Pick 6 random metrics
+            const shuffled = [...crypticMetrics].sort(() => Math.random() - 0.5).slice(0, 6);
+
+            let html = '';
+            shuffled.forEach(metric => {
+                const value = (Math.random() * 100).toFixed(1);
+                const displayValue = Math.random() > 0.3
+                    ? value + '%'
+                    : (Math.random() * 10).toFixed(2) + 'σ';
+
+                html += `<div class="metric-card">
+                    <div class="metric-name">${metric.name}</div>
+                    <div class="metric-value">${displayValue}</div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill" style="width:${value}%; background:${metric.color};"></div>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function renderPanicCurve() {
+            const container = document.getElementById('panicCurve');
+            const barCount = 20;
+
+            // Generate a curve that rises to a climax then falls
+            let html = '';
+            for (let i = 0; i < barCount; i++) {
+                // Create a narrative tension curve shape
+                const progress = i / (barCount - 1);
+                let baseHeight;
+                if (progress < 0.3) {
+                    // Exposition - gradual rise
+                    baseHeight = 15 + progress * 60;
+                } else if (progress < 0.7) {
+                    // Rising action - steeper rise to climax around 0.6-0.7
+                    const riseProgress = (progress - 0.3) / 0.4;
+                    baseHeight = 33 + riseProgress * 55;
+                } else {
+                    // Falling action / resolution
+                    const fallProgress = (progress - 0.7) / 0.3;
+                    baseHeight = 88 - fallProgress * 50;
+                }
+                // Add some randomness
+                const height = Math.max(8, baseHeight + (Math.random() - 0.5) * 20);
+                html += `<div class="panic-bar" style="height:${height}%;"></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        function renderCompatMatrix() {
+            const grid = document.getElementById('compatGrid');
+            const cellCount = 25; // 5x5 matrix
+
+            const colors = ['#2ecc71', '#27ae60', '#f1c40f', '#f39c12', '#e74c3c', '#c0392b'];
+            let html = '';
+            for (let i = 0; i < cellCount; i++) {
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const opacity = 0.5 + Math.random() * 0.5;
+                html += `<div class="compat-cell" style="background:${color}; opacity:${opacity};"></div>`;
+            }
+            grid.innerHTML = html;
         }
 
         function shareResult() {
