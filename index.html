@@ -552,6 +552,132 @@
             margin-top: 30px;
         }
 
+        /* Genre Prediction Visualizer */
+        .genre-predictor {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 14px 18px;
+            margin-bottom: 18px;
+        }
+
+        .genre-predictor-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .genre-predictor-label .signal-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: signalPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes signalPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .genre-predictor-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .genre-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: barSlideIn 0.35s ease-out;
+        }
+
+        @keyframes barSlideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .genre-bar-name {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #555;
+            width: 110px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .genre-bar-track {
+            flex: 1;
+            height: 14px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 7px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .genre-bar-fill {
+            height: 100%;
+            border-radius: 7px;
+            transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            min-width: 0;
+        }
+
+        .genre-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+            border-radius: 7px 7px 0 0;
+        }
+
+        .genre-bar-score {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #888;
+            width: 24px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .genre-predictor-empty {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+            padding: 8px 0;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        .genre-prediction-tag {
+            display: inline-block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            color: rgba(102, 126, 234, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(102, 126, 234, 0.15);
+            width: 100%;
+            text-align: center;
+        }
+
         @media (max-width: 900px) {
             .quiz-layout {
                 grid-template-columns: 1fr;
@@ -560,6 +686,11 @@
             .story-box {
                 order: -1;
                 margin-bottom: 20px;
+            }
+
+            .genre-bar-name {
+                width: 85px;
+                font-size: 0.6rem;
             }
         }
 
@@ -643,6 +774,17 @@
                 <div class="timeline-playhead" id="timelinePlayhead"></div>
             </div>
             <p id="progressText" class="progress-text">ACT I - SCENE 1 / 30</p>
+
+            <!-- Genre Prediction Visualizer -->
+            <div class="genre-predictor" id="genrePredictor">
+                <div class="genre-predictor-label">
+                    <span class="signal-dot"></span>
+                    Genre Signal Detection
+                </div>
+                <div class="genre-predictor-bars" id="genrePredictorBars">
+                    <div class="genre-predictor-empty">Awaiting narrative data...</div>
+                </div>
+            </div>
 
             <div class="quiz-layout">
                 <div class="quiz-main">
@@ -788,6 +930,42 @@
             "FREEZE FRAME:",
             "[Elevator dings]"
         ];
+
+        // Category bar colors for prediction visualizer
+        const categoryBarColors = {
+            1: '#D2691E',   // Fantasy - amber
+            2: '#607d8b',   // Dystopian - slate
+            3: '#FF6B6B',   // Anime - vibrant red
+            4: '#457b9d',   // Slice of Life - calm blue
+            5: '#DC143C',   // Superhero - crimson
+            6: '#FFD700',   // Sitcom - gold
+            7: '#8B0000',   // Horror - dark red
+            8: '#708090',   // Mystery - slate gray
+            9: '#FF69B4',   // Romance - pink
+            10: '#CD853F',  // Tarantino - peru
+            11: '#4682B4',  // Spielberg - steel blue
+            12: '#6A5ACD',  // Space Opera - slate blue
+            13: '#2F4F4F',  // Mafia - dark slate
+            14: '#A9A9A9'   // Reality - gray
+        };
+
+        // Short names for the prediction bars
+        const categoryShortNames = {
+            1: 'Fantasy',
+            2: 'Dystopian',
+            3: 'Anime',
+            4: 'Slice of Life',
+            5: 'Superhero',
+            6: 'Sitcom',
+            7: 'Horror',
+            8: 'Mystery',
+            9: 'Rom-Com',
+            10: 'Tarantino',
+            11: 'Spielberg',
+            12: 'Space Opera',
+            13: 'Mafia Epic',
+            14: 'Reality'
+        };
 
         // Category background colors
         const categoryThemes = {
@@ -1346,6 +1524,7 @@
             // Update HUD
             updateRealityIntegrity(points);
             spikeWaveform();
+            updateGenrePredictor();
 
             // Brief pause for effect
             setTimeout(() => {
@@ -1406,6 +1585,49 @@
             setTimeout(() => {
                 updateResultWaveform();
             }, 50);
+        }
+
+        function updateGenrePredictor() {
+            const container = document.getElementById('genrePredictorBars');
+
+            // Gather categories with scores > 0, sorted descending
+            const scored = [];
+            for (let id = 1; id <= 14; id++) {
+                if (scores[id] > 0) {
+                    scored.push({ id: id, score: scores[id] });
+                }
+            }
+            scored.sort((a, b) => b.score - a.score);
+
+            // Show top 5 categories max
+            const top = scored.slice(0, 5);
+            const maxScore = top.length > 0 ? top[0].score : 0;
+
+            if (top.length === 0) {
+                container.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
+                return;
+            }
+
+            let html = '';
+            top.forEach(entry => {
+                const pct = Math.round((entry.score / Math.max(maxScore, 1)) * 100);
+                const color = categoryBarColors[entry.id];
+                const name = categoryShortNames[entry.id];
+                html += `<div class="genre-bar-row">
+                    <span class="genre-bar-name">${name}</span>
+                    <div class="genre-bar-track">
+                        <div class="genre-bar-fill" style="width:${pct}%; background:${color};"></div>
+                    </div>
+                    <span class="genre-bar-score">${entry.score}</span>
+                </div>`;
+            });
+
+            // Add current prediction label
+            const leader = top[0];
+            const leaderName = categoryShortNames[leader.id];
+            html += `<div class="genre-prediction-tag">Current prediction: ${leaderName}</div>`;
+
+            container.innerHTML = html;
         }
 
         function updateResultWaveform() {
