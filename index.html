@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Am I in a Story? – The Narrative Diagnostic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Courier+Prime:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #1a0033;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            color: #333;
+            position: relative;
+        }
+
+        /* Dynamic Background with Script Snippets */
+        .background-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            transition: background 1s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .script-text {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                        inset 0 0 20px rgba(102, 126, 234, 0.1);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            margin: 40px auto;
+            animation: fadeIn 0.5s ease-in;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+
+        /* Fixed size only for quiz screen */
+        #quizScreen.active ~ .container,
+        .container:has(#quizScreen.active) {
+            min-height: 600px;
+        }
+
+        #quizScreen {
+            min-height: 600px;
+        }
+
+        /* CRT/Terminal Effect */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.03),
+                rgba(0, 0, 0, 0.03) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            border-radius: 16px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: screenFadeIn 0.4s ease-out;
+        }
+
+        @keyframes screenFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .tagline {
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        #landingScreen button {
+            display: block;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* HUD Elements */
+        .hud-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .reality-integrity {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .reality-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .reality-value {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .reality-value.critical {
+            color: #ff4444;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .reality-warning {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #ff4444;
+            margin-top: 3px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .reality-warning.active {
+            opacity: 1;
+        }
+
+        .narrative-tension {
+            width: 120px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            text-align: center;
+        }
+
+        .tension-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .waveform {
+            display: flex;
+            gap: 2px;
+            height: 30px;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: #667eea;
+            transition: height 0.2s ease;
+            border-radius: 2px;
+        }
+
+        /* Timeline Progress Bar */
+        .progress-timeline {
+            position: relative;
+            height: 40px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            overflow: visible;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .timeline-track {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e0e0e0;
+            transform: translateY(-50%);
+        }
+
+        .timeline-progress {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .timeline-playhead {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border: 3px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: left 0.3s ease;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .timeline-notches {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+
+        .timeline-notch {
+            width: 2px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-text {
+            text-align: center;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            color: #222;
+            line-height: 1.6;
+            text-align: center;
+            font-weight: 500;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            border: 3px solid #667eea;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .quiz-main {
+            min-width: 0;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        /* Story Box */
+        .story-box {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.02),
+                rgba(0, 0, 0, 0.02) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+        }
+
+        .story-genre {
+            display: none;
+        }
+
+        .story-content {
+            font-family: Georgia, serif;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: #444;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .story-page {
+            font-family: 'Courier New', monospace;
+            font-size: 0.65rem;
+            color: #999;
+            text-align: center;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 30px;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        .option-btn {
+            background: white;
+            color: #667eea;
+            border: 3px solid #667eea;
+            position: relative;
+        }
+
+        .option-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+
+        /* Script Overlay Effect */
+        .script-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .script-overlay.active {
+            opacity: 1;
+        }
+
+        .script-content {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: #00ff00;
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            line-height: 1.8;
+        }
+
+        .result-title {
+            font-size: 2.2rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+            animation: resultGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes resultGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+            50% { text-shadow: 0 0 30px rgba(102, 126, 234, 0.8); }
+        }
+
+        .result-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 25px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .result-narrative {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-narrative::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.02),
+                rgba(0, 0, 0, 0.02) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+        }
+
+        .result-narrative .story-content {
+            font-size: 1rem;
+        }
+
+        .result-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        /* Genre Prediction Visualizer */
+        .genre-predictor {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 14px 18px;
+            margin-bottom: 18px;
+        }
+
+        .genre-predictor-label {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .genre-predictor-label .signal-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: signalPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes signalPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .genre-predictor-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .genre-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: barSlideIn 0.35s ease-out;
+        }
+
+        @keyframes barSlideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .genre-bar-name {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #555;
+            width: 110px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .genre-bar-track {
+            flex: 1;
+            height: 14px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 7px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .genre-bar-fill {
+            height: 100%;
+            border-radius: 7px;
+            transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            min-width: 0;
+        }
+
+        .genre-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+            border-radius: 7px 7px 0 0;
+        }
+
+        .genre-bar-score {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.65rem;
+            color: #888;
+            width: 24px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .genre-predictor-empty {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+            padding: 8px 0;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        .genre-prediction-tag {
+            display: inline-block;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.6rem;
+            color: rgba(102, 126, 234, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(102, 126, 234, 0.15);
+            width: 100%;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .quiz-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .story-box {
+                order: -1;
+                margin-bottom: 20px;
+            }
+
+            .genre-bar-name {
+                width: 85px;
+                font-size: 0.6rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .hud-container {
+                flex-direction: column;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .result-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .question-text {
+                font-size: 1.1rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dynamic Background -->
+    <div class="background-layer" id="backgroundLayer"></div>
+
+    <!-- Script Overlay -->
+    <div class="script-overlay" id="scriptOverlay">
+        <div class="script-content" id="scriptContent"></div>
+    </div>
+
+    <div class="container">
+        <!-- Landing Screen -->
+        <div id="landingScreen" class="screen active">
+            <h1>Am I in a Story?</h1>
+            <p class="tagline">Are you a hero or is the struggle just real? Take this diagnostic to find out if you're living in a fictional narrative or just another regular miserable person.</p>
+            <button onclick="startQuiz()">Start Diagnostic</button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="screen">
+            <!-- HUD Elements -->
+            <div class="hud-container">
+                <div class="reality-integrity">
+                    <div class="reality-label">Reality Integrity</div>
+                    <div class="reality-value" id="realityValue">100%</div>
+                    <div class="reality-warning" id="realityWarning"></div>
+                </div>
+                <div class="narrative-tension">
+                    <div class="tension-label">Tension</div>
+                    <div class="waveform" id="waveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timeline Progress -->
+            <div class="progress-timeline">
+                <div class="timeline-notches" id="timelineNotches"></div>
+                <div class="timeline-track">
+                    <div class="timeline-progress" id="timelineProgress"></div>
+                </div>
+                <div class="timeline-playhead" id="timelinePlayhead"></div>
+            </div>
+            <p id="progressText" class="progress-text">ACT I - SCENE 1 / 30</p>
+
+            <!-- Genre Prediction Visualizer -->
+            <div class="genre-predictor" id="genrePredictor">
+                <div class="genre-predictor-label">
+                    <span class="signal-dot"></span>
+                    Genre Signal Detection
+                </div>
+                <div class="genre-predictor-bars" id="genrePredictorBars">
+                    <div class="genre-predictor-empty">Awaiting narrative data...</div>
+                </div>
+            </div>
+
+            <div class="quiz-layout">
+                <div class="quiz-main">
+                    <p id="questionText" class="question-text"></p>
+                    <div class="options">
+                        <button class="option-btn" onclick="answerQuestion('yes')" onmouseenter="showWaveform()">
+                            <span>YES</span>
+                        </button>
+                        <button class="option-btn" onclick="answerQuestion('no')" onmouseenter="showWaveform()">
+                            <span>NO</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="story-box">
+                    <div class="story-genre" id="storyGenre">FANTASY EPIC</div>
+                    <div class="story-content" id="storyContent">The ancient prophecy had been clear: a child would be born under the blood moon, marked by destiny...</div>
+                    <div class="story-page" id="storyPage">— Page 47 —</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="resultScreen" class="screen">
+            <div class="hud-container">
+                <div class="reality-integrity">
+                    <div class="reality-label">Final Diagnosis</div>
+                    <div class="reality-value" id="finalReality">Complete</div>
+                </div>
+                <div class="narrative-tension">
+                    <div class="tension-label">Analysis</div>
+                    <div class="waveform" id="resultWaveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-container">
+                <p id="resultText" class="question-text"></p>
+                <div class="result-narrative">
+                    <div class="story-content" id="resultStory"></div>
+                    <div class="story-page">— The End —</div>
+                </div>
+                <div class="result-actions">
+                    <button onclick="shareResult()">Share Result</button>
+                    <button onclick="playAgain()">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let currentQuestionIndex = 0;
+        let selectedQuestions = [];
+        let scores = {};
+        let currentResult = null;
+        let totalTropePoints = 0;
+        let realityIntegrity = 100;
+
+        // Script text snippets for background
+        const scriptSnippets = [
+            "INT. REALITY - DAY",
+            "EXT. LIFE - CONTINUOUS",
+            "FADE IN:",
+            "CUT TO:",
+            "[THE PROTAGONIST enters]",
+            "FADE OUT.",
+            "[Dramatic pause]",
+            "THE END?",
+            "ACT I",
+            "ACT II",
+            "ACT III",
+            "DISSOLVE TO:",
+            "[Music swells]",
+            "SMASH CUT:",
+            "[Beat]",
+            "CLOSE ON:",
+            "MATCH CUT:",
+            "[The camera pans]",
+            "FLASHBACK:",
+            "VOICE OVER:",
+            "[Thunder rumbles]",
+            "MONTAGE:",
+            "INT. COFFEE SHOP - MORNING",
+            "EXT. CITY STREET - NIGHT",
+            "ESTABLISHING SHOT:",
+            "TRACKING SHOT:",
+            "[Silence]",
+            "JUMP CUT:",
+            "CROSS CUT:",
+            "POV SHOT:",
+            "[Off screen]",
+            "LATER:",
+            "MEANWHILE:",
+            "EARLIER:",
+            "INT. APARTMENT - CONTINUOUS",
+            "EXT. ROOFTOP - DUSK",
+            "[SFX: Door slams]",
+            "[We hear footsteps]",
+            "ANGLE ON:",
+            "PUSH IN ON:",
+            "PULL BACK TO REVEAL:",
+            "TIME CUT:",
+            "[Long pause]",
+            "INTERCUT:",
+            "[Rain falls]",
+            "[Footsteps echo]",
+            "TITLE CARD:",
+            "SUPER:",
+            "[Wind howls]",
+            "INT. OFFICE - DAY",
+            "EXT. PARKING LOT - AFTERNOON",
+            "[Glass shatters]",
+            "[Phone rings]",
+            "OVERHEAD SHOT:",
+            "LOW ANGLE:",
+            "DUTCH ANGLE:",
+            "[Distant sirens]",
+            "SLOW MOTION:",
+            "[Clock ticking]",
+            "HARD CUT:",
+            "WHIP PAN:",
+            "[Crowd murmurs]",
+            "INT. HALLWAY - NIGHT",
+            "EXT. BRIDGE - DAWN",
+            "[Breathing heavily]",
+            "REVERSE ANGLE:",
+            "[Credits roll]",
+            "PRELAP:",
+            "[Car horn]",
+            "TWO SHOT:",
+            "OVER THE SHOULDER:",
+            "[Laughter fades]",
+            "CRANE SHOT:",
+            "[Lightning flashes]",
+            "SPLIT SCREEN:",
+            "[Typing sounds]",
+            "FREEZE FRAME:",
+            "[Elevator dings]"
+        ];
+
+        // Category bar colors for prediction visualizer
+        const categoryBarColors = {
+            1: '#D2691E',   // Fantasy - amber
+            2: '#607d8b',   // Dystopian - slate
+            3: '#FF6B6B',   // Anime - vibrant red
+            4: '#457b9d',   // Slice of Life - calm blue
+            5: '#DC143C',   // Superhero - crimson
+            6: '#FFD700',   // Sitcom - gold
+            7: '#8B0000',   // Horror - dark red
+            8: '#708090',   // Mystery - slate gray
+            9: '#FF69B4',   // Romance - pink
+            10: '#CD853F',  // Tarantino - peru
+            11: '#4682B4',  // Spielberg - steel blue
+            12: '#6A5ACD',  // Space Opera - slate blue
+            13: '#2F4F4F',  // Mafia - dark slate
+            14: '#A9A9A9'   // Reality - gray
+        };
+
+        // Short names for the prediction bars
+        const categoryShortNames = {
+            1: 'Fantasy',
+            2: 'Dystopian',
+            3: 'Anime',
+            4: 'Slice of Life',
+            5: 'Superhero',
+            6: 'Sitcom',
+            7: 'Horror',
+            8: 'Mystery',
+            9: 'Rom-Com',
+            10: 'Tarantino',
+            11: 'Spielberg',
+            12: 'Space Opera',
+            13: 'Mafia Epic',
+            14: 'Reality'
+        };
+
+        // Category background colors
+        const categoryThemes = {
+            1: { bg: 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)', name: 'fantasy' },  // Fantasy - brown/amber
+            2: { bg: 'linear-gradient(135deg, #2c3e50 0%, #607d8b 100%)', name: 'dystopian' },  // Dystopian - dark gray
+            3: { bg: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)', name: 'anime' },  // Anime - bright/vibrant
+            4: { bg: 'linear-gradient(135deg, #a8dadc 0%, #457b9d 100%)', name: 'slice-of-life' },  // Slice of Life - calm blue
+            5: { bg: 'linear-gradient(135deg, #DC143C 0%, #1E90FF 100%)', name: 'superhero' },  // Superhero - red/blue
+            6: { bg: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', name: 'sitcom' },  // Sitcom - bright yellow
+            7: { bg: 'linear-gradient(135deg, #8B0000 0%, #2C0000 100%)', name: 'horror' },  // Horror - dark red
+            8: { bg: 'linear-gradient(135deg, #36454F 0%, #708090 100%)', name: 'mystery' },  // Mystery - slate gray
+            9: { bg: 'linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%)', name: 'romance' },  // Romance - pink
+            10: { bg: 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)', name: 'tarantino' },  // Tarantino - brown/sepia
+            11: { bg: 'linear-gradient(135deg, #87CEEB 0%, #4682B4 100%)', name: 'spielberg' },  // Spielberg - sky blue
+            12: { bg: 'linear-gradient(135deg, #000000 0%, #1a1a2e 100%)', name: 'space-opera' },  // Space Opera - dark/starry
+            13: { bg: 'linear-gradient(135deg, #2F4F4F 0%, #1C1C1C 100%)', name: 'mafia' },  // Mafia - dark/shadowy
+            14: { bg: 'linear-gradient(135deg, #808080 0%, #A9A9A9 100%)', name: 'reality' }  // Reality - flat gray
+        };
+
+        // Initialize static script text
+        function initBackground() {
+            const bg = document.getElementById('backgroundLayer');
+            bg.innerHTML = ''; // Clear existing text
+            for (let i = 0; i < 50; i++) {
+                const scriptEl = document.createElement('div');
+                scriptEl.className = 'script-text';
+                scriptEl.textContent = scriptSnippets[Math.floor(Math.random() * scriptSnippets.length)];
+                scriptEl.style.left = Math.random() * 95 + '%';
+                scriptEl.style.top = Math.random() * 95 + '%';
+                bg.appendChild(scriptEl);
+            }
+        }
+
+        // Change background based on category
+        function updateBackgroundTheme(categoryId) {
+            const bg = document.getElementById('backgroundLayer');
+            const theme = categoryThemes[categoryId];
+            if (theme) {
+                bg.style.background = theme.bg;
+            }
+        }
+
+        // Initialize timeline notches
+        function initTimeline() {
+            const notchesContainer = document.getElementById('timelineNotches');
+            notchesContainer.innerHTML = ''; // Clear any existing notches
+            for (let i = 0; i < 30; i++) {
+                const notch = document.createElement('div');
+                notch.className = 'timeline-notch';
+                notchesContainer.appendChild(notch);
+            }
+        }
+
+        // Update reality integrity
+        function updateRealityIntegrity(points) {
+            realityIntegrity = Math.max(0, 100 - (totalTropePoints * 3));
+            const valueEl = document.getElementById('realityValue');
+            const warningEl = document.getElementById('realityWarning');
+
+            valueEl.textContent = realityIntegrity + '%';
+
+            if (realityIntegrity < 50) {
+                valueEl.classList.add('critical');
+                warningEl.classList.add('active');
+            } else {
+                valueEl.classList.remove('critical');
+                warningEl.classList.remove('active');
+            }
+        }
+
+        // Animate waveform
+        function showWaveform() {
+            const bars = document.querySelectorAll('.wave-bar');
+            bars.forEach(bar => {
+                const height = Math.random() * 20 + 10;
+                bar.style.height = height + 'px';
+            });
+        }
+
+        function spikeWaveform() {
+            const bars = document.querySelectorAll('.wave-bar');
+            bars.forEach(bar => {
+                bar.style.height = (Math.random() * 25 + 15) + 'px';
+            });
+            setTimeout(() => {
+                bars.forEach(bar => {
+                    bar.style.height = '10px';
+                });
+            }, 500);
+        }
+
+        // Show script overlay
+        function showScriptOverlay(text) {
+            const overlay = document.getElementById('scriptOverlay');
+            const content = document.getElementById('scriptContent');
+            content.textContent = text;
+            overlay.classList.add('active');
+
+            setTimeout(() => {
+                overlay.classList.remove('active');
+            }, 1500);
+        }
+
+        // Categories Database
+        const categories = {
+            1: {
+                name: "Destiny / Fantasy Hero",
+                result: "You are the Chosen One. Stop ignoring the old man in the tavern; he has a quest for you. Also, check your attic for legendary swords."
+            },
+            2: {
+                name: "Young Adult Dystopian Hero",
+                result: "You are the protagonist of a YA Dystopian novel. You're likely wearing combat boots and are about to overthrow a government using only angst and a bow and arrow."
+            },
+            3: {
+                name: "Anime / Manga Protagonist",
+                result: "You are a Shonen Protagonist. Your power level is rising. If you start glowing or screaming for more than 30 seconds, please move to an open field to avoid property damage."
+            },
+            4: {
+                name: "Main Character Energy (Slice of Life)",
+                result: "You have Main Character Energy. Your life is a slow-burn indie film where small moments feel profound. Enjoy the aesthetic melancholy."
+            },
+            5: {
+                name: "Superhero / Comic Book Lead",
+                result: "You are a Superhero. Your double life is exhausting, your costume is impractical, and your loved ones are in constant danger. But at least you look cool."
+            },
+            6: {
+                name: "Sitcom Character",
+                result: "You are a Sitcom Character. Your problems are easily solved in 22 minutes, your apartment is inexplicably nice, and laugh tracks follow you everywhere."
+            },
+            7: {
+                name: "Horror Movie Survivor (or Victim)",
+                result: "You are in a Horror Movie. Stop investigating strange noises. Stop going into basements. Just leave. Now. While you still can."
+            },
+            8: {
+                name: "Mystery / Detective Protagonist",
+                result: "You are a Detective. You see clues where others see trash. You probably look great in a trench coat, but your personal life is likely a shambles."
+            },
+            9: {
+                name: "Romantic Comedy Lead",
+                result: "You are in a Rom-Com. That clumsiness is charming, not dangerous. Prepare for a misunderstanding at the 60-minute mark, followed by a sprint through an airport."
+            },
+            10: {
+                name: "Tarantino Universe Character",
+                result: "You are in a Tarantino movie. Your life is cool, violent, and non-linear. Enjoy the witty dialogue, but watch out—statistically, you might not make it to the credits."
+            },
+            11: {
+                name: "Spielberg Adventure Hero",
+                result: "You are in a Spielberg Adventure. Look at the horizon with awe. Something magical is coming, and it's going to make grown men cry."
+            },
+            12: {
+                name: "Lucas Space Opera Hero",
+                result: "You are in a Space Opera Myth. You have a grand destiny, daddy issues, and a high probability of losing a hand. May the Force be with you."
+            },
+            13: {
+                name: "Coppola Family Epic Character",
+                result: "You are in a Mafia Family Drama. It's strictly business. Don't go fishing, don't accept favors on your daughter's wedding day, and stay away from the cannoli."
+            },
+            14: {
+                name: "Regular Miserable Person",
+                result: "You are an NPC in a Simulation. Or just a person. You have no plot armor, your dialogue is unscripted and awkward, and your 'character arc' is just you trying to pay off a credit card. Go drink some water."
+            }
+        };
+
+        // Questions Database
+        const questions = [
+            // Category 1: Destiny / Fantasy Hero
+            { text: "Does anyone around you keep muttering something when you enter a room?", categoryId: 1 },
+            { text: "Have you recently discovered you can read an ancient language despite never studying it?", categoryId: 1 },
+            { text: "Did a talking animal, tree, or sword give you life advice in the last 48 hours?", categoryId: 1 },
+            { text: "Is there a local cult whose members seems oddly focused on you?", categoryId: 1 },
+            { text: "Have you learned that an object you've had since childhood is actually 'the object'?", categoryId: 1 },
+            { text: "Do elderly people stare at you, whisper, and then refuse to explain what they know?", categoryId: 1 },
+            { text: "Has a mentor figure died immediately after giving you one really important speech?", categoryId: 1 },
+            { text: "Are you inexplicably good at swordfighting / archery despite zero training?", categoryId: 1 },
+            { text: "Has anyone told you that 'your power is unstable'?", categoryId: 1 },
+
+            // Category 2: Young Adult Dystopian Hero
+            { text: "Are you forced to wear the same gray or beige outfit every day?", categoryId: 2 },
+            { text: "Is your love interest on the opposite side of the regime, yet weirdly bad at arresting you?", categoryId: 2 },
+            { text: "Have you discovered that the 'outside world' is not what everyone claims it is?", categoryId: 2 },
+
+            // Category 3: Anime / Manga Protagonist
+            { text: "Do strangers frequently comment on your 'incredible potential' despite overwhelming evidence to the contrary?", categoryId: 3 },
+            { text: "Did your tragic childhood only get mentioned halfway through conversations?", categoryId: 3 },
+            { text: "Does your power level dramatically increase whenever you think about friendship?", categoryId: 3 },
+            { text: "Has a mysterious rival appeared whose sole purpose is to glare at you from rooftops?", categoryId: 3 },
+            { text: "Do you regularly survive injuries that should require at least three funerals?", categoryId: 3 },
+            { text: "Is there a tournament arc in your life where absolutely everything must be decided by a flashy battle?", categoryId: 3 },
+            { text: "Do enemies politely wait for you to finish long speeches before attacking?", categoryId: 3 },
+            { text: "Have you ever unlocked a new form/state by screaming for an uncomfortably long time?", categoryId: 3 },
+            { text: "Did you die and wake up in another world with a menu screen and inventory?", categoryId: 3 },
+            { text: "Is there a mascot creature nearby whose main abilities are being adorable and selling merch?", categoryId: 3 },
+
+            // Category 4: Main Character Energy
+            { text: "Has anyone ever told you, 'You always learn the lesson right before the credits roll'?", categoryId: 4 },
+            { text: "Do you bump into the same three strangers in wildly different parts of town for no reason?", categoryId: 4 },
+            { text: "Does your alarm clock ring exactly when something dramatic happens?", categoryId: 4 },
+            { text: "Is your local coffee shop staff weirdly invested in your love life?", categoryId: 4 },
+            { text: "Does your internal monologue sound like it's narrated by someone with a podcast?", categoryId: 4 },
+            { text: "Do heartfelt conversations conveniently happen during sunsets with perfect lighting?", categoryId: 4 },
+            { text: "Does every big life event happen on weekends or evenings—never during boring office hours?", categoryId: 4 },
+            { text: "When you change your hairstyle, does everyone react like it's a season premiere?", categoryId: 4 },
+            { text: "Do you often say 'I have a bad feeling about this' right before something important happens?", categoryId: 4 },
+            { text: "Does your life seem to have 'bottle episodes' where everything happens in one location?", categoryId: 4 },
+
+            // Category 5: Superhero / Comic Book Lead
+            { text: "Do you have a secret second wardrobe made mostly of spandex, leather, or capes?", categoryId: 5 },
+            { text: "Did a freak accident (lab, spider, radiation, alien artifact) give you abilities instead of a lawsuit?", categoryId: 5 },
+            { text: "Is your city's crime rate mysteriously correlated with your availability?", categoryId: 5 },
+            { text: "Does no one recognize you when you put on a small mask or different glasses?", categoryId: 5 },
+            { text: "Is there an arch-nemesis who somehow escapes prison every other week?", categoryId: 5 },
+            { text: "Does your boss keep saying 'Where were you during the attack?!' while you're bandaged up?", categoryId: 5 },
+            { text: "Have you dramatically whispered 'With great power comes great responsibility' at least once?", categoryId: 5 },
+            { text: "Is your romantic relationship constantly ruined by you having to 'step out for a minute'?", categoryId: 5 },
+
+            // Category 6: Sitcom Character
+            { text: "Do people around you pause and stare into the distance as if waiting for laughter?", categoryId: 6 },
+            { text: "Does every problem in your life escalate absurdly and then reset by next week?", categoryId: 6 },
+            { text: "Do you live in an apartment far nicer than your salary can realistically explain?", categoryId: 6 },
+            { text: "Is your neighbor/friend always dropping by without knocking, yet no one calls the police?", categoryId: 6 },
+            { text: "Do minor misunderstandings spiral into chaos because no one will explain a simple sentence?", categoryId: 6 },
+            { text: "Have you pretended to be someone's partner/boss/parent to get out of an awkward situation?", categoryId: 6 },
+            { text: "Does your workplace have exactly 5–8 recurring characters and nobody else?", categoryId: 6 },
+            { text: "Do your exes or old classmates reappear exactly when the episode needs drama?", categoryId: 6 },
+
+            // Category 7: Horror Movie Survivor
+            { text: "Do you currently live near a cemetery, old asylum, or house described as 'having history'?", categoryId: 7 },
+            { text: "Have you heard a noise in the basement and thought, 'I should investigate alone, unarmed'?", categoryId: 7 },
+            { text: "Does your town have a legend everyone knows but no one takes seriously until it's too late?", categoryId: 7 },
+            { text: "Has someone suggested splitting up, and you agreed like that was a good idea?", categoryId: 7 },
+            { text: "Do children in your area quietly sing creepy rhymes about local tragedies?", categoryId: 7 },
+            { text: "Has a mirror, TV, or doll ever stared back at you in a way that felt… too intentional?", categoryId: 7 },
+            { text: "Does the weather dramatically shift to thunder and lightning whenever secrets are revealed?", categoryId: 7 },
+            { text: "Did you recently move into a place where the rent is suspiciously cheap?", categoryId: 7 },
+
+            // Category 8: Mystery / Detective
+            { text: "Do you routinely notice tiny details that everyone else somehow missed?", categoryId: 8 },
+            { text: "Have you ever dramatically announced the solution to a problem in front of a gathered crowd?", categoryId: 8 },
+            { text: "Do you get invited to isolated mansions, trains, or islands right before a crime happens?", categoryId: 8 },
+            { text: "Has someone said, 'You're the only one who can figure this out' despite many qualified professionals?", categoryId: 8 },
+            { text: "Does your friend group include at least one comic-relief sidekick who keeps almost dying?", categoryId: 8 },
+            { text: "Do you keep a bulletin board full of photos and red string, and call it 'thinking'?", categoryId: 8 },
+
+            // Category 9: Romantic Comedy Lead
+            { text: "Have you literally collided with a stranger while carrying coffee, groceries, or paperwork?", categoryId: 9 },
+            { text: "Is there someone you 'can't stand' but also think about constantly for no good reason?", categoryId: 9 },
+            { text: "Does terrible weather appear exactly when you need a dramatic confession scene?", categoryId: 9 },
+            { text: "Have you had to choose between a stable, kind person and a chaotic, charming disaster?", categoryId: 9 },
+            { text: "Do you make big life decisions based on overhearing half a conversation?", categoryId: 9 },
+            { text: "Has your best friend ever said, 'The person you're looking for has been right here all along'?", categoryId: 9 },
+            { text: "Do grand public gestures of affection keep happening around you—and somehow work out?", categoryId: 9 },
+
+            // Category 10: Tarantino Universe
+            { text: "Do you frequently have long, philosophical conversations about trivial topics (like burgers or tipping) right before something violent happens?", categoryId: 10 },
+            { text: "Is the soundtrack of your life made of obscure but incredibly cool retro tracks that start playing at oddly tense moments?", categoryId: 10 },
+            { text: "Has anyone ever delivered a calm, five-minute speech while clearly holding a weapon?", categoryId: 10 },
+            { text: "Do arguments in your world escalate from 'casual banter' to 'life-threatening situation' instantly?", categoryId: 10 },
+            { text: "Does your story keep jumping back and forth in time, revealing that actually you already saw this scene… from a different angle?", categoryId: 10 },
+            { text: "Have you recently opened a briefcase, seen a mysterious glowing light, and nobody will tell you what it is?", categoryId: 10 },
+            { text: "Have you ever danced in a diner, bar, or living room for no clear reason, but it somehow felt extremely important to the plot?", categoryId: 10 },
+            { text: "Does everyone talk like they're trying to win a 'Coolest Dialogue' competition?", categoryId: 10 },
+
+            // Category 11: Spielberg Adventure
+            { text: "Are you or one of your closest companions a child who knows way more than the adults about what's going on?", categoryId: 11 },
+            { text: "Do ordinary suburban streets around you frequently become scenes of extraordinary events (UFOs, dinosaurs)?", categoryId: 11 },
+            { text: "Have you recently touched something otherworldly while soft, emotional music played in the background?", categoryId: 11 },
+            { text: "Do your most important moments happen at sunset with a suspiciously perfect glowing sky?", categoryId: 11 },
+            { text: "Is there a gentle, misunderstood creature/being that everyone fears except you and your small group of friends?", categoryId: 11 },
+            { text: "Do bicycles, walkie-talkies, and improvised gadgets play a suspiciously large role in your survival?", categoryId: 11 },
+            { text: "Have you looked up into the sky in awe at something huge and mysterious while the camera zooms in on your face?", categoryId: 11 },
+
+            // Category 12: Lucas Space Opera
+            { text: "Have you ever learned that the main villain is secretly related to you in a very inconvenient way?", categoryId: 12 },
+            { text: "Does your world contain a giant authoritarian empire, a scrappy rebellion, and a moon-sized superweapon?", categoryId: 12 },
+            { text: "Did an old, cryptic mentor tell you to 'trust your feelings' instead of giving clear instructions?", categoryId: 12 },
+            { text: "Do people around you casually use mystical energy, but insist it's also kind of science?", categoryId: 12 },
+            { text: "Is there a noisy alien bar/cantina where everyone seems to be doing illegal business in the open?", categoryId: 12 },
+            { text: "Have you piloted, or wanted to pilot, a ridiculously unsafe vehicle through impossible obstacles at high speed?", categoryId: 12 },
+            { text: "Do you have a bad feeling about things so often it might as well be your catchphrase?", categoryId: 12 },
+
+            // Category 13: Coppola Family Epic
+            { text: "Is your life heavily influenced by a powerful family, clan, or organization where loyalty matters more than the law?", categoryId: 13 },
+            { text: "Do major decisions get made around large dining tables, in hushed tones, while everyone pretends nothing is wrong?", categoryId: 13 },
+            { text: "Have you ever been told, 'It's not personal, it's strictly business' right before something very personal happened?", categoryId: 13 },
+            { text: "Do you find yourself slowly becoming more like a parent or elder you swore you'd never resemble?", categoryId: 13 },
+            { text: "Do weddings, baptisms, or other sacred ceremonies in your world suspiciously coincide with acts of extreme betrayal?", categoryId: 13 },
+            { text: "Does rain, dim light, or church organs play whenever major moral choices are made?", categoryId: 13 },
+            { text: "Are deals in your world always described as 'offers you can't refuse,' yet you really wish you could?", categoryId: 13 },
+
+            // Category 14: Regular Miserable Person (Reality Control)
+            { text: "Do you wake up feeling slightly worse than when you went to sleep, despite having no battle injuries?", categoryId: 14 },
+            { text: "If a stranger approached you in a tavern/bar with a 'quest,' would you assume they are drunk or trying to sell you crypto?", categoryId: 14 },
+            { text: "Is the most 'mysterious object' in your possession a plastic container lid that doesn't match any of your bowls?", categoryId: 14 },
+            { text: "Do your conversations often involve saying 'What?' three times, then just awkwardly laughing because you still didn't hear them?", categoryId: 14 },
+            { text: "Is your current 'Arch-Nemesis' a printer, a neighbor, or nonspecific lower back pain?", categoryId: 14 },
+            { text: "If you fell off a roof, are you 100% certain you would die immediately rather than landing in a convenient dumpster?", categoryId: 14 },
+            { text: "Has a 'bottle episode' (stuck in traffic, DMV waiting room) lasted 4 hours with absolutely no character development?", categoryId: 14 },
+            { text: "Is the 'soundtrack' of your life mostly just the hum of a refrigerator or mild tinnitus?", categoryId: 14 }
+        ];
+
+        // Genre story excerpts
+        const genreStories = {
+            1: {
+                genre: "FANTASY EPIC",
+                stories: [
+                    "The ancient prophecy had been clear: a child would be born under the blood moon, marked by destiny and bearing the sign of the Chosen.",
+                    "The sword felt impossibly light in their hand, as if it had been waiting centuries for this very moment. The runes along its blade began to glow.",
+                    "\"The prophecy speaks of you,\" the old woman whispered, her eyes milky with age but somehow seeing everything. \"You cannot run from what you are.\"",
+                    "In the dusty corner of the attic, wrapped in cloth that had not been touched in generations, the artifact pulsed with an otherworldly light."
+                ]
+            },
+            2: {
+                genre: "DYSTOPIAN CHRONICLE",
+                stories: [
+                    "The city walls loomed gray and endless. Beyond them, they said, was death. But she had begun to suspect that was a lie.",
+                    "The uniform was the same as everyone else's—regulation gray, regulation cut. Yet somehow, the Enforcers always seemed to know which face to watch.",
+                    "\"You're one of us now,\" he said, his rebel insignia barely visible in the dim light. \"There's no going back to who you were.\"",
+                    "The announcement crackled through every speaker: \"Citizen 4719, report for sorting.\" Her blood ran cold. Today was the day everything would change."
+                ]
+            },
+            3: {
+                genre: "SHONEN SAGA",
+                stories: [
+                    "The power surged through their body like lightning. Friends. That's what gave them strength. That's what made them unbeatable.",
+                    "\"You have potential,\" the master said, though his student had just destroyed the entire training ground. \"Raw, uncontrollable, catastrophic potential.\"",
+                    "The rival stood atop the building, silhouetted against the moon, his coat billowing dramatically. They locked eyes. This battle had been inevitable.",
+                    "They fell to their knees, wounds that should have killed them three times over somehow... not mattering. The tournament had to continue. Their friends were watching."
+                ]
+            },
+            4: {
+                genre: "INDIE DRAMA",
+                stories: [
+                    "The coffee was getting cold, but the conversation had hit that perfect moment where time didn't seem to matter anymore.",
+                    "It was Tuesday again. Same walk, same thoughts, same melancholy. But somehow, today, it all felt significant.",
+                    "The sunset painted the ordinary street in extraordinary colors. They stood there, phone in hand, wondering if this moment was worth photographing or just... feeling.",
+                    "\"You always do this,\" their friend said with a knowing smile. \"You turn nothing into something profound.\" They weren't wrong."
+                ]
+            },
+            5: {
+                genre: "SUPERHERO CHRONICLE",
+                stories: [
+                    "The mask went on. The person disappeared. What remained was something else—something the city needed but would never truly understand.",
+                    "\"Where were you?\" The question hung in the air, heavy with suspicion. If only they knew that saving the world and making it to dinner on time were mutually exclusive.",
+                    "The accident should have killed them. Instead, it had given them something impossible. Power. Responsibility. A double life that would cost them everything.",
+                    "The villain smiled from behind bars. \"See you next week,\" they said. And somehow, terrifyingly, that was always true."
+                ]
+            },
+            6: {
+                genre: "SITCOM SCRIPT",
+                stories: [
+                    "The door swung open without a knock. Again. How did they even afford this apartment? And why did problems that should take weeks always resolve themselves by Friday?",
+                    "The misunderstanding spiraled beautifully out of control. One simple sentence could fix it. But where was the fun in that?",
+                    "\"Remember when—\" they started, and suddenly the whole gang was there, as if summoned by the power of nostalgia and convenient timing.",
+                    "The problem was ridiculous. The solution was even more ridiculous. But somehow, it would all work out in exactly 22 minutes."
+                ]
+            },
+            7: {
+                genre: "HORROR NOVEL",
+                stories: [
+                    "The house was too cheap. The realtor had been too eager. And now, alone in the darkness, they understood why.",
+                    "The children's song drifted through the empty street: \"One, two, he's coming for you...\" How did they all know the same rhyme?",
+                    "\"We should split up,\" someone said. The words hung in the air like a death sentence. And yet, somehow, everyone agreed.",
+                    "The reflection in the mirror moved a fraction of a second too late. They tried to convince themselves it was their imagination. It wasn't."
+                ]
+            },
+            8: {
+                genre: "MYSTERY THRILLER",
+                stories: [
+                    "The clue had been there all along, hidden in plain sight. Everyone else had looked right past it. But they had a gift for seeing what others missed.",
+                    "The invitation arrived on cream-colored cardstock: \"You are cordially invited to Blackwood Manor.\" Three days later, the first body would be found.",
+                    "\"You're the only one who can solve this,\" they said, despite a room full of qualified detectives. Perhaps they were right. Perhaps that was the problem.",
+                    "The red string connected the photos like a spider's web. To anyone else, it looked like madness. To them, it was the only thing that made sense."
+                ]
+            },
+            9: {
+                genre: "ROMANTIC COMEDY",
+                stories: [
+                    "The coffee spilled in slow motion, papers flying, eyes meeting in that suspended moment of disaster that somehow felt like fate.",
+                    "\"I can't stand you,\" they said, thinking about him constantly. The universe had a funny way of making people eat their words.",
+                    "The rain started right on cue, as if the weather itself was conspiring to create the perfect moment for a confession that would change everything.",
+                    "\"They were right in front of you this whole time,\" her best friend said with an exasperated smile. \"How could you not see it?\""
+                ]
+            },
+            10: {
+                genre: "TARANTINO SCREENPLAY",
+                stories: [
+                    "They talked about nothing—the usual burger philosophy—for fifteen minutes. Then the guns came out. That's how it always went.",
+                    "The briefcase glowed. Nobody asked what was inside. Smart people in this world learned not to ask questions that might get them killed.",
+                    "\"You know what they call this in Paris?\" The conversation was casual. The weapon in his lap was not. This was how business got done.",
+                    "The timeline jumped. Again. What happened yesterday would be shown next Tuesday. What happened ten years ago was happening now. It all made sense if you stopped trying."
+                ]
+            },
+            11: {
+                genre: "SPIELBERG ADVENTURE",
+                stories: [
+                    "The child pointed at the sky with absolute certainty. The adults exchanged worried glances. Kids always knew first.",
+                    "The bicycle flew over the moon—or at least it felt that way. Magic was real, adventure was calling, and suburbia would never be the same.",
+                    "The creature was gentle, misunderstood, terrifying to everyone except the small group who saw the truth. They would protect it, no matter the cost.",
+                    "The sunset was impossibly perfect, painting everything gold. Somewhere, a violin swelled. This was the moment that would define everything."
+                ]
+            },
+            12: {
+                genre: "SPACE OPERA",
+                stories: [
+                    "\"I am your father,\" the figure said, and the galaxy suddenly felt impossibly small and personal. Family drama on a cosmic scale.",
+                    "The mystical energy flowed through them—definitely not magic, absolutely science-based, trust us—as they lifted the starship with their mind.",
+                    "The cantina was loud, dangerous, and absolutely the kind of place where every conversation could start a war or forge an alliance.",
+                    "\"I have a bad feeling about this,\" they muttered, for the seventeenth time this week. Their instincts were always right. That was the problem."
+                ]
+            },
+            13: {
+                genre: "MAFIA DRAMA",
+                stories: [
+                    "The family gathered around the table. Business would be discussed. Loyalty would be tested. And someone would not leave this room.",
+                    "\"It's not personal,\" he said quietly, \"it's strictly business.\" But they both knew that was a lie. It was always personal.",
+                    "The rain fell like judgment itself. Church bells echoed in the distance. Moral choices were being made in the shadows, and there were no good options.",
+                    "\"I'm going to make him an offer he can't refuse,\" he said, and everyone in the room understood exactly what that meant."
+                ]
+            },
+            14: {
+                genre: "REALITY",
+                stories: [
+                    "The alarm went off. Again. She hit snooze. The coffee was lukewarm. There was no dramatic reason for it. Just bad timing and a microwave that beeped too soon.",
+                    "\"What?\" he said for the third time. His friend repeated the sentence. He still didn't catch it. They both laughed awkwardly and moved on.",
+                    "The printer jammed. Of course it did. The IT ticket would take three days. This was his arch-nemesis now. Not a villain. Just... this.",
+                    "He opened the tupperware drawer. Seventeen lids. None of them matched. This was the mystery he was solving today. There would be no resolution."
+                ]
+            }
+        };
+
+        // Expanded story excerpts for results
+        const resultStories = {
+            1: "The old woman's eyes glowed silver in the tavern's dim light. \"The Marked One,\" she whispered, though he'd told no one his name. Her gnarled finger pointed to the birthmark he'd kept hidden since childhood. \"The prophecy speaks of the one born under the blood moon, bearer of the serpent's mark.\" Outside, thunder rolled across a cloudless sky. The ancient sword hanging above the hearth began to hum, its runes blazing to life after centuries of silence. Every patron turned to stare. He felt it then—the weight of destiny settling onto his shoulders like an iron cloak. The quest had found him at last.",
+
+            2: "The wall was gray. Everything beyond the wall was death, they said. Kira stood at her assigned post, regulation uniform pressed, regulation thoughts carefully maintained. Then she saw it—a crack in the propaganda feed, a single frame of green where there should only be ash. Her handler smiled that careful smile. \"Citizen 4719, you've been selected.\" The words should have filled her with pride. Instead, her chest tightened with a feeling they'd trained out of her years ago: fear. Because she'd seen the truth, and the truth was forbidden. The rebellion started with a glitch. It always did.",
+
+            3: "\"Get up.\" His rival's voice cut through the pain. Blood dripped from wounds that would have killed anyone else. But he wasn't anyone else. He thought of them—Mika's laugh, Ren's stupid jokes, the promise they'd made under the sakura trees. Power surged through his body like lightning. His hair stood on end. The air crackled. \"This isn't even my final form!\" The words came out before he could stop them. His rival actually smiled. \"There it is. Show me your true power.\" The ground beneath them shattered. The tournament arc wasn't over. It was only beginning.",
+
+            4: "The coffee was getting cold. Maya noticed the way afternoon light painted everything gold, the way dust motes danced like they were performing just for her. \"You do this thing,\" her friend said, not unkindly, \"where you turn nothing into something profound.\" She wanted to deny it, but the accusation landed with the weight of truth. Outside, the Tuesday crowd shuffled past with their Tuesday faces. Same street. Same thoughts. And yet. The sunset was happening, had always been happening, would always be worth stopping for. She pulled out her phone, then put it away. Some moments were too small to photograph, too large to miss.",
+
+            5: "The mask came off. In the mirror, she barely recognized the face underneath—bruised, exhausted, human. \"Where were you?\" Marcus had asked at dinner, his voice tight with suspicion. She'd lied, of course. Told him the subway was delayed while the truth screamed in her bandaged ribs: she'd been saving the city. Again. Her phone buzzed. Another crisis. Always another crisis. \"I have to step out for a minute,\" she said, though they both knew it was ending. The city needed her. Her life didn't. She reached for the mask. There was no choice. There never was.",
+
+            6: "The door swung open without a knock. \"You're not gonna believe what just happened—\" Rachel froze mid-sentence, seeing the disaster in progress. \"Oh no. Oh NO. Is that your boss? Tell me that's not your boss.\" It was absolutely her boss. In her apartment. While she was pretending to be her roommate's British girlfriend for reasons that made perfect sense five minutes ago and absolutely no sense now. Cut to: everyone staring. Pause for laughter. \"I can explain,\" she said. But explaining would solve everything in one sentence, and they still had seventeen minutes left until Friday.",
+
+            7: "The children's voices drifted through the empty street: \"One, two, coming for you. Three, four, lock the door.\" Sarah's hands tightened on the steering wheel. The house was too cheap. She'd known it was too cheap. The realtor had been too eager, too quick to close. Now here she stood in the foyer as night fell, as the floorboards creaked overhead where no one should be. The mirror at the end of the hall showed her reflection. Showed her reflection move, just slightly, a fraction of a second too late. The legend was true. The legend was always true. She had two choices: leave now, or become part of the song the children sang.",
+
+            8: "The invitation was cream-colored, expensive. \"You are cordially invited to Blackwood Manor for a weekend of mystery and intrigue.\" Detective Chen studied the guest list with practiced eyes. The socialite with secrets. The business partner with motive. The spouse with opportunity. Her assistant looked over her shoulder. \"Doesn't it seem suspicious that they invited you specifically?\" Chen smiled grimly. \"They always do.\" She noticed the detail everyone else would miss—the watermark on the paper, visible only at certain angles. By Sunday, there would be a body. By Monday, she'd know who. The clues were already there. They always were.",
+
+            9: "The coffee betrayed her spectacularly, launching itself into the air in perfect slow-motion catastrophe. Papers scattered like startled birds. And then—eyes meeting across the disaster, his hand catching hers to steady the cup, the world narrowing to this moment, this ridiculously romantic moment that absolutely should not be happening with someone she couldn't stand. Except. \"I hate you,\" she said, aware her hand was still in his. \"The feeling's mutual,\" he replied, not letting go. Behind them, her best friend stage-whispered: \"Oh my God, finally.\" Rain started falling. Of course it did. The universe was nothing if not committed to the bit.",
+
+            10: "\"You know what they call a Quarter Pounder with Cheese in Paris?\" Vincent asked, because this was how it went—casual philosophy before the violence. Jules checked his watch. The briefcase glowed softly beside them, contents unknown, questions unasked. Smart people didn't ask questions. The diner's jukebox played something obscure and perfect. \"Royale with Cheese,\" Jules said. Vincent smiled. \"Royale with Cheese.\" Outside, the target was walking into position. The timeline would jump soon—what happened next was already shown in the opening scene. Everything was non-linear. Everything was cool. The dialogue was what mattered.",
+
+            11: "Elliott pointed at the sky. The adults turned to look—nothing but clouds and dying light—but Elliott knew better. Kids always knew first. Behind them, bicycles lay scattered across the lawn, walkie-talkies crackling with static and wonder. \"It's coming back,\" Elliott whispered. The creature the town feared, the one they'd sworn to protect. Keys in his pocket—not to his house, but to somewhere impossible, somewhere the adults had forgotten existed. The sun set in perfect gold. Somewhere, strings swelled. The camera zoomed impossibly close to his face as he smiled. This was the moment. Magic was real, and suburbia was about to remember.",
+
+            12: "\"No. No, that's not true. That's impossible.\" The words came out strangled, broken. The mask tilted, mechanical breathing filling the chamber. \"Search your feelings. You know it to be true.\" Father. The word rewrote everything—the rebellion, the war, the impossible choices. Outside the viewport, stars wheeled past, indifferent to family drama playing out on cosmic scales. The old mentor's voice echoed from beyond death: \"Trust your feelings.\" The mystical energy—definitely-not-magic, absolutely-science—hummed through the station. \"I have a bad feeling about this,\" had been the last words before everything changed. That feeling was always right.",
+
+            13: "The family gathered around the table. Sunday dinner. Michael smiled at his children, his wife, the normalcy of it all. Underneath, his father's voice: \"It's not personal. It's strictly business.\" But it was personal. It was always personal. The wedding was next week. Someone at this table wouldn't see it. The organization demanded loyalty above all—above law, above love, above the person he'd sworn he'd never become. Rain fell outside. Church bells echoed from downtown. His son looked at him with eyes too knowing for his age. \"Papa?\" Michael smiled. Poured the wine. Made the choice he'd already made when he sat down at this table years ago.",
+
+            14: "The alarm screamed at 6:30 AM. There was no foreshadowing, no dramatic lighting, just the gray reality of a Tuesday. I looked at the pile of laundry on the chair—it hadn't moved. It wasn't a metaphor for my internal struggles; it was just dirty socks. I made coffee. It was lukewarm. I drank it anyway. The email from my boss arrived: \"Can you hop on a call?\" No. I could not hop. I could barely walk. My back hurt for no heroic reason. At lunch, I tried to open a plastic container. The lid didn't match. It never matched. This was my quest now. There would be no resolution, no character growth, no third-act transformation. Just this. Tuesday becoming Wednesday. The endless, magnificent banality of being alive and unremarkable."
+        };
+
+        // Utility Functions
+        function shuffle(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function selectQuestions() {
+            const selected = [];
+            // Select 2 questions from categories 1-13
+            for (let categoryId = 1; categoryId <= 13; categoryId++) {
+                const categoryQuestions = questions.filter(q => q.categoryId === categoryId);
+                const shuffledCategory = shuffle(categoryQuestions);
+                selected.push(...shuffledCategory.slice(0, 2));
+            }
+            // Select 4 questions from category 14 (Reality Control)
+            const category14Questions = questions.filter(q => q.categoryId === 14);
+            const shuffledCategory14 = shuffle(category14Questions);
+            selected.push(...shuffledCategory14.slice(0, 4));
+
+            return shuffle(selected);
+        }
+
+        function switchScreen(hideId, showId) {
+            document.getElementById(hideId).classList.remove('active');
+            document.getElementById(showId).classList.add('active');
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / selectedQuestions.length) * 100;
+            document.getElementById('timelineProgress').style.width = progress + '%';
+            document.getElementById('timelinePlayhead').style.left = progress + '%';
+
+            const act = currentQuestionIndex < 9 ? 'I' : currentQuestionIndex < 18 ? 'II' : 'III';
+            document.getElementById('progressText').textContent =
+                `ACT ${act} - SCENE ${currentQuestionIndex + 1} / ${selectedQuestions.length}`;
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex < selectedQuestions.length) {
+                const question = selectedQuestions[currentQuestionIndex];
+                document.getElementById('questionText').textContent = question.text;
+                updateProgress();
+                updateBackgroundTheme(question.categoryId);
+                updateStoryBox(question.categoryId);
+            } else {
+                showResult();
+            }
+        }
+
+        function updateStoryBox(categoryId) {
+            const genreData = genreStories[categoryId];
+            const randomStory = genreData.stories[Math.floor(Math.random() * genreData.stories.length)];
+            const randomPage = Math.floor(Math.random() * 200) + 1;
+
+            document.getElementById('storyGenre').textContent = genreData.genre;
+            document.getElementById('storyContent').textContent = randomStory;
+            document.getElementById('storyPage').textContent = `— Page ${randomPage} —`;
+        }
+
+        // Game Functions
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            selectedQuestions = selectQuestions();
+            scores = {};
+            totalTropePoints = 0;
+            realityIntegrity = 100;
+
+            for (let i = 1; i <= 14; i++) {
+                scores[i] = 0;
+            }
+
+            initBackground();
+            initTimeline();
+            switchScreen('landingScreen', 'quizScreen');
+            displayQuestion();
+        }
+
+        function answerQuestion(answer) {
+            const question = selectedQuestions[currentQuestionIndex];
+
+            // Update score based on answer
+            let points = 0;
+            if (answer === 'yes') {
+                points = 1;
+            }
+            // 'no' = 0 points
+
+            scores[question.categoryId] += points;
+            totalTropePoints += points;
+
+            // Update HUD
+            updateRealityIntegrity(points);
+            spikeWaveform();
+            updateGenrePredictor();
+
+            // Brief pause for effect
+            setTimeout(() => {
+                currentQuestionIndex++;
+                displayQuestion();
+            }, 300);
+        }
+
+        function showResult() {
+            let maxScore = 0;
+            let winningCategories = [];
+
+            for (let categoryId in scores) {
+                if (scores[categoryId] > maxScore) {
+                    maxScore = scores[categoryId];
+                    winningCategories = [parseInt(categoryId)];
+                } else if (scores[categoryId] === maxScore) {
+                    winningCategories.push(parseInt(categoryId));
+                }
+            }
+
+            let resultText, resultStoryText, categoryId;
+
+            if (maxScore <= 1) {
+                resultText = "You are just a regular miserable person in real life. No prophecies, no epic soundtrack, and no cinematic lighting. Just emails, laundry, mild back pain, and the crushing weight of reality. Sorry.";
+                resultStoryText = "The alarm went off. She hit snooze. Twenty minutes later, it went off again. Coffee was made with hands that knew the routine too well. The email from her boss arrived at 7:43 AM, as it always did. Subject: Urgent. It was never actually urgent. Outside, people walked to jobs they tolerated, lived in apartments they couldn't quite afford, made small talk about weather that didn't matter. Her back hurt. There was no reason for it—no dramatic battle, no heroic sacrifice. Just the accumulated weight of existing. The mirror showed exactly what was there: tired eyes, ordinary face, a person unadorned by destiny. The bills needed paying. The laundry needed folding. This was it. The whole story. Tuesday becoming Wednesday becoming Thursday. No plot. No arc. Just the regular, relentless machinery of being alive.";
+                currentResult = { title: "Regular Miserable Person", text: resultText };
+            } else if (winningCategories.length === 1) {
+                categoryId = winningCategories[0];
+                const category = categories[categoryId];
+                resultText = category.result;
+                resultStoryText = resultStories[categoryId];
+                currentResult = { title: category.name, text: resultText };
+                updateBackgroundTheme(categoryId);
+            } else {
+                let lastCategoryId = null;
+                for (let i = selectedQuestions.length - 1; i >= 0; i--) {
+                    if (winningCategories.includes(selectedQuestions[i].categoryId)) {
+                        lastCategoryId = selectedQuestions[i].categoryId;
+                        break;
+                    }
+                }
+                categoryId = lastCategoryId;
+                const category = categories[lastCategoryId];
+                resultText = category.result;
+                resultStoryText = resultStories[categoryId];
+                currentResult = { title: category.name, text: resultText };
+                updateBackgroundTheme(lastCategoryId);
+            }
+
+            document.getElementById('resultText').textContent = resultText;
+            document.getElementById('resultStory').textContent = resultStoryText;
+            document.getElementById('finalReality').textContent = realityIntegrity + '%';
+
+            switchScreen('quizScreen', 'resultScreen');
+
+            // Update result waveform with varying bar heights after screen switch
+            setTimeout(() => {
+                updateResultWaveform();
+            }, 50);
+        }
+
+        function updateGenrePredictor() {
+            const container = document.getElementById('genrePredictorBars');
+
+            // Gather categories with scores > 0, sorted descending
+            const scored = [];
+            for (let id = 1; id <= 14; id++) {
+                if (scores[id] > 0) {
+                    scored.push({ id: id, score: scores[id] });
+                }
+            }
+            scored.sort((a, b) => b.score - a.score);
+
+            // Show top 5 categories max
+            const top = scored.slice(0, 5);
+            const maxScore = top.length > 0 ? top[0].score : 0;
+
+            if (top.length === 0) {
+                container.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
+                return;
+            }
+
+            let html = '';
+            top.forEach(entry => {
+                const pct = Math.round((entry.score / Math.max(maxScore, 1)) * 100);
+                const color = categoryBarColors[entry.id];
+                const name = categoryShortNames[entry.id];
+                html += `<div class="genre-bar-row">
+                    <span class="genre-bar-name">${name}</span>
+                    <div class="genre-bar-track">
+                        <div class="genre-bar-fill" style="width:${pct}%; background:${color};"></div>
+                    </div>
+                    <span class="genre-bar-score">${entry.score}</span>
+                </div>`;
+            });
+
+            // Add current prediction label
+            const leader = top[0];
+            const leaderName = categoryShortNames[leader.id];
+            html += `<div class="genre-prediction-tag">Current prediction: ${leaderName}</div>`;
+
+            container.innerHTML = html;
+        }
+
+        function updateResultWaveform() {
+            const resultBars = document.querySelectorAll('#resultWaveform .wave-bar');
+            resultBars.forEach((bar, index) => {
+                const height = 12 + Math.random() * 18; // Random height between 12-30px
+                bar.style.height = height + 'px';
+                bar.style.transition = 'height 0.3s ease';
+            });
+        }
+
+        function shareResult() {
+            const shareText = `I just took the Narrative Diagnostic and I'm a ${currentResult.title}! Are you living in a story or just miserable? Find out: ${window.location.href}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Am I in a Story?',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('Result copied to clipboard!');
+                }).catch(err => {
+                    alert('Share text: ' + shareText);
+                });
+            }
+        }
+
+        function playAgain() {
+            switchScreen('resultScreen', 'landingScreen');
+            // Reset background
+            document.getElementById('backgroundLayer').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            initBackground();
+        }
+
+        // Initialize background on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            initBackground();
+        });
+    </script>
+</body>
+</html>
