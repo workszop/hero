@@ -890,67 +890,73 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        .metrics-grid {
+        /* Circular Gauge Metrics */
+        .metrics-gauges {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 15px;
         }
 
-        .metric-card {
+        .gauge-card {
             background: rgba(0, 0, 0, 0.04);
-            border-radius: 10px;
-            padding: 14px;
+            border-radius: 12px;
+            padding: 15px 10px;
             border: 1px solid rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        .gauge-wrapper {
             position: relative;
-            overflow: hidden;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
         }
 
-        .metric-card::after {
-            content: '';
+        .gauge-svg {
+            transform: rotate(-90deg);
+            width: 80px;
+            height: 80px;
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.08);
+            stroke-width: 8;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gauge-center {
             position: absolute;
-            top: 0;
-            right: 0;
-            width: 40px;
-            height: 40px;
-            background: radial-gradient(circle at top right, rgba(102, 126, 234, 0.1), transparent);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #444;
         }
 
-        .metric-name {
+        .gauge-name {
             font-family: 'Roboto Mono', monospace;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             color: #888;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            line-height: 1.3;
         }
 
-        .metric-value {
-            font-family: 'Courier Prime', monospace;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #444;
-            margin-bottom: 8px;
-        }
-
-        .metric-bar {
-            height: 4px;
-            background: rgba(0, 0, 0, 0.08);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .metric-bar-fill {
-            height: 100%;
-            border-radius: 2px;
-            transition: width 1s ease-out;
-        }
-
-        /* Panic Curve Chart */
-        .panic-curve-section {
+        /* Scatter Plot Chart */
+        .tension-scatter-section {
             margin-bottom: 25px;
         }
 
-        .panic-header {
+        .scatter-header {
             font-family: 'Roboto Mono', monospace;
             font-size: 0.7rem;
             color: #666;
@@ -962,111 +968,114 @@
             gap: 8px;
         }
 
-        .panic-header .indicator {
+        .scatter-header .indicator {
             width: 8px;
             height: 8px;
             background: #ff6b6b;
             border-radius: 2px;
-            animation: panicBlink 0.8s ease-in-out infinite;
+            animation: scatterPulse 1.5s ease-in-out infinite;
         }
 
-        @keyframes panicBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        @keyframes scatterPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
-        .panic-curve-container {
+        .scatter-container {
             background: rgba(0, 0, 0, 0.04);
             border-radius: 10px;
             padding: 15px;
             border: 1px solid rgba(0, 0, 0, 0.06);
         }
 
-        .panic-curve {
-            display: flex;
-            align-items: flex-end;
-            height: 60px;
-            gap: 3px;
+        .scatter-plot {
+            position: relative;
+            height: 100px;
+            margin-bottom: 5px;
         }
 
-        .panic-bar {
-            flex: 1;
-            background: linear-gradient(180deg, #ff6b6b 0%, #ffa07a 100%);
-            border-radius: 2px 2px 0 0;
-            transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .scatter-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 20% 25%;
         }
 
-        .panic-labels {
+        .scatter-points {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .scatter-point {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pointPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+        }
+
+        @keyframes pointPop {
+            from { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .scatter-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .scatter-line path {
+            fill: none;
+            stroke: rgba(102, 126, 234, 0.6);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 1.5s ease-out 0.3s forwards;
+        }
+
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .scatter-axes {
             display: flex;
             justify-content: space-between;
-            margin-top: 8px;
+            align-items: center;
             font-family: 'Roboto Mono', monospace;
             font-size: 0.5rem;
             color: #999;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-top: 8px;
         }
 
-        /* Compatibility Matrix */
-        .compat-section {
-            margin-bottom: 20px;
+        .scatter-y-label {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            position: absolute;
+            left: -5px;
+            top: 50%;
+            transform: translateY(-50%) rotate(180deg);
         }
 
-        .compat-header {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 0.7rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .compat-header .indicator {
-            width: 8px;
-            height: 8px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 50%;
-        }
-
-        .compat-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
-        }
-
-        .compat-cell {
-            aspect-ratio: 1;
-            border-radius: 4px;
-            transition: transform 0.2s ease;
-        }
-
-        .compat-cell:hover {
-            transform: scale(1.1);
-            z-index: 1;
-        }
-
-        .compat-legend {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 10px;
-            font-family: 'Roboto Mono', monospace;
-            font-size: 0.5rem;
-            color: #888;
-        }
-
-        .compat-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .compat-legend-color {
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
+        .scatter-x-label {
+            margin-left: auto;
         }
 
         /* Dashboard Footer */
@@ -1093,7 +1102,7 @@
         }
 
         @media (max-width: 900px) {
-            .metrics-grid {
+            .metrics-gauges {
                 grid-template-columns: repeat(2, 1fr);
             }
 
@@ -1132,20 +1141,39 @@
                 padding: 15px 20px;
             }
 
-            .metrics-grid {
-                grid-template-columns: 1fr 1fr;
+            .metrics-gauges {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
             }
 
-            .metric-card {
-                padding: 10px;
+            .gauge-card {
+                padding: 10px 8px;
             }
 
-            .metric-value {
-                font-size: 1.1rem;
+            .gauge-wrapper {
+                width: 65px;
+                height: 65px;
+            }
+
+            .gauge-svg {
+                width: 65px;
+                height: 65px;
+            }
+
+            .gauge-center {
+                font-size: 0.75rem;
+            }
+
+            .gauge-name {
+                font-size: 0.45rem;
             }
 
             .winner-genre {
                 font-size: 1.3rem;
+            }
+
+            .scatter-plot {
+                height: 80px;
             }
         }
     </style>
@@ -1283,51 +1311,30 @@
                         <div class="genre-breakdown-grid" id="genreBreakdownGrid"></div>
                     </div>
 
-                    <!-- Cryptic Metrics -->
+                    <!-- Cryptic Metrics - Circular Gauges -->
                     <div class="cryptic-metrics">
                         <div class="metrics-header">
                             <span class="indicator"></span>
                             Protagonist Metrics Analysis
                         </div>
-                        <div class="metrics-grid" id="metricsGrid"></div>
+                        <div class="metrics-gauges" id="metricsGauges"></div>
                     </div>
 
-                    <!-- Panic Curve -->
-                    <div class="panic-curve-section">
-                        <div class="panic-header">
+                    <!-- Narrative Tension - Scatter Plot -->
+                    <div class="tension-scatter-section">
+                        <div class="scatter-header">
                             <span class="indicator"></span>
-                            Narrative Tension Curve
+                            Narrative Tension Mapping
                         </div>
-                        <div class="panic-curve-container">
-                            <div class="panic-curve" id="panicCurve"></div>
-                            <div class="panic-labels">
-                                <span>Exposition</span>
-                                <span>Rising Action</span>
-                                <span>Climax</span>
-                                <span>Resolution</span>
+                        <div class="scatter-container">
+                            <div class="scatter-plot" id="scatterPlot">
+                                <div class="scatter-grid"></div>
+                                <div class="scatter-points" id="scatterPoints"></div>
+                                <svg class="scatter-line" id="scatterLine"></svg>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Compatibility Matrix -->
-                    <div class="compat-section">
-                        <div class="compat-header">
-                            <span class="indicator"></span>
-                            Trope Compatibility Matrix
-                        </div>
-                        <div class="compat-grid" id="compatGrid"></div>
-                        <div class="compat-legend">
-                            <div class="compat-legend-item">
-                                <div class="compat-legend-color" style="background: #2ecc71;"></div>
-                                <span>High</span>
-                            </div>
-                            <div class="compat-legend-item">
-                                <div class="compat-legend-color" style="background: #f1c40f;"></div>
-                                <span>Medium</span>
-                            </div>
-                            <div class="compat-legend-item">
-                                <div class="compat-legend-color" style="background: #e74c3c;"></div>
-                                <span>Low</span>
+                            <div class="scatter-axes">
+                                <span class="scatter-y-label">Intensity</span>
+                                <span class="scatter-x-label">Story Progression</span>
                             </div>
                         </div>
                     </div>
@@ -2173,8 +2180,7 @@
             // Render all dashboard components
             renderGenreBreakdown(winningCategoryId);
             renderCrypticMetrics();
-            renderPanicCurve();
-            renderCompatMatrix();
+            renderScatterPlot();
         }
 
         function renderGenreBreakdown(winningId) {
@@ -2208,69 +2214,85 @@
         }
 
         function renderCrypticMetrics() {
-            const grid = document.getElementById('metricsGrid');
-            // Pick 6 random metrics
+            const container = document.getElementById('metricsGauges');
+            // Pick 6 random metrics for circular gauges
             const shuffled = [...crypticMetrics].sort(() => Math.random() - 0.5).slice(0, 6);
 
-            let html = '';
-            shuffled.forEach(metric => {
-                const value = (Math.random() * 100).toFixed(1);
-                const displayValue = Math.random() > 0.3
-                    ? value + '%'
-                    : (Math.random() * 10).toFixed(2) + 'σ';
+            const circumference = 2 * Math.PI * 32; // radius = 32
 
-                html += `<div class="metric-card">
-                    <div class="metric-name">${metric.name}</div>
-                    <div class="metric-value">${displayValue}</div>
-                    <div class="metric-bar">
-                        <div class="metric-bar-fill" style="width:${value}%; background:${metric.color};"></div>
+            let html = '';
+            shuffled.forEach((metric, idx) => {
+                const value = Math.floor(Math.random() * 100);
+                const offset = circumference - (value / 100) * circumference;
+
+                html += `<div class="gauge-card">
+                    <div class="gauge-wrapper">
+                        <svg class="gauge-svg" viewBox="0 0 80 80">
+                            <circle class="gauge-bg" cx="40" cy="40" r="32"/>
+                            <circle class="gauge-fill" cx="40" cy="40" r="32"
+                                stroke="${metric.color}"
+                                stroke-dasharray="${circumference}"
+                                stroke-dashoffset="${circumference}"
+                                style="animation-delay: ${idx * 0.1}s;"
+                                data-offset="${offset}"/>
+                        </svg>
+                        <div class="gauge-center">${value}</div>
                     </div>
+                    <div class="gauge-name">${metric.name}</div>
                 </div>`;
             });
-            grid.innerHTML = html;
-        }
-
-        function renderPanicCurve() {
-            const container = document.getElementById('panicCurve');
-            const barCount = 20;
-
-            // Generate a curve that rises to a climax then falls
-            let html = '';
-            for (let i = 0; i < barCount; i++) {
-                // Create a narrative tension curve shape
-                const progress = i / (barCount - 1);
-                let baseHeight;
-                if (progress < 0.3) {
-                    // Exposition - gradual rise
-                    baseHeight = 15 + progress * 60;
-                } else if (progress < 0.7) {
-                    // Rising action - steeper rise to climax around 0.6-0.7
-                    const riseProgress = (progress - 0.3) / 0.4;
-                    baseHeight = 33 + riseProgress * 55;
-                } else {
-                    // Falling action / resolution
-                    const fallProgress = (progress - 0.7) / 0.3;
-                    baseHeight = 88 - fallProgress * 50;
-                }
-                // Add some randomness
-                const height = Math.max(8, baseHeight + (Math.random() - 0.5) * 20);
-                html += `<div class="panic-bar" style="height:${height}%;"></div>`;
-            }
             container.innerHTML = html;
+
+            // Animate gauges after render
+            setTimeout(() => {
+                container.querySelectorAll('.gauge-fill').forEach(fill => {
+                    fill.style.strokeDashoffset = fill.dataset.offset;
+                });
+            }, 50);
         }
 
-        function renderCompatMatrix() {
-            const grid = document.getElementById('compatGrid');
-            const cellCount = 25; // 5x5 matrix
+        function renderScatterPlot() {
+            const pointsContainer = document.getElementById('scatterPoints');
+            const lineContainer = document.getElementById('scatterLine');
+            const pointCount = 12;
 
-            const colors = ['#2ecc71', '#27ae60', '#f1c40f', '#f39c12', '#e74c3c', '#c0392b'];
-            let html = '';
-            for (let i = 0; i < cellCount; i++) {
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const opacity = 0.5 + Math.random() * 0.5;
-                html += `<div class="compat-cell" style="background:${color}; opacity:${opacity};"></div>`;
+            // Generate points along a narrative tension curve with some randomness
+            const points = [];
+            for (let i = 0; i < pointCount; i++) {
+                const progress = i / (pointCount - 1);
+                let baseY;
+                if (progress < 0.3) {
+                    baseY = 70 - progress * 80;
+                } else if (progress < 0.7) {
+                    const rise = (progress - 0.3) / 0.4;
+                    baseY = 46 - rise * 40;
+                } else {
+                    const fall = (progress - 0.7) / 0.3;
+                    baseY = 6 + fall * 50;
+                }
+                // Add randomness
+                const y = Math.max(5, Math.min(95, baseY + (Math.random() - 0.5) * 25));
+                const x = (progress * 90) + 5 + (Math.random() - 0.5) * 5;
+                points.push({ x, y });
             }
-            grid.innerHTML = html;
+
+            // Render scatter points
+            const colors = ['#667eea', '#764ba2', '#ff6b6b', '#f39c12', '#2ecc71', '#3498db'];
+            let pointsHtml = '';
+            points.forEach((pt, idx) => {
+                const color = colors[idx % colors.length];
+                const size = 6 + Math.random() * 6;
+                pointsHtml += `<div class="scatter-point" style="left:${pt.x}%; top:${pt.y}%; width:${size}px; height:${size}px; background:${color}; animation-delay:${idx * 0.08}s;"></div>`;
+            });
+            pointsContainer.innerHTML = pointsHtml;
+
+            // Render connecting line as SVG path
+            const pathPoints = points.map((pt, idx) => {
+                const cmd = idx === 0 ? 'M' : 'L';
+                return `${cmd} ${pt.x} ${pt.y}`;
+            }).join(' ');
+
+            lineContainer.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${pathPoints}"/></svg>`;
         }
 
         function shareResult() {
