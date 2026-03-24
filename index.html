@@ -46,6 +46,15 @@
             pointer-events: none;
         }
 
+        .pdf-bg-page {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.07;
+            filter: brightness(1.5) contrast(0.8);
+            transition: opacity 2s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
         .container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 16px;
@@ -1177,6 +1186,7 @@
             }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
     <!-- Dynamic Background -->
@@ -1497,7 +1507,8 @@
         // Initialize static script text
         function initBackground() {
             const bg = document.getElementById('backgroundLayer');
-            bg.innerHTML = ''; // Clear existing text
+            // Keep PDF pages if already rendered, only clear script texts
+            bg.querySelectorAll('.script-text').forEach(el => el.remove());
             for (let i = 0; i < 50; i++) {
                 const scriptEl = document.createElement('div');
                 scriptEl.className = 'script-text';
@@ -1505,6 +1516,51 @@
                 scriptEl.style.left = Math.random() * 95 + '%';
                 scriptEl.style.top = Math.random() * 95 + '%';
                 bg.appendChild(scriptEl);
+            }
+        }
+
+        // Render random PDF pages as background decoration
+        async function initPdfBackground() {
+            const bg = document.getElementById('backgroundLayer');
+            try {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                const pdf = await pdfjsLib.getDocument('True-Romance.pdf').promise;
+                const totalPages = pdf.numPages;
+                const numToShow = Math.min(12, totalPages);
+                // Pick random unique pages
+                const pageNumbers = [];
+                const available = Array.from({length: totalPages}, (_, i) => i + 1);
+                for (let i = 0; i < numToShow; i++) {
+                    const idx = Math.floor(Math.random() * available.length);
+                    pageNumbers.push(available.splice(idx, 1)[0]);
+                }
+
+                for (const pageNum of pageNumbers) {
+                    const page = await pdf.getPage(pageNum);
+                    const scale = 0.8;
+                    const viewport = page.getViewport({ scale });
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'pdf-bg-page';
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.style.width = viewport.width + 'px';
+                    canvas.style.height = viewport.height + 'px';
+
+                    // Random position - allow some overflow for natural feel
+                    const left = Math.random() * 90 - 5;
+                    const top = Math.random() * 90 - 5;
+                    const rotation = (Math.random() - 0.5) * 20; // -10 to +10 degrees
+                    canvas.style.left = left + '%';
+                    canvas.style.top = top + '%';
+                    canvas.style.transform = 'rotate(' + rotation + 'deg)';
+
+                    bg.appendChild(canvas);
+
+                    const ctx = canvas.getContext('2d');
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                }
+            } catch (e) {
+                console.log('PDF background not available:', e.message);
             }
         }
 
@@ -2323,6 +2379,7 @@
         // Initialize background on page load
         window.addEventListener('DOMContentLoaded', function() {
             initBackground();
+            initPdfBackground();
         });
     </script>
 </body>
