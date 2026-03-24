@@ -2080,11 +2080,26 @@
             let points = 0;
             if (answer === 'yes') {
                 points = 1;
+                scores[question.categoryId] += points;
+                totalTropePoints += points;
+            } else {
+                // "No" redistributes probability away from this genre
+                // Slightly boost all OTHER categories that have scores > 0
+                const currentCat = question.categoryId;
+                const scoredOthers = [];
+                for (let id = 1; id <= 14; id++) {
+                    if (id !== currentCat && scores[id] > 0) {
+                        scoredOthers.push(id);
+                    }
+                }
+                // Penalize current category
+                scores[currentCat] = Math.max(0, scores[currentCat] - 0.3);
+                // Give a small boost to scored competitors
+                if (scoredOthers.length > 0) {
+                    const boost = 0.2 / scoredOthers.length;
+                    scoredOthers.forEach(id => { scores[id] += boost; });
+                }
             }
-            // 'no' = 0 points
-
-            scores[question.categoryId] += points;
-            totalTropePoints += points;
 
             // Update HUD
             updateRealityIntegrity(points);
@@ -2162,40 +2177,66 @@
 
             // Gather categories with scores > 0, sorted descending
             const scored = [];
+            let totalScore = 0;
             for (let id = 1; id <= 14; id++) {
                 if (scores[id] > 0) {
                     scored.push({ id: id, score: scores[id] });
+                    totalScore += scores[id];
                 }
             }
             scored.sort((a, b) => b.score - a.score);
 
             // Show top 5 categories max
             const top = scored.slice(0, 5);
-            const maxScore = top.length > 0 ? top[0].score : 0;
 
             if (top.length === 0) {
                 container.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
                 return;
             }
 
+            // Calculate certainty based on questions answered and score distribution
+            const questionsAnswered = currentQuestionIndex + 1;
+            const totalQuestions = selectedQuestions.length;
+            const progressFactor = Math.min(questionsAnswered / totalQuestions, 1);
+
+            // Base certainty grows with more questions answered
+            // Starts low (~15-25%) and can reach up to ~95% near the end
+            const leader = top[0];
+            const leaderShare = leader.score / Math.max(totalScore, 0.1);
+            // How dominant is the leader vs others
+            const dominance = top.length > 1
+                ? (leader.score - top[1].score) / Math.max(leader.score, 0.1)
+                : 0.5;
+
+            // Certainty formula: combines progress, dominance, and leader share
+            const baseCertainty = (progressFactor * 0.5 + leaderShare * 0.3 + dominance * 0.2) * 100;
+            // Clamp between 8% and 97%, with randomness that shrinks as we get more data
+            const noiseRange = Math.max(3, 15 * (1 - progressFactor));
+            const noise = (Math.random() - 0.5) * noiseRange;
+            const certainty = Math.round(Math.min(97, Math.max(8, baseCertainty + noise)));
+
             let html = '';
             top.forEach(entry => {
-                const pct = Math.round((entry.score / Math.max(maxScore, 1)) * 100);
+                // Show bars as % of total score (relative probability)
+                const rawPct = (entry.score / Math.max(totalScore, 0.1)) * 100;
+                // Add small randomness to bar widths for a "live signal" feel
+                const barNoise = (Math.random() - 0.5) * 4 * (1 - progressFactor);
+                const pct = Math.round(Math.min(100, Math.max(3, rawPct + barNoise)));
                 const color = categoryBarColors[entry.id];
                 const name = categoryShortNames[entry.id];
+                const displayPct = Math.round(rawPct);
                 html += `<div class="genre-bar-row">
                     <span class="genre-bar-name">${name}</span>
                     <div class="genre-bar-track">
                         <div class="genre-bar-fill" style="width:${pct}%; background:${color};"></div>
                     </div>
-                    <span class="genre-bar-score">${entry.score}</span>
+                    <span class="genre-bar-score">${displayPct}%</span>
                 </div>`;
             });
 
-            // Add current prediction label
-            const leader = top[0];
+            // Add current prediction label with certainty
             const leaderName = categoryShortNames[leader.id];
-            html += `<div class="genre-prediction-tag">Current prediction: ${leaderName}</div>`;
+            html += `<div class="genre-prediction-tag">Signal: ${leaderName} — ${certainty}% certainty</div>`;
 
             container.innerHTML = html;
         }
