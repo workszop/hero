@@ -2282,12 +2282,16 @@
 
         function renderGenreBreakdown(winningId) {
             const grid = document.getElementById('genreBreakdownGrid');
-            const maxScore = Math.max(...Object.values(scores), 1);
+            let totalScore = 0;
+            for (let id = 1; id <= 14; id++) {
+                totalScore += scores[id];
+            }
+            totalScore = Math.max(totalScore, 0.1);
 
             let html = '';
             for (let id = 1; id <= 14; id++) {
                 const score = scores[id];
-                const pct = Math.round((score / maxScore) * 100);
+                const pct = Math.round((score / totalScore) * 100);
                 const color = categoryBarColors[id];
                 const name = categoryShortNames[id];
                 const isWinner = id === winningId && score > 0;
@@ -2297,7 +2301,7 @@
                     <div class="breakdown-track">
                         <div class="breakdown-fill" style="width:${pct}%; background:${color};"></div>
                     </div>
-                    <span class="breakdown-score">${score}</span>
+                    <span class="breakdown-score">${pct}%</span>
                 </div>`;
             }
             grid.innerHTML = html;
