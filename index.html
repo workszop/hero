@@ -150,6 +150,16 @@
             line-height: 1.6;
         }
 
+        .tagline p {
+            margin-bottom: 1em;
+        }
+
+        .tagline p:last-child {
+            margin-bottom: 0;
+            font-weight: bold;
+            font-style: italic;
+        }
+
         #landingScreen button {
             display: block;
             max-width: 300px;
@@ -1200,8 +1210,14 @@
     <div class="container">
         <!-- Landing Screen -->
         <div id="landingScreen" class="screen active">
-            <h1>Am I in a Story?</h1>
-            <p class="tagline">Are you a hero or is the struggle just real? Take this diagnostic to find out if you're living in a fictional narrative or just another regular miserable person.</p>
+            <h1>Are you living your own story?</h1>
+            <div class="tagline">
+                <p>Ever get the nagging feeling that your life is a little too structured? That the same things happen to you at the same time, every single day? That somewhere, somehow, someone might be watching - or worse, writing - what happens next?</p>
+                <p>Two movies dared to ask a wild question: what if you weren't the author of your own life? What if you were just a character - in someone's novel, someone's screenplay, or maybe even someone's game - completely unaware of it?</p>
+                <p>Before you dismiss that idea... take this quiz first.
+                We'll ask you a few questions about how you see yourself, how you move through the world, and how you handle the unexpected. Your answers might reveal something surprising about the kind of story you're actually living in.</p>
+                <p>Are you the hero? A side character? Or maybe... an NPC?</p>
+            </div>
             <button onclick="startQuiz()">Start Diagnostic</button>
         </div>
 
@@ -1562,6 +1578,19 @@
             } catch (e) {
                 console.log('PDF background not available:', e.message);
             }
+        }
+
+        // Randomize positions of PDF background pages for each question
+        function randomizePdfPositions() {
+            const pages = document.querySelectorAll('.pdf-bg-page');
+            pages.forEach(canvas => {
+                const left = Math.random() * 90 - 5;
+                const top = Math.random() * 90 - 5;
+                const rotation = (Math.random() - 0.5) * 20;
+                canvas.style.left = left + '%';
+                canvas.style.top = top + '%';
+                canvas.style.transform = 'rotate(' + rotation + 'deg)';
+            });
         }
 
         // Change background based on category
@@ -2040,6 +2069,7 @@
                 updateProgress();
                 updateBackgroundTheme(question.categoryId);
                 updateStoryBox(question.categoryId);
+                randomizePdfPositions();
             } else {
                 showResult();
             }
