@@ -1,6 +1,6 @@
 # Am I in a Story?
 
-**Am I in a Story?** is a self-contained, deliberately overdramatic story-archetype quiz. It asks whether everyday events look like evidence of a fictional narrative, then presents a theatrical “Narrative Diagnostic” with a genre result and intentionally suspicious analytical readout.
+**Am I in a Story?** is a self-contained, deliberately overdramatic story-archetype quiz presented as **Dead Signal DOS**, a late-1980s EGA survival-horror terminal. It asks whether everyday events look like evidence of a fictional narrative, then presents a theatrical “Narrative Diagnostic” with a genre result and intentionally suspicious analytical readout.
 
 The ordinary-life outcome is part of the joke and is intentionally common. The **Regular Miserable Person** category and its description are kept as authored: the quiz is not trying to turn ordinary life into a consolation prize or a medical diagnosis.
 
@@ -45,6 +45,27 @@ Then open <http://localhost:8000/>.
 
 The quiz logic runs in the browser. The page imports its display fonts from Google Fonts when a network connection is available; the system font fallbacks keep the app usable offline.
 
+## Controls
+
+- `Enter` starts the diagnostic from the landing screen.
+- `Y` records Yes while a quiz question is active.
+- `N` records No while a quiz question is active.
+- Every action is also available through native buttons for pointer, touch and assistive-technology users.
+
+Input is locked during the short question transition, so repeated clicks or key presses cannot score the same question twice.
+
+## Dead Signal scenes
+
+Each category maps to one generated EGA-style screenshot under `assets/dead-signal/`. Production scenes follow these conventions:
+
+- `960 × 720` pixels in 4:3 format
+- WebP files, normally below 350 KB each
+- original characters and environments without readable generated text, logos or recognizable copyrighted characters
+- meaningful alternative text in the category model
+- lowercase descriptive filenames such as `space-opera.webp`
+
+The app loads the current category scene and preloads only the next selected scene. If a configured image is unavailable, `fallback.webp` replaces it and the failure is announced without interrupting the quiz.
+
 ## Deploy
 
 This repository is a static site. Publish the repository root with GitHub Pages or any static hosting provider. `index.html` is the entry point; no server-side runtime or database is required.
@@ -64,8 +85,11 @@ No license file is currently included. Add one before inviting third parties to 
 Run the dependency-free checks with:
 
 ```bash
+node tests/pure.test.mjs
 node --test tests/pure.test.mjs
 ```
+
+For browser verification, serve the app and check landing, 30-question completion, replay, sharing, keyboard controls and the `390 × 844`, `768 × 1024`, `1024 × 768` and `1440 × 900` layouts. The root `data-*` attributes expose the current screen, question, scene, transition and result state for automated probes.
 
 ## Project contents
 
@@ -75,3 +99,4 @@ node --test tests/pure.test.mjs
 | [`README.md`](./README.md) | Project overview and operating notes |
 | [`.gitignore`](./.gitignore) | Excludes local plans, reviews and scratch artifacts |
 | [`tests/pure.test.mjs`](./tests/pure.test.mjs) | Pure-logic, model-invariant and DOM-contract checks |
+| [`assets/dead-signal/`](./assets/dead-signal/) | Fourteen generated category scenes and the local fallback scene |
