@@ -4,8 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Am I in a Story? – The Narrative Diagnostic</title>
+    <meta name="description" content="A playful narrative diagnostic that matches everyday experiences to cinematic story patterns.">
+    <meta name="theme-color" content="#1a0033">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Am I in a Story?">
+    <meta property="og:description" content="Are you a hero, or is the struggle just real? Take the narrative diagnostic.">
+    <meta property="og:url" content="https://workszop.github.io/hero/">
+    <meta name="twitter:card" content="summary">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a0033'/%3E%3Cpath d='M15 17h34v8H36v22h-8V25H15z' fill='%23667eea'/%3E%3C/svg%3E">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Courier+Prime:wght@400;700&display=swap');
+
+        :root {
+            --color-bg-deep: #1a0033;
+            --color-primary: #667eea;
+            --color-secondary: #764ba2;
+            --color-danger: #ff4444;
+            --color-ink: #222;
+            --color-text: #333;
+            --color-text-strong: #444;
+            --color-text-muted: #666;
+            --color-text-soft: #888;
+            --color-text-faint: #999;
+            --color-text-ghost: #aaa;
+            --color-text-disabled: #ccc;
+            --color-track: #e0e0e0;
+            --color-black: #000000;
+            --color-near-black: #1c1c1c;
+            --color-night: #1a1a2e;
+            --color-brown: #8b4513;
+            --color-amber: #d2691e;
+            --color-ochre: #cd853f;
+            --color-gold: #ffd700;
+            --color-yellow: #ffe66d;
+            --color-orange: #ffa500;
+            --color-coral: #ff6b6b;
+            --color-red: #e74c3c;
+            --color-red-dark: #8b0000;
+            --color-blood: #2c0000;
+            --color-crimson: #dc143c;
+            --color-pink: #ff69b4;
+            --color-pink-light: #ffb6c1;
+            --color-hot-pink: #e91e63;
+            --color-blue: #3498db;
+            --color-blue-bright: #1e90ff;
+            --color-blue-steel: #4682b4;
+            --color-sky: #87ceeb;
+            --color-cyan-soft: #a8dadc;
+            --color-steel: #457b9d;
+            --color-slate: #607d8b;
+            --color-slate-light: #708090;
+            --color-blue-gray: #34495e;
+            --color-navy-slate: #2c3e50;
+            --color-violet-slate: #6a5acd;
+            --color-purple: #9b59b6;
+            --color-charcoal: #36454f;
+            --color-charcoal-teal: #2f4f4f;
+            --color-gray: #808080;
+            --color-gray-light: #a9a9a9;
+            --color-green: #2ecc71;
+            --color-teal: #1abc9c;
+            --color-teal-dark: #16a085;
+            --color-surface: rgba(255, 255, 255, 0.95);
+            --color-surface-muted: rgba(0, 0, 0, 0.05);
+            --color-line: rgba(102, 126, 234, 0.2);
+            --color-line-strong: rgba(102, 126, 234, 0.3);
+            --gradient-brand: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
+            --font-script: 'Courier Prime', 'Courier New', monospace;
+            --font-serif: Georgia, serif;
+        }
 
         * {
             margin: 0;
@@ -14,14 +83,14 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #1a0033;
+            font-family: var(--font-ui);
+            background: var(--color-bg-deep);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             padding: 20px;
-            color: #333;
+            color: var(--color-text);
             position: relative;
         }
 
@@ -34,12 +103,12 @@
             height: 100%;
             z-index: 0;
             transition: background 1s ease;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--gradient-brand);
         }
 
         .script-text {
             position: absolute;
-            font-family: 'Courier New', monospace;
+            font-family: var(--font-script);
             font-size: 14px;
             color: rgba(255, 255, 255, 0.1);
             white-space: nowrap;
@@ -47,7 +116,7 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--color-surface);
             border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
                         inset 0 0 20px rgba(102, 126, 234, 0.1);
@@ -62,8 +131,7 @@
         }
 
         /* Fixed size only for quiz screen */
-        #quizScreen.active ~ .container,
-        .container:has(#quizScreen.active) {
+        #appRoot[data-screen="quiz"] {
             min-height: 600px;
         }
 
@@ -125,7 +193,7 @@
         h1 {
             font-size: 2rem;
             margin-bottom: 20px;
-            color: #667eea;
+            color: var(--color-primary);
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -133,9 +201,9 @@
         }
 
         .tagline {
-            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-family: var(--font-script);
             font-size: 1.1rem;
-            color: #666;
+            color: var(--color-text-muted);
             text-align: center;
             margin-bottom: 30px;
             line-height: 1.6;
@@ -165,24 +233,24 @@
         }
 
         .reality-label {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.75rem;
-            color: #666;
+            color: var(--color-text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 5px;
         }
 
         .reality-value {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 1.5rem;
             font-weight: bold;
-            color: #667eea;
+            color: var(--color-primary);
             transition: all 0.3s ease;
         }
 
         .reality-value.critical {
-            color: #ff4444;
+            color: var(--color-danger);
             animation: pulse 1s infinite;
         }
 
@@ -192,9 +260,9 @@
         }
 
         .reality-warning {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.7rem;
-            color: #ff4444;
+            color: var(--color-danger);
             margin-top: 3px;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -214,9 +282,9 @@
         }
 
         .tension-label {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.65rem;
-            color: #666;
+            color: var(--color-text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 8px;
@@ -232,7 +300,7 @@
 
         .wave-bar {
             width: 4px;
-            background: #667eea;
+            background: var(--color-primary);
             transition: height 0.2s ease;
             border-radius: 2px;
         }
@@ -254,14 +322,14 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: #e0e0e0;
+            background: var(--color-track);
             transform: translateY(-50%);
         }
 
         .timeline-progress {
             position: absolute;
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
             transition: width 0.3s ease;
             box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
         }
@@ -272,7 +340,7 @@
             left: 0;
             width: 20px;
             height: 20px;
-            background: #667eea;
+            background: var(--color-primary);
             border: 3px solid white;
             border-radius: 50%;
             transform: translate(-50%, -50%);
@@ -299,25 +367,25 @@
 
         .progress-text {
             text-align: center;
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.85rem;
-            color: #666;
+            color: var(--color-text-muted);
             margin-bottom: 25px;
             letter-spacing: 1px;
         }
 
         .question-text {
-            font-family: 'Courier Prime', 'Courier New', monospace;
+            font-family: var(--font-script);
             font-size: 1.4rem;
             margin-bottom: 30px;
-            color: #222;
+            color: var(--color-ink);
             line-height: 1.6;
             text-align: center;
             font-weight: 500;
             padding: 20px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 12px;
-            border: 3px solid #667eea;
+            border: 3px solid var(--color-primary);
             min-height: 140px;
             display: flex;
             align-items: center;
@@ -374,19 +442,19 @@
         }
 
         .story-content {
-            font-family: Georgia, serif;
+            font-family: var(--font-serif);
             font-size: 0.9rem;
             line-height: 1.7;
-            color: #444;
+            color: var(--color-text-strong);
             font-style: italic;
             position: relative;
             z-index: 1;
         }
 
         .story-page {
-            font-family: 'Courier New', monospace;
+            font-family: var(--font-script);
             font-size: 0.65rem;
-            color: #999;
+            color: var(--color-text-faint);
             text-align: center;
             margin-top: 15px;
             position: relative;
@@ -394,7 +462,7 @@
         }
 
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
             color: white;
             border: none;
             padding: 20px 30px;
@@ -436,54 +504,34 @@
             transform: translateY(-1px);
         }
 
+        button:focus-visible {
+            outline: 3px solid var(--color-ink);
+            outline-offset: 4px;
+        }
+
+        button:disabled {
+            cursor: wait;
+            opacity: 0.65;
+            transform: none;
+        }
+
         .option-btn {
             background: white;
-            color: #667eea;
-            border: 3px solid #667eea;
+            color: var(--color-primary);
+            border: 3px solid var(--color-primary);
             position: relative;
         }
 
         .option-btn:hover {
-            background: #667eea;
+            background: var(--color-primary);
             color: white;
-            border-color: #667eea;
+            border-color: var(--color-primary);
         }
 
-
-        /* Script Overlay Effect */
-        .script-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .script-overlay.active {
-            opacity: 1;
-        }
-
-        .script-content {
-            font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
-            color: #00ff00;
-            text-align: center;
-            padding: 40px;
-            max-width: 600px;
-            line-height: 1.8;
-        }
 
         .result-title {
             font-size: 2.2rem;
-            color: #667eea;
+            color: var(--color-primary);
             margin-bottom: 20px;
             text-align: center;
             text-transform: uppercase;
@@ -500,13 +548,13 @@
         .result-text {
             font-size: 1.2rem;
             line-height: 1.8;
-            color: #555;
+            color: var(--color-text-muted);
             margin-bottom: 30px;
             text-align: center;
             padding: 25px;
             background: rgba(102, 126, 234, 0.05);
             border-radius: 12px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid var(--color-primary);
         }
 
         .result-container {
@@ -552,6 +600,15 @@
             margin-top: 30px;
         }
 
+        .app-status {
+            min-height: 1.5em;
+            margin-top: 14px;
+            color: var(--color-text-muted);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
         /* Genre Prediction Visualizer */
         .genre-predictor {
             background: rgba(0, 0, 0, 0.05);
@@ -562,9 +619,9 @@
         }
 
         .genre-predictor-label {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.7rem;
-            color: #666;
+            color: var(--color-text-muted);
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 10px;
@@ -577,7 +634,7 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--color-primary);
             animation: signalPulse 1.5s ease-in-out infinite;
         }
 
@@ -605,9 +662,9 @@
         }
 
         .genre-bar-name {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.65rem;
-            color: #555;
+            color: var(--color-text-muted);
             width: 110px;
             flex-shrink: 0;
             text-transform: uppercase;
@@ -646,18 +703,18 @@
         }
 
         .genre-bar-score {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.65rem;
-            color: #888;
+            color: var(--color-text-soft);
             width: 24px;
             text-align: right;
             flex-shrink: 0;
         }
 
         .genre-predictor-empty {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.75rem;
-            color: #999;
+            color: var(--color-text-faint);
             text-align: center;
             padding: 8px 0;
             font-style: italic;
@@ -666,7 +723,7 @@
 
         .genre-prediction-tag {
             display: inline-block;
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.6rem;
             color: rgba(102, 126, 234, 0.8);
             text-transform: uppercase;
@@ -702,9 +759,9 @@
         }
 
         .dashboard-title {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.8rem;
-            color: #667eea;
+            color: var(--color-primary);
             text-transform: uppercase;
             letter-spacing: 2px;
             text-align: center;
@@ -757,27 +814,27 @@
         }
 
         .winner-label {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.65rem;
-            color: #888;
+            color: var(--color-text-soft);
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 8px;
         }
 
         .winner-genre {
-            font-family: 'Courier Prime', monospace;
+            font-family: var(--font-script);
             font-size: 1.6rem;
             font-weight: bold;
-            color: #667eea;
+            color: var(--color-primary);
             text-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
             margin-bottom: 5px;
         }
 
         .winner-score {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.75rem;
-            color: #666;
+            color: var(--color-text-muted);
         }
 
         /* Genre Breakdown Chart */
@@ -786,9 +843,9 @@
         }
 
         .breakdown-header {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.7rem;
-            color: #666;
+            color: var(--color-text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
@@ -800,7 +857,7 @@
         .breakdown-header .indicator {
             width: 8px;
             height: 8px;
-            background: #667eea;
+            background: var(--color-primary);
             border-radius: 2px;
         }
 
@@ -830,9 +887,9 @@
         }
 
         .breakdown-name {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.6rem;
-            color: #555;
+            color: var(--color-text-muted);
             width: 75px;
             flex-shrink: 0;
             text-transform: uppercase;
@@ -853,9 +910,9 @@
         }
 
         .breakdown-score {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.6rem;
-            color: #888;
+            color: var(--color-text-soft);
             width: 16px;
             text-align: right;
         }
@@ -866,9 +923,9 @@
         }
 
         .metrics-header {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.7rem;
-            color: #666;
+            color: var(--color-text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
@@ -880,7 +937,7 @@
         .metrics-header .indicator {
             width: 8px;
             height: 8px;
-            background: #764ba2;
+            background: var(--color-secondary);
             border-radius: 50%;
             animation: metricPulse 2s ease-in-out infinite;
         }
@@ -936,16 +993,16 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.9rem;
             font-weight: bold;
-            color: #444;
+            color: var(--color-text-strong);
         }
 
         .gauge-name {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.5rem;
-            color: #888;
+            color: var(--color-text-soft);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             line-height: 1.3;
@@ -957,9 +1014,9 @@
         }
 
         .scatter-header {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.7rem;
-            color: #666;
+            color: var(--color-text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
@@ -971,7 +1028,7 @@
         .scatter-header .indicator {
             width: 8px;
             height: 8px;
-            background: #ff6b6b;
+            background: var(--color-coral);
             border-radius: 2px;
             animation: scatterPulse 1.5s ease-in-out infinite;
         }
@@ -1057,9 +1114,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.5rem;
-            color: #999;
+            color: var(--color-text-faint);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             padding-top: 8px;
@@ -1087,17 +1144,17 @@
         }
 
         .dashboard-footer-text {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.55rem;
-            color: #aaa;
+            color: var(--color-text-ghost);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .dashboard-id {
-            font-family: 'Roboto Mono', monospace;
+            font-family: var(--font-mono);
             font-size: 0.5rem;
-            color: #ccc;
+            color: var(--color-text-disabled);
             margin-top: 5px;
         }
 
@@ -1180,19 +1237,20 @@
 </head>
 <body>
     <!-- Dynamic Background -->
-    <div class="background-layer" id="backgroundLayer"></div>
+    <div class="background-layer" id="backgroundLayer" aria-hidden="true"></div>
 
-    <!-- Script Overlay -->
-    <div class="script-overlay" id="scriptOverlay">
-        <div class="script-content" id="scriptContent"></div>
-    </div>
-
-    <div class="container">
+    <main class="container" id="appRoot"
+          data-screen="landing"
+          data-question-index="0"
+          data-quiz-length="0"
+          data-transitioning="false"
+          data-reality-integrity="100"
+          data-result-category="">
         <!-- Landing Screen -->
         <div id="landingScreen" class="screen active">
             <h1>Am I in a Story?</h1>
             <p class="tagline">Are you a hero or is the struggle just real? Take this diagnostic to find out if you're living in a fictional narrative or just another regular miserable person.</p>
-            <button onclick="startQuiz()">Start Diagnostic</button>
+            <button id="startButton" type="button">Start Diagnostic</button>
         </div>
 
         <!-- Quiz Screen -->
@@ -1218,7 +1276,7 @@
             </div>
 
             <!-- Timeline Progress -->
-            <div class="progress-timeline">
+            <div class="progress-timeline" id="progressTimeline" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="30" aria-valuenow="1">
                 <div class="timeline-notches" id="timelineNotches"></div>
                 <div class="timeline-track">
                     <div class="timeline-progress" id="timelineProgress"></div>
@@ -1240,12 +1298,12 @@
 
             <div class="quiz-layout">
                 <div class="quiz-main">
-                    <p id="questionText" class="question-text"></p>
+                    <p id="questionText" class="question-text" tabindex="-1"></p>
                     <div class="options">
-                        <button class="option-btn" onclick="answerQuestion('yes')" onmouseenter="showWaveform()">
+                        <button class="option-btn" type="button" data-answer="yes">
                             <span>YES</span>
                         </button>
-                        <button class="option-btn" onclick="answerQuestion('no')" onmouseenter="showWaveform()">
+                        <button class="option-btn" type="button" data-answer="no">
                             <span>NO</span>
                         </button>
                     </div>
@@ -1279,15 +1337,16 @@
             </div>
 
             <div class="result-container">
-                <p id="resultText" class="question-text"></p>
+                <p id="resultText" class="question-text" tabindex="-1"></p>
                 <div class="result-narrative">
                     <div class="story-content" id="resultStory"></div>
                     <div class="story-page">— The End —</div>
                 </div>
                 <div class="result-actions">
-                    <button onclick="shareResult()">Share Result</button>
-                    <button onclick="playAgain()">Play Again</button>
+                    <button id="shareButton" type="button">Share Result</button>
+                    <button id="playAgainButton" type="button">Play Again</button>
                 </div>
+                <p id="appStatus" class="app-status" role="status" aria-live="polite"></p>
 
                 <!-- Epic Results Dashboard -->
                 <div class="results-dashboard" id="resultsDashboard">
@@ -1347,16 +1406,58 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        // Game State
-        let currentQuestionIndex = 0;
-        let selectedQuestions = [];
-        let scores = {};
-        let currentResult = null;
-        let totalTropePoints = 0;
-        let realityIntegrity = 100;
+        // ─── State ───
+        const state = {
+            currentQuestionIndex: 0,
+            selectedQuestions: [],
+            scores: {},
+            currentResult: null,
+            totalTropePoints: 0,
+            realityIntegrity: 100,
+            questionTransitioning: false,
+            advanceTimer: null,
+            screen: 'landing',
+            resultCategoryId: null
+        };
+
+        // ─── DOM refs ───
+        const dom = {
+            appRoot: document.getElementById('appRoot'),
+            appStatus: document.getElementById('appStatus'),
+            backgroundLayer: document.getElementById('backgroundLayer'),
+            dashboardId: document.getElementById('dashboardId'),
+            finalReality: document.getElementById('finalReality'),
+            genreBreakdownGrid: document.getElementById('genreBreakdownGrid'),
+            genrePredictorBars: document.getElementById('genrePredictorBars'),
+            landingScreen: document.getElementById('landingScreen'),
+            metricsGauges: document.getElementById('metricsGauges'),
+            optionButtons: [...document.querySelectorAll('[data-answer]')],
+            playAgainButton: document.getElementById('playAgainButton'),
+            progressText: document.getElementById('progressText'),
+            progressTimeline: document.getElementById('progressTimeline'),
+            questionText: document.getElementById('questionText'),
+            quizScreen: document.getElementById('quizScreen'),
+            realityValue: document.getElementById('realityValue'),
+            realityWarning: document.getElementById('realityWarning'),
+            resultScreen: document.getElementById('resultScreen'),
+            resultStory: document.getElementById('resultStory'),
+            resultText: document.getElementById('resultText'),
+            scatterLine: document.getElementById('scatterLine'),
+            scatterPoints: document.getElementById('scatterPoints'),
+            shareButton: document.getElementById('shareButton'),
+            startButton: document.getElementById('startButton'),
+            storyContent: document.getElementById('storyContent'),
+            storyGenre: document.getElementById('storyGenre'),
+            storyPage: document.getElementById('storyPage'),
+            timelineNotches: document.getElementById('timelineNotches'),
+            timelinePlayhead: document.getElementById('timelinePlayhead'),
+            timelineProgress: document.getElementById('timelineProgress'),
+            winnerGenre: document.getElementById('winnerGenre'),
+            winnerScore: document.getElementById('winnerScore')
+        };
 
         // Script text snippets for background
         const scriptSnippets = [
@@ -1442,20 +1543,20 @@
 
         // Category bar colors for prediction visualizer
         const categoryBarColors = {
-            1: '#D2691E',   // Fantasy - amber
-            2: '#607d8b',   // Dystopian - slate
-            3: '#FF6B6B',   // Anime - vibrant red
-            4: '#457b9d',   // Slice of Life - calm blue
-            5: '#DC143C',   // Superhero - crimson
-            6: '#FFD700',   // Sitcom - gold
-            7: '#8B0000',   // Horror - dark red
-            8: '#708090',   // Mystery - slate gray
-            9: '#FF69B4',   // Romance - pink
-            10: '#CD853F',  // Tarantino - peru
-            11: '#4682B4',  // Spielberg - steel blue
-            12: '#6A5ACD',  // Space Opera - slate blue
-            13: '#2F4F4F',  // Mafia - dark slate
-            14: '#A9A9A9'   // Reality - gray
+            1: 'var(--color-amber)',   // Fantasy - amber
+            2: 'var(--color-slate)',   // Dystopian - slate
+            3: 'var(--color-coral)',   // Anime - vibrant red
+            4: 'var(--color-steel)',   // Slice of Life - calm blue
+            5: 'var(--color-crimson)',   // Superhero - crimson
+            6: 'var(--color-gold)',   // Sitcom - gold
+            7: 'var(--color-red-dark)',   // Horror - dark red
+            8: 'var(--color-slate-light)',   // Mystery - slate gray
+            9: 'var(--color-pink)',   // Romance - pink
+            10: 'var(--color-ochre)',  // Tarantino - peru
+            11: 'var(--color-blue-steel)',  // Spielberg - steel blue
+            12: 'var(--color-violet-slate)',  // Space Opera - slate blue
+            13: 'var(--color-charcoal-teal)',  // Mafia - dark slate
+            14: 'var(--color-gray-light)'   // Reality - gray
         };
 
         // Short names for the prediction bars
@@ -1478,71 +1579,68 @@
 
         // Category background colors
         const categoryThemes = {
-            1: { bg: 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)', name: 'fantasy' },  // Fantasy - brown/amber
-            2: { bg: 'linear-gradient(135deg, #2c3e50 0%, #607d8b 100%)', name: 'dystopian' },  // Dystopian - dark gray
-            3: { bg: 'linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%)', name: 'anime' },  // Anime - bright/vibrant
-            4: { bg: 'linear-gradient(135deg, #a8dadc 0%, #457b9d 100%)', name: 'slice-of-life' },  // Slice of Life - calm blue
-            5: { bg: 'linear-gradient(135deg, #DC143C 0%, #1E90FF 100%)', name: 'superhero' },  // Superhero - red/blue
-            6: { bg: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)', name: 'sitcom' },  // Sitcom - bright yellow
-            7: { bg: 'linear-gradient(135deg, #8B0000 0%, #2C0000 100%)', name: 'horror' },  // Horror - dark red
-            8: { bg: 'linear-gradient(135deg, #36454F 0%, #708090 100%)', name: 'mystery' },  // Mystery - slate gray
-            9: { bg: 'linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%)', name: 'romance' },  // Romance - pink
-            10: { bg: 'linear-gradient(135deg, #8B4513 0%, #D2691E 100%)', name: 'tarantino' },  // Tarantino - brown/sepia
-            11: { bg: 'linear-gradient(135deg, #87CEEB 0%, #4682B4 100%)', name: 'spielberg' },  // Spielberg - sky blue
-            12: { bg: 'linear-gradient(135deg, #000000 0%, #1a1a2e 100%)', name: 'space-opera' },  // Space Opera - dark/starry
-            13: { bg: 'linear-gradient(135deg, #2F4F4F 0%, #1C1C1C 100%)', name: 'mafia' },  // Mafia - dark/shadowy
-            14: { bg: 'linear-gradient(135deg, #808080 0%, #A9A9A9 100%)', name: 'reality' }  // Reality - flat gray
+            1: { bg: 'linear-gradient(135deg, var(--color-brown) 0%, var(--color-amber) 100%)', name: 'fantasy' },  // Fantasy - brown/amber
+            2: { bg: 'linear-gradient(135deg, var(--color-navy-slate) 0%, var(--color-slate) 100%)', name: 'dystopian' },  // Dystopian - dark gray
+            3: { bg: 'linear-gradient(135deg, var(--color-coral) 0%, var(--color-yellow) 100%)', name: 'anime' },  // Anime - bright/vibrant
+            4: { bg: 'linear-gradient(135deg, var(--color-cyan-soft) 0%, var(--color-steel) 100%)', name: 'slice-of-life' },  // Slice of Life - calm blue
+            5: { bg: 'linear-gradient(135deg, var(--color-crimson) 0%, var(--color-blue-bright) 100%)', name: 'superhero' },  // Superhero - red/blue
+            6: { bg: 'linear-gradient(135deg, var(--color-gold) 0%, var(--color-orange) 100%)', name: 'sitcom' },  // Sitcom - bright yellow
+            7: { bg: 'linear-gradient(135deg, var(--color-red-dark) 0%, var(--color-blood) 100%)', name: 'horror' },  // Horror - dark red
+            8: { bg: 'linear-gradient(135deg, var(--color-charcoal) 0%, var(--color-slate-light) 100%)', name: 'mystery' },  // Mystery - slate gray
+            9: { bg: 'linear-gradient(135deg, var(--color-pink-light) 0%, var(--color-pink) 100%)', name: 'romance' },  // Romance - pink
+            10: { bg: 'linear-gradient(135deg, var(--color-brown) 0%, var(--color-amber) 100%)', name: 'tarantino' },  // Tarantino - brown/sepia
+            11: { bg: 'linear-gradient(135deg, var(--color-sky) 0%, var(--color-blue-steel) 100%)', name: 'spielberg' },  // Spielberg - sky blue
+            12: { bg: 'linear-gradient(135deg, var(--color-black) 0%, var(--color-night) 100%)', name: 'space-opera' },  // Space Opera - dark/starry
+            13: { bg: 'linear-gradient(135deg, var(--color-charcoal-teal) 0%, var(--color-near-black) 100%)', name: 'mafia' },  // Mafia - dark/shadowy
+            14: { bg: 'linear-gradient(135deg, var(--color-gray) 0%, var(--color-gray-light) 100%)', name: 'reality' }  // Reality - flat gray
         };
 
         // Initialize static script text
         function initBackground() {
-            const bg = document.getElementById('backgroundLayer');
-            bg.innerHTML = ''; // Clear existing text
+            dom.backgroundLayer.innerHTML = '';
             for (let i = 0; i < 50; i++) {
                 const scriptEl = document.createElement('div');
                 scriptEl.className = 'script-text';
-                scriptEl.textContent = scriptSnippets[Math.floor(Math.random() * scriptSnippets.length)];
+                scriptEl.textContent = MODEL.scriptSnippets[Math.floor(Math.random() * MODEL.scriptSnippets.length)];
                 scriptEl.style.left = Math.random() * 95 + '%';
                 scriptEl.style.top = Math.random() * 95 + '%';
-                bg.appendChild(scriptEl);
+                dom.backgroundLayer.appendChild(scriptEl);
             }
         }
 
         // Change background based on category
         function updateBackgroundTheme(categoryId) {
-            const bg = document.getElementById('backgroundLayer');
-            const theme = categoryThemes[categoryId];
+            const theme = MODEL.categoryThemes[categoryId];
             if (theme) {
-                bg.style.background = theme.bg;
+                dom.backgroundLayer.style.background = theme.bg;
             }
         }
 
         // Initialize timeline notches
         function initTimeline() {
-            const notchesContainer = document.getElementById('timelineNotches');
-            notchesContainer.innerHTML = ''; // Clear any existing notches
-            for (let i = 0; i < 30; i++) {
+            dom.timelineNotches.innerHTML = '';
+            for (let i = 0; i < state.selectedQuestions.length; i++) {
                 const notch = document.createElement('div');
                 notch.className = 'timeline-notch';
-                notchesContainer.appendChild(notch);
+                dom.timelineNotches.appendChild(notch);
             }
         }
 
         // Update reality integrity
-        function updateRealityIntegrity(points) {
-            realityIntegrity = Math.max(0, 100 - (totalTropePoints * 3));
-            const valueEl = document.getElementById('realityValue');
-            const warningEl = document.getElementById('realityWarning');
+        function updateRealityIntegrity() {
+            state.realityIntegrity = calculateRealityIntegrity(state.totalTropePoints);
+            dom.realityValue.textContent = state.realityIntegrity + '%';
 
-            valueEl.textContent = realityIntegrity + '%';
-
-            if (realityIntegrity < 50) {
-                valueEl.classList.add('critical');
-                warningEl.classList.add('active');
+            if (state.realityIntegrity < 50) {
+                dom.realityValue.classList.add('critical');
+                dom.realityWarning.textContent = 'Narrative interference detected';
+                dom.realityWarning.classList.add('active');
             } else {
-                valueEl.classList.remove('critical');
-                warningEl.classList.remove('active');
+                dom.realityValue.classList.remove('critical');
+                dom.realityWarning.textContent = '';
+                dom.realityWarning.classList.remove('active');
             }
+            syncDomContract();
         }
 
         // Animate waveform
@@ -1564,18 +1662,6 @@
                     bar.style.height = '10px';
                 });
             }, 500);
-        }
-
-        // Show script overlay
-        function showScriptOverlay(text) {
-            const overlay = document.getElementById('scriptOverlay');
-            const content = document.getElementById('scriptContent');
-            content.textContent = text;
-            overlay.classList.add('active');
-
-            setTimeout(() => {
-                overlay.classList.remove('active');
-            }, 1500);
         }
 
         // Categories Database
@@ -1936,79 +2022,198 @@
             14: "The alarm screamed at 6:30 AM. There was no foreshadowing, no dramatic lighting, just the gray reality of a Tuesday. I looked at the pile of laundry on the chair—it hadn't moved. It wasn't a metaphor for my internal struggles; it was just dirty socks. I made coffee. It was lukewarm. I drank it anyway. The email from my boss arrived: \"Can you hop on a call?\" No. I could not hop. I could barely walk. My back hurt for no heroic reason. At lunch, I tried to open a plastic container. The lid didn't match. It never matched. This was my quest now. There would be no resolution, no character growth, no third-act transformation. Just this. Tuesday becoming Wednesday. The endless, magnificent banality of being alive and unremarkable."
         };
 
-        // Utility Functions
-        function shuffle(array) {
+        // ─── Pure helpers ───
+        /* pure-helpers-start */
+        function shuffle(array, randomFn = Math.random) {
             const shuffled = [...array];
             for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
+                const j = Math.floor(randomFn() * (i + 1));
                 [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
             return shuffled;
         }
 
-        function selectQuestions() {
+        function selectQuestionsFromModel(model, randomFn = Math.random) {
             const selected = [];
-            // Select 2 questions from categories 1-13
-            for (let categoryId = 1; categoryId <= 13; categoryId++) {
-                const categoryQuestions = questions.filter(q => q.categoryId === categoryId);
-                const shuffledCategory = shuffle(categoryQuestions);
-                selected.push(...shuffledCategory.slice(0, 2));
+            for (const categoryId of model.config.genreCategoryIds) {
+                const categoryQuestions = model.questions.filter(question => question.categoryId === categoryId);
+                selected.push(...shuffle(categoryQuestions, randomFn).slice(0, model.config.genreQuestionsPerCategory));
             }
-            // Select 4 questions from category 14 (Reality Control)
-            const category14Questions = questions.filter(q => q.categoryId === 14);
-            const shuffledCategory14 = shuffle(category14Questions);
-            selected.push(...shuffledCategory14.slice(0, 4));
 
-            return shuffle(selected);
+            const realityQuestions = model.questions.filter(
+                question => question.categoryId === model.config.realityCategoryId
+            );
+            selected.push(...shuffle(realityQuestions, randomFn).slice(0, model.config.realityQuestionCount));
+
+            return shuffle(selected, randomFn);
+        }
+
+        function calculateRealityIntegrity(totalTropePoints) {
+            return Math.min(100, Math.max(0, 100 - (totalTropePoints * 3)));
+        }
+
+        function determineWinner(scores, ordinaryThreshold, tiePriority, realityCategoryId) {
+            const entries = Object.entries(scores).map(([categoryId, score]) => ({
+                categoryId: Number(categoryId),
+                score
+            }));
+            const maxScore = Math.max(...entries.map(entry => entry.score), 0);
+
+            if (maxScore <= ordinaryThreshold) {
+                return { categoryId: realityCategoryId, maxScore, ordinaryByThreshold: true };
+            }
+
+            const tiedIds = entries
+                .filter(entry => entry.score === maxScore)
+                .map(entry => entry.categoryId);
+            const categoryId = tiePriority.find(id => tiedIds.includes(id)) ?? tiedIds[0];
+
+            return { categoryId, maxScore, ordinaryByThreshold: false };
+        }
+
+        function validateModel(model) {
+            const errors = [];
+            const categoryIds = [...model.config.genreCategoryIds, model.config.realityCategoryId];
+
+            for (const categoryId of categoryIds) {
+                if (!model.categories[categoryId]) errors.push(`Missing category ${categoryId}`);
+                if (!model.categoryShortNames[categoryId]) errors.push(`Missing short name ${categoryId}`);
+                if (!model.categoryThemes[categoryId]) errors.push(`Missing theme ${categoryId}`);
+                if (!model.genreStories[categoryId]?.stories?.length) errors.push(`Missing genre stories ${categoryId}`);
+                if (!model.resultStories[categoryId]) errors.push(`Missing result story ${categoryId}`);
+
+                const required = categoryId === model.config.realityCategoryId
+                    ? model.config.realityQuestionCount
+                    : model.config.genreQuestionsPerCategory;
+                const available = model.questions.filter(question => question.categoryId === categoryId).length;
+                if (available < required) errors.push(`Category ${categoryId} has ${available}/${required} questions`);
+            }
+
+            return errors;
+        }
+
+        function buildShareText(resultTitle, url) {
+            return `I just took the Narrative Diagnostic and I'm a ${resultTitle}! Are you living in a story or just miserable? Find out: ${url}`;
+        }
+        /* pure-helpers-end */
+
+        // ─── Helpers ───
+        function selectQuestions() {
+            return selectQuestionsFromModel(MODEL);
+        }
+
+        function syncDomContract() {
+            dom.appRoot.dataset.screen = state.screen;
+            dom.appRoot.dataset.questionIndex = String(state.currentQuestionIndex);
+            dom.appRoot.dataset.quizLength = String(state.selectedQuestions.length);
+            dom.appRoot.dataset.transitioning = String(state.questionTransitioning);
+            dom.appRoot.dataset.realityIntegrity = String(state.realityIntegrity);
+            dom.appRoot.dataset.resultCategory = state.resultCategoryId == null
+                ? ''
+                : String(state.resultCategoryId);
+        }
+
+        function setAnswerButtonsDisabled(disabled) {
+            dom.optionButtons.forEach(button => {
+                button.disabled = disabled;
+            });
+        }
+
+        function setStatus(message) {
+            dom.appStatus.textContent = message;
+        }
+
+        function resetQuizUi() {
+            clearTimeout(state.advanceTimer);
+            state.advanceTimer = null;
+            state.questionTransitioning = false;
+            state.currentResult = null;
+            state.resultCategoryId = null;
+            dom.realityValue.textContent = '100%';
+            dom.realityValue.classList.remove('critical');
+            dom.realityWarning.textContent = '';
+            dom.realityWarning.classList.remove('active');
+            dom.genrePredictorBars.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
+            dom.timelineProgress.style.width = '0%';
+            dom.timelinePlayhead.style.left = '0%';
+            dom.progressTimeline.setAttribute('aria-valuenow', '0');
+            dom.resultText.textContent = '';
+            dom.resultStory.textContent = '';
+            dom.genreBreakdownGrid.innerHTML = '';
+            dom.metricsGauges.innerHTML = '';
+            dom.scatterPoints.innerHTML = '';
+            dom.scatterLine.innerHTML = '';
+            document.querySelectorAll('.wave-bar').forEach(bar => {
+                bar.style.height = '10px';
+            });
+            setAnswerButtonsDisabled(false);
+            setStatus('');
+            syncDomContract();
         }
 
         function switchScreen(hideId, showId) {
-            document.getElementById(hideId).classList.remove('active');
-            document.getElementById(showId).classList.add('active');
+            const hiddenScreen = document.getElementById(hideId);
+            const shownScreen = document.getElementById(showId);
+            hiddenScreen.classList.remove('active');
+            hiddenScreen.setAttribute('aria-hidden', 'true');
+            shownScreen.classList.add('active');
+            shownScreen.setAttribute('aria-hidden', 'false');
+            state.screen = showId.replace('Screen', '');
+            syncDomContract();
         }
 
         function updateProgress() {
-            const progress = ((currentQuestionIndex + 1) / selectedQuestions.length) * 100;
-            document.getElementById('timelineProgress').style.width = progress + '%';
-            document.getElementById('timelinePlayhead').style.left = progress + '%';
+            const scene = state.currentQuestionIndex + 1;
+            const total = state.selectedQuestions.length;
+            const progress = (scene / total) * 100;
+            const actNumber = Math.min(3, Math.ceil((scene / total) * 3));
+            const act = ['I', 'II', 'III'][actNumber - 1];
 
-            const act = currentQuestionIndex < 9 ? 'I' : currentQuestionIndex < 18 ? 'II' : 'III';
-            document.getElementById('progressText').textContent =
-                `ACT ${act} - SCENE ${currentQuestionIndex + 1} / ${selectedQuestions.length}`;
+            dom.timelineProgress.style.width = progress + '%';
+            dom.timelinePlayhead.style.left = progress + '%';
+            dom.progressTimeline.setAttribute('aria-valuemax', String(total));
+            dom.progressTimeline.setAttribute('aria-valuenow', String(scene));
+            dom.progressText.textContent = `ACT ${act} - SCENE ${scene} / ${total}`;
+            syncDomContract();
         }
 
         function displayQuestion() {
-            if (currentQuestionIndex < selectedQuestions.length) {
-                const question = selectedQuestions[currentQuestionIndex];
-                document.getElementById('questionText').textContent = question.text;
+            if (state.currentQuestionIndex < state.selectedQuestions.length) {
+                const question = state.selectedQuestions[state.currentQuestionIndex];
+                dom.questionText.textContent = question.text;
                 updateProgress();
                 updateBackgroundTheme(question.categoryId);
                 updateStoryBox(question.categoryId);
+                state.questionTransitioning = false;
+                setAnswerButtonsDisabled(false);
+                syncDomContract();
+                dom.questionText.focus({ preventScroll: true });
             } else {
                 showResult();
             }
         }
 
         function updateStoryBox(categoryId) {
-            const genreData = genreStories[categoryId];
+            const genreData = MODEL.genreStories[categoryId];
             const randomStory = genreData.stories[Math.floor(Math.random() * genreData.stories.length)];
             const randomPage = Math.floor(Math.random() * 200) + 1;
 
-            document.getElementById('storyGenre').textContent = genreData.genre;
-            document.getElementById('storyContent').textContent = randomStory;
-            document.getElementById('storyPage').textContent = `— Page ${randomPage} —`;
+            dom.storyGenre.textContent = genreData.genre;
+            dom.storyContent.textContent = randomStory;
+            dom.storyPage.textContent = `— Page ${randomPage} —`;
         }
 
-        // Game Functions
+        // ─── App actions ───
         function startQuiz() {
-            currentQuestionIndex = 0;
-            selectedQuestions = selectQuestions();
-            scores = {};
-            totalTropePoints = 0;
-            realityIntegrity = 100;
+            state.currentQuestionIndex = 0;
+            state.selectedQuestions = selectQuestions();
+            state.scores = {};
+            state.totalTropePoints = 0;
+            state.realityIntegrity = 100;
+            resetQuizUi();
 
-            for (let i = 1; i <= 14; i++) {
-                scores[i] = 0;
+            for (const categoryId of Object.keys(MODEL.categories)) {
+                state.scores[categoryId] = 0;
             }
 
             initBackground();
@@ -2018,97 +2223,83 @@
         }
 
         function answerQuestion(answer) {
-            const question = selectedQuestions[currentQuestionIndex];
+            if (state.questionTransitioning || state.currentQuestionIndex >= state.selectedQuestions.length) {
+                return;
+            }
+
+            state.questionTransitioning = true;
+            setAnswerButtonsDisabled(true);
+            syncDomContract();
+
+            const question = state.selectedQuestions[state.currentQuestionIndex];
 
             // Update score based on answer
-            let points = 0;
-            if (answer === 'yes') {
-                points = 1;
-            }
-            // 'no' = 0 points
+            const points = answer === 'yes' ? 1 : 0;
 
-            scores[question.categoryId] += points;
-            totalTropePoints += points;
+            state.scores[question.categoryId] += points;
+            if (question.categoryId !== MODEL.config.realityCategoryId) {
+                state.totalTropePoints += points;
+            }
 
             // Update HUD
-            updateRealityIntegrity(points);
+            updateRealityIntegrity();
             spikeWaveform();
             updateGenrePredictor();
 
             // Brief pause for effect
-            setTimeout(() => {
-                currentQuestionIndex++;
+            state.advanceTimer = setTimeout(() => {
+                state.currentQuestionIndex++;
                 displayQuestion();
             }, 300);
         }
 
         function showResult() {
-            let maxScore = 0;
-            let winningCategories = [];
+            state.questionTransitioning = false;
+            state.advanceTimer = null;
+            const outcome = determineWinner(
+                state.scores,
+                MODEL.config.ordinaryThreshold,
+                MODEL.config.tiePriority,
+                MODEL.config.realityCategoryId
+            );
+            const winningCategoryId = outcome.categoryId;
+            let resultText;
+            let resultStoryText;
 
-            for (let categoryId in scores) {
-                if (scores[categoryId] > maxScore) {
-                    maxScore = scores[categoryId];
-                    winningCategories = [parseInt(categoryId)];
-                } else if (scores[categoryId] === maxScore) {
-                    winningCategories.push(parseInt(categoryId));
-                }
-            }
-
-            let resultText, resultStoryText, categoryId;
-            let winningCategoryId = 14; // Default to Reality
-
-            if (maxScore <= 1) {
+            if (outcome.ordinaryByThreshold) {
                 resultText = "You are just a regular miserable person in real life. No prophecies, no epic soundtrack, and no cinematic lighting. Just emails, laundry, mild back pain, and the crushing weight of reality. Sorry.";
                 resultStoryText = "The alarm went off. She hit snooze. Twenty minutes later, it went off again. Coffee was made with hands that knew the routine too well. The email from her boss arrived at 7:43 AM, as it always did. Subject: Urgent. It was never actually urgent. Outside, people walked to jobs they tolerated, lived in apartments they couldn't quite afford, made small talk about weather that didn't matter. Her back hurt. There was no reason for it—no dramatic battle, no heroic sacrifice. Just the accumulated weight of existing. The mirror showed exactly what was there: tired eyes, ordinary face, a person unadorned by destiny. The bills needed paying. The laundry needed folding. This was it. The whole story. Tuesday becoming Wednesday becoming Thursday. No plot. No arc. Just the regular, relentless machinery of being alive.";
-                currentResult = { title: "Regular Miserable Person", text: resultText };
-                winningCategoryId = 14;
-            } else if (winningCategories.length === 1) {
-                categoryId = winningCategories[0];
-                winningCategoryId = categoryId;
-                const category = categories[categoryId];
-                resultText = category.result;
-                resultStoryText = resultStories[categoryId];
-                currentResult = { title: category.name, text: resultText };
-                updateBackgroundTheme(categoryId);
+                state.currentResult = { title: "Regular Miserable Person", text: resultText };
             } else {
-                let lastCategoryId = null;
-                for (let i = selectedQuestions.length - 1; i >= 0; i--) {
-                    if (winningCategories.includes(selectedQuestions[i].categoryId)) {
-                        lastCategoryId = selectedQuestions[i].categoryId;
-                        break;
-                    }
-                }
-                categoryId = lastCategoryId;
-                winningCategoryId = lastCategoryId;
-                const category = categories[lastCategoryId];
+                const category = MODEL.categories[winningCategoryId];
                 resultText = category.result;
-                resultStoryText = resultStories[categoryId];
-                currentResult = { title: category.name, text: resultText };
-                updateBackgroundTheme(lastCategoryId);
+                resultStoryText = MODEL.resultStories[winningCategoryId];
+                state.currentResult = { title: category.name, text: resultText };
             }
 
-            document.getElementById('resultText').textContent = resultText;
-            document.getElementById('resultStory').textContent = resultStoryText;
-            document.getElementById('finalReality').textContent = realityIntegrity + '%';
+            state.resultCategoryId = winningCategoryId;
+            updateBackgroundTheme(winningCategoryId);
+            dom.resultText.textContent = resultText;
+            dom.resultStory.textContent = resultStoryText;
+            dom.finalReality.textContent = state.realityIntegrity + '%';
 
             switchScreen('quizScreen', 'resultScreen');
+            syncDomContract();
+            dom.resultText.focus({ preventScroll: true });
 
             // Update result waveform with varying bar heights after screen switch
             setTimeout(() => {
                 updateResultWaveform();
-                renderResultsDashboard(winningCategoryId, maxScore);
+                renderResultsDashboard(winningCategoryId, outcome.maxScore);
             }, 50);
         }
 
         function updateGenrePredictor() {
-            const container = document.getElementById('genrePredictorBars');
-
             // Gather categories with scores > 0, sorted descending
             const scored = [];
             for (let id = 1; id <= 14; id++) {
-                if (scores[id] > 0) {
-                    scored.push({ id: id, score: scores[id] });
+                if (state.scores[id] > 0) {
+                    scored.push({ id: id, score: state.scores[id] });
                 }
             }
             scored.sort((a, b) => b.score - a.score);
@@ -2118,15 +2309,15 @@
             const maxScore = top.length > 0 ? top[0].score : 0;
 
             if (top.length === 0) {
-                container.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
+                dom.genrePredictorBars.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
                 return;
             }
 
             let html = '';
             top.forEach(entry => {
                 const pct = Math.round((entry.score / Math.max(maxScore, 1)) * 100);
-                const color = categoryBarColors[entry.id];
-                const name = categoryShortNames[entry.id];
+                const color = MODEL.categoryBarColors[entry.id];
+                const name = MODEL.categoryShortNames[entry.id];
                 html += `<div class="genre-bar-row">
                     <span class="genre-bar-name">${name}</span>
                     <div class="genre-bar-track">
@@ -2138,10 +2329,10 @@
 
             // Add current prediction label
             const leader = top[0];
-            const leaderName = categoryShortNames[leader.id];
+            const leaderName = MODEL.categoryShortNames[leader.id];
             html += `<div class="genre-prediction-tag">Current prediction: ${leaderName}</div>`;
 
-            container.innerHTML = html;
+            dom.genrePredictorBars.innerHTML = html;
         }
 
         function updateResultWaveform() {
@@ -2155,27 +2346,49 @@
 
         // Cryptic metric definitions
         const crypticMetrics = [
-            { name: 'Luck Quotient', color: '#2ecc71' },
-            { name: 'Action Intelligence', color: '#3498db' },
-            { name: 'Romantic Pull', color: '#e91e63' },
-            { name: 'Chaos Compatibility', color: '#9b59b6' },
-            { name: 'Plot Armor Index', color: '#f39c12' },
-            { name: 'Dramatic Timing', color: '#1abc9c' },
-            { name: 'Sidekick Magnetism', color: '#e74c3c' },
-            { name: 'Exposition Density', color: '#34495e' },
-            { name: 'Cliffhanger Resilience', color: '#16a085' }
+            { name: 'Luck Quotient', color: 'var(--color-green)' },
+            { name: 'Action Intelligence', color: 'var(--color-blue)' },
+            { name: 'Romantic Pull', color: 'var(--color-hot-pink)' },
+            { name: 'Chaos Compatibility', color: 'var(--color-purple)' },
+            { name: 'Plot Armor Index', color: 'var(--color-gold)' },
+            { name: 'Dramatic Timing', color: 'var(--color-teal)' },
+            { name: 'Sidekick Magnetism', color: 'var(--color-red)' },
+            { name: 'Exposition Density', color: 'var(--color-blue-gray)' },
+            { name: 'Cliffhanger Resilience', color: 'var(--color-teal-dark)' }
         ];
+
+        // ─── Model ───
+        const MODEL = Object.freeze({
+            config: Object.freeze({
+                genreCategoryIds: Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]),
+                realityCategoryId: 14,
+                genreQuestionsPerCategory: 2,
+                realityQuestionCount: 4,
+                ordinaryThreshold: 1,
+                // Reality deliberately wins ties so ordinary life remains a frequent diagnosis.
+                tiePriority: Object.freeze([14, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
+            }),
+            scriptSnippets,
+            categoryBarColors,
+            categoryShortNames,
+            categoryThemes,
+            categories,
+            questions,
+            genreStories,
+            resultStories,
+            crypticMetrics
+        });
 
         function renderResultsDashboard(winningCategoryId, maxScore) {
             // Set winner info
-            const winnerName = categoryShortNames[winningCategoryId] || 'Unknown';
+            const winnerName = MODEL.categoryShortNames[winningCategoryId] || 'Unknown';
             const confidence = Math.min(95, Math.max(45, 50 + (maxScore * 8) + Math.floor(Math.random() * 15)));
-            document.getElementById('winnerGenre').textContent = winnerName;
-            document.getElementById('winnerScore').textContent = `Confidence: ${confidence}%`;
+            dom.winnerGenre.textContent = winnerName;
+            dom.winnerScore.textContent = `Confidence: ${confidence}%`;
 
             // Generate session ID
             const sessionId = 'NRR-' + Math.random().toString(36).substr(2, 7).toUpperCase();
-            document.getElementById('dashboardId').textContent = `Session ID: ${sessionId}`;
+            dom.dashboardId.textContent = `Session ID: ${sessionId}`;
 
             // Render all dashboard components
             renderGenreBreakdown(winningCategoryId);
@@ -2184,16 +2397,15 @@
         }
 
         function renderGenreBreakdown(winningId) {
-            const grid = document.getElementById('genreBreakdownGrid');
-            const maxScore = Math.max(...Object.values(scores), 1);
+            const maxScore = Math.max(...Object.values(state.scores), 1);
 
             let html = '';
             for (let id = 1; id <= 14; id++) {
-                const score = scores[id];
+                const score = state.scores[id];
                 const pct = Math.round((score / maxScore) * 100);
-                const color = categoryBarColors[id];
-                const name = categoryShortNames[id];
-                const isWinner = id === winningId && score > 0;
+                const color = MODEL.categoryBarColors[id];
+                const name = MODEL.categoryShortNames[id];
+                const isWinner = id === winningId;
 
                 html += `<div class="breakdown-bar-row ${isWinner ? 'winner' : ''}">
                     <span class="breakdown-name">${name}</span>
@@ -2203,20 +2415,19 @@
                     <span class="breakdown-score">${score}</span>
                 </div>`;
             }
-            grid.innerHTML = html;
+            dom.genreBreakdownGrid.innerHTML = html;
 
             // Animate bars in
             setTimeout(() => {
-                grid.querySelectorAll('.breakdown-fill').forEach((fill, i) => {
+                dom.genreBreakdownGrid.querySelectorAll('.breakdown-fill').forEach(fill => {
                     fill.style.width = fill.style.width; // Trigger reflow
                 });
             }, 100);
         }
 
         function renderCrypticMetrics() {
-            const container = document.getElementById('metricsGauges');
             // Pick 6 random metrics for circular gauges
-            const shuffled = [...crypticMetrics].sort(() => Math.random() - 0.5).slice(0, 6);
+            const shuffled = shuffle(MODEL.crypticMetrics).slice(0, 6);
 
             const circumference = 2 * Math.PI * 32; // radius = 32
 
@@ -2241,19 +2452,17 @@
                     <div class="gauge-name">${metric.name}</div>
                 </div>`;
             });
-            container.innerHTML = html;
+            dom.metricsGauges.innerHTML = html;
 
             // Animate gauges after render
             setTimeout(() => {
-                container.querySelectorAll('.gauge-fill').forEach(fill => {
+                dom.metricsGauges.querySelectorAll('.gauge-fill').forEach(fill => {
                     fill.style.strokeDashoffset = fill.dataset.offset;
                 });
             }, 50);
         }
 
         function renderScatterPlot() {
-            const pointsContainer = document.getElementById('scatterPoints');
-            const lineContainer = document.getElementById('scatterLine');
             const pointCount = 12;
 
             // Generate points along a narrative tension curve with some randomness
@@ -2277,14 +2486,14 @@
             }
 
             // Render scatter points
-            const colors = ['#667eea', '#764ba2', '#ff6b6b', '#f39c12', '#2ecc71', '#3498db'];
+            const colors = ['var(--color-primary)', 'var(--color-secondary)', 'var(--color-coral)', 'var(--color-gold)', 'var(--color-green)', 'var(--color-blue)'];
             let pointsHtml = '';
             points.forEach((pt, idx) => {
                 const color = colors[idx % colors.length];
                 const size = 6 + Math.random() * 6;
                 pointsHtml += `<div class="scatter-point" style="left:${pt.x}%; top:${pt.y}%; width:${size}px; height:${size}px; background:${color}; animation-delay:${idx * 0.08}s;"></div>`;
             });
-            pointsContainer.innerHTML = pointsHtml;
+            dom.scatterPoints.innerHTML = pointsHtml;
 
             // Render connecting line as SVG path
             const pathPoints = points.map((pt, idx) => {
@@ -2292,38 +2501,100 @@
                 return `${cmd} ${pt.x} ${pt.y}`;
             }).join(' ');
 
-            lineContainer.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${pathPoints}"/></svg>`;
+            dom.scatterLine.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${pathPoints}"/></svg>`;
         }
 
-        function shareResult() {
-            const shareText = `I just took the Narrative Diagnostic and I'm a ${currentResult.title}! Are you living in a story or just miserable? Find out: ${window.location.href}`;
+        async function copyText(text) {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(text);
+                return;
+            }
 
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Am I in a Story?',
-                    text: shareText,
-                    url: window.location.href
-                }).catch(err => console.log('Error sharing:', err));
-            } else {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    alert('Result copied to clipboard!');
-                }).catch(err => {
-                    alert('Share text: ' + shareText);
-                });
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            const copied = document.execCommand('copy');
+            textarea.remove();
+            if (!copied) throw new Error('Copy command was rejected');
+        }
+
+        async function shareResult() {
+            if (!state.currentResult) return;
+
+            const canonicalUrl = window.location.protocol === 'file:'
+                ? window.location.href.split(/[?#]/)[0]
+                : `${window.location.origin}${window.location.pathname}`;
+            const shareText = buildShareText(state.currentResult.title, canonicalUrl);
+
+            try {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: 'Am I in a Story?',
+                        text: shareText,
+                        url: canonicalUrl
+                    });
+                    setStatus('Result shared.');
+                    return;
+                }
+
+                await copyText(shareText);
+                setStatus('Result copied to clipboard.');
+            } catch (error) {
+                if (error?.name === 'AbortError') {
+                    setStatus('Sharing cancelled.');
+                    return;
+                }
+                setStatus('Could not share automatically. Copy the page address manually.');
             }
         }
 
         function playAgain() {
             switchScreen('resultScreen', 'landingScreen');
-            // Reset background
-            document.getElementById('backgroundLayer').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            state.currentQuestionIndex = 0;
+            state.selectedQuestions = [];
+            state.scores = {};
+            state.totalTropePoints = 0;
+            state.realityIntegrity = 100;
+            resetQuizUi();
+            dom.backgroundLayer.style.background = 'var(--gradient-brand)';
+            initBackground();
+            dom.startButton.focus({ preventScroll: true });
+        }
+
+        // ─── Listeners ───
+        dom.startButton.addEventListener('click', startQuiz);
+        dom.optionButtons.forEach(button => {
+            button.addEventListener('click', () => answerQuestion(button.dataset.answer));
+            button.addEventListener('pointerenter', showWaveform);
+            button.addEventListener('focus', showWaveform);
+        });
+        dom.shareButton.addEventListener('click', shareResult);
+        dom.playAgainButton.addEventListener('click', playAgain);
+
+        // ─── Init ───
+        function init() {
+            const modelErrors = validateModel(MODEL);
+            if (modelErrors.length > 0) {
+                console.error('Hero model validation failed:', modelErrors);
+                setStatus('The narrative engine failed its pre-flight check.');
+                dom.startButton.disabled = true;
+                dom.appRoot.dataset.modelValid = 'false';
+                return;
+            }
+
+            dom.appRoot.dataset.modelValid = 'true';
+            dom.landingScreen.setAttribute('aria-hidden', 'false');
+            dom.quizScreen.setAttribute('aria-hidden', 'true');
+            dom.resultScreen.setAttribute('aria-hidden', 'true');
+            resetQuizUi();
             initBackground();
         }
 
-        // Initialize background on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            initBackground();
-        });
+        init();
     </script>
 </body>
 </html>
