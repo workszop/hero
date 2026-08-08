@@ -6,6 +6,9 @@ import vm from 'node:vm';
 
 const APP_PATH = path.resolve(import.meta.dirname, '..', 'index.html');
 const APP_SOURCE = fs.readFileSync(APP_PATH, 'utf8');
+const HERO_DIR = path.dirname(APP_PATH);
+const DEAD_SIGNAL_ASSET_DIR = path.resolve(HERO_DIR, 'assets', 'dead-signal');
+const STYLE_SOURCE = APP_SOURCE.match(/<style\b[^>]*>([\s\S]*?)<\/style>/i)?.[1] ?? '';
 
 function loadPureHelpers() {
     const match = APP_SOURCE.match(
@@ -191,4 +194,265 @@ test('the root and interactive controls publish the DOM contract', () => {
     assert.match(APP_SOURCE, /data-answer="yes"/i);
     assert.match(APP_SOURCE, /data-answer="no"/i);
     assert.match(APP_SOURCE, /id="appStatus"[^>]*role="status"[^>]*aria-live="polite"/i);
+});
+
+// ─── Dead Signal visual contract ───
+
+function findMatchingBrace(source, openingIndex) {
+    let depth = 0;
+    let quote = null;
+    let escaped = false;
+    let lineComment = false;
+    let blockComment = false;
+
+    for (let index = openingIndex; index < source.length; index += 1) {
+        const character = source[index];
+        const nextCharacter = source[index + 1];
+
+        if (lineComment) {
+            if (character === '\n') lineComment = false;
+            continue;
+        }
+        if (blockComment) {
+            if (character === '*' && nextCharacter === '/') {
+                blockComment = false;
+                index += 1;
+            }
+            continue;
+        }
+        if (quote) {
+            if (escaped) {
+                escaped = false;
+            } else if (character === '\\') {
+                escaped = true;
+            } else if (character === quote) {
+                quote = null;
+            }
+            continue;
+        }
+        if (character === '/' && nextCharacter === '/') {
+            lineComment = true;
+            index += 1;
+            continue;
+        }
+        if (character === '/' && nextCharacter === '*') {
+            blockComment = true;
+            index += 1;
+            continue;
+        }
+        if (character === '"' || character === "'" || character === '`') {
+            quote = character;
+            continue;
+        }
+        if (character === '{') {
+            depth += 1;
+        } else if (character === '}') {
+            depth -= 1;
+            if (depth === 0) return index;
+        }
+    }
+
+    return -1;
+}
+
+function extractCategoriesSource() {
+    const declaration = /(?:const|let|var)\s+categories\s*=\s*\{/i.exec(APP_SOURCE);
+    assert.ok(declaration, 'index.html must expose a categories object');
+    const openingIndex = declaration.index + declaration[0].lastIndexOf('{');
+    const closingIndex = findMatchingBrace(APP_SOURCE, openingIndex);
+    assert.notEqual(closingIndex, -1, 'categories object must be closed');
+    return APP_SOURCE.slice(openingIndex + 1, closingIndex);
+}
+
+function extractCategorySource(categoriesSource, categoryId) {
+    const keyPattern = new RegExp(
+        `(?:^|\\n)\\s*["']?${categoryId}["']?\\s*:\\s*\\{`,
+        'm'
+    );
+    const match = keyPattern.exec(categoriesSource);
+    assert.ok(match, `category ${categoryId} must be present in categories`);
+
+    const openingIndex = match.index + match[0].lastIndexOf('{');
+    const closingIndex = findMatchingBrace(categoriesSource, openingIndex);
+    assert.notEqual(closingIndex, -1, `category ${categoryId} object must be closed`);
+    return categoriesSource.slice(openingIndex + 1, closingIndex);
+}
+
+function getCategoryField(categorySource, fieldName, categoryId) {
+    const fieldPattern = new RegExp(
+        `(?:^|[\\s,{])(?:["']?${fieldName}["']?)\\s*:\\s*(["'\\x60])([^"'\\x60]+)\\1`,
+        'm'
+    );
+    const match = fieldPattern.exec(categorySource);
+    assert.ok(match, `category ${categoryId} must define ${fieldName}`);
+    return match[2];
+}
+
+test('app root declares the Dead Signal visual theme', () => {
+    const rootMatch = APP_SOURCE.match(/<main\b[^>]*\bid=["']appRoot["'][^>]*>/i);
+    assert.ok(rootMatch, 'appRoot main element is required');
+    assert.match(rootMatch[0], /\bdata-visual-theme=["']dead-signal["']/i);
+});
+
+test('Dead Signal semantic tokens and fonts are defined', () => {
+    const requiredTokens = [
+        '--ds-bg',
+        '--ds-screen',
+        '--ds-frame',
+        '--ds-panel',
+        '--ds-line',
+        '--ds-line-dim',
+        '--ds-signal',
+        '--ds-signal-bright',
+        '--ds-phosphor',
+        '--ds-amber',
+        '--ds-alert',
+        '--ds-ink',
+        '--ds-muted',
+        '--ds-shadow'
+    ];
+
+    for (const token of requiredTokens) {
+        assert.match(
+            STYLE_SOURCE,
+            new RegExp(`${token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}\\s*:`, 'i'),
+            `${token} must be defined in the style token block`
+        );
+    }
+    assert.match(STYLE_SOURCE, /--font-pixel\s*:/i);
+    assert.match(STYLE_SOURCE, /--font-mono\s*:/i);
+    assert.match(APP_SOURCE, /Silkscreen/i, 'Silkscreen must be referenced');
+    assert.match(APP_SOURCE, /Space\s+Mono/i, 'Space Mono must be referenced');
+});
+
+test('every category maps to a local signal scene with meaningful metadata', () => {
+    const categoriesSource = extractCategoriesSource();
+    const scenePaths = [];
+
+    for (let categoryId = 1; categoryId <= 14; categoryId += 1) {
+        const categorySource = extractCategorySource(categoriesSource, categoryId);
+        const scenePath = getCategoryField(categorySource, 'scene', categoryId);
+        const sceneAlt = getCategoryField(categorySource, 'sceneAlt', categoryId);
+        getCategoryField(categorySource, 'sceneKey', categoryId);
+
+        assert.ok(sceneAlt.trim().length > 0, `category ${categoryId} sceneAlt must not be empty`);
+        const normalizedScenePath = scenePath.replace(/^\.\//, '');
+        assert.match(
+            normalizedScenePath,
+            /^assets\/dead-signal\/[^/]+\.webp$/i,
+            `category ${categoryId} scene must be a production WebP under assets/dead-signal`
+        );
+        const absoluteScenePath = path.resolve(HERO_DIR, normalizedScenePath);
+        assert.ok(
+            absoluteScenePath.startsWith(`${DEAD_SIGNAL_ASSET_DIR}${path.sep}`),
+            `category ${categoryId} scene must stay inside assets/dead-signal`
+        );
+        assert.ok(
+            fs.existsSync(absoluteScenePath),
+            `category ${categoryId} configured scene is missing: ${normalizedScenePath}`
+        );
+        scenePaths.push(normalizedScenePath);
+    }
+
+    assert.equal(
+        new Set(scenePaths).size,
+        14,
+        'each category must use its own production signal scene'
+    );
+});
+
+test('the configured Dead Signal fallback scene exists locally', () => {
+    const fallbackPath = 'assets/dead-signal/fallback.webp';
+    assert.match(
+        APP_SOURCE,
+        new RegExp(fallbackPath.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')),
+        'index.html must configure fallback.webp'
+    );
+    assert.ok(
+        fs.existsSync(path.resolve(HERO_DIR, fallbackPath)),
+        `${fallbackPath} must exist`
+    );
+});
+
+test('index.html contains no retired purple brand values', () => {
+    const retiredValues = [
+        /#667eea\b/i,
+        /#764ba2\b/i,
+        /#1a0033\b/i,
+        /%23667eea\b/i,
+        /%23764ba2\b/i,
+        /%231a0033\b/i,
+        /rgba?\(\s*102\s*,\s*126\s*,\s*234(?:\s*(?:,|\/)[^)]*)?\s*\)/i,
+        /rgba?\(\s*118\s*,\s*75\s*,\s*162(?:\s*(?:,|\/)[^)]*)?\s*\)/i,
+        /rgba?\(\s*26\s*,\s*0\s*,\s*51(?:\s*(?:,|\/)[^)]*)?\s*\)/i
+    ];
+
+    const matches = retiredValues
+        .map(pattern => APP_SOURCE.match(pattern)?.[0])
+        .filter(Boolean);
+    assert.deepEqual(matches, [], `retired brand values remain: ${matches.join(', ')}`);
+});
+
+test('mobile layout keeps the question and answers before story or evidence content', () => {
+    assert.doesNotMatch(
+        STYLE_SOURCE,
+        /(?:story|evidence)[^{}]*\{[^{}]*\border\s*:\s*-\s*\d+/i,
+        'mobile styles must not move story/evidence content ahead of the question'
+    );
+
+    const quizStart = APP_SOURCE.search(/<(?:div|section)\b[^>]*\bid=["']quizScreen["']/i);
+    const resultStart = APP_SOURCE.search(/<(?:div|section)\b[^>]*\bid=["']resultScreen["']/i);
+    assert.ok(quizStart >= 0 && resultStart > quizStart, 'quiz and result screens are required');
+    const quizMarkup = APP_SOURCE.slice(quizStart, resultStart);
+    const questionIndex = quizMarkup.search(/\bid=["']questionText["']/i);
+    const answerIndex = quizMarkup.search(/\bdata-answer=["'](?:yes|no)["']/i);
+    const evidenceIndex = quizMarkup.search(
+        /(?:id|class)=["'][^"']*(?:story|evidence)[^"']*["']/i
+    );
+
+    assert.ok(questionIndex >= 0, 'quiz question markup is required');
+    assert.ok(answerIndex >= 0, 'quiz answer controls are required');
+    assert.ok(evidenceIndex >= 0, 'quiz story/evidence markup is required');
+    assert.ok(questionIndex < evidenceIndex, 'question must precede story/evidence in the DOM');
+    assert.ok(answerIndex < evidenceIndex, 'answers must precede story/evidence in the DOM');
+});
+
+test('Dead Signal terminal chrome and signal scene elements are present', () => {
+    assert.match(APP_SOURCE, /DEAD SIGNAL DOS/i, 'terminal chrome must name the Dead Signal system');
+    assert.match(
+        APP_SOURCE,
+        /(?:id|class)=["'][^"']*terminal[^"']*["']/i,
+        'terminal chrome needs a stable semantic hook'
+    );
+    assert.match(APP_SOURCE, /(?:PORT|LINK|MEM)\s*:/i, 'terminal metadata must be visible');
+    assert.match(
+        APP_SOURCE,
+        /(?:id|class)=["'][^"']*(?:signal[-_]?scene|scene[-_]?frame|dead[-_]?signal)[^"']*["']/i,
+        'a dedicated signal scene element is required'
+    );
+    assert.match(STYLE_SOURCE, /image-rendering\s*:\s*pixelated/i);
+    assert.match(APP_SOURCE, /\bdecoding=["']async["']/i);
+});
+
+test('the signal scene publishes an accessible loading/error status contract', () => {
+    const rootMatch = APP_SOURCE.match(/<main\b[^>]*\bid=["']appRoot["'][^>]*>/i);
+    assert.ok(rootMatch, 'appRoot main element is required');
+    for (const attribute of ['data-category', 'data-scene', 'data-scene-status']) {
+        assert.match(rootMatch[0], new RegExp(`\\b${attribute}\\s*=`), `${attribute} must be published on appRoot`);
+    }
+
+    const sceneStatusTag = APP_SOURCE.match(
+        /<[a-z][^>]*(?:id|class)=["'][^"']*(?:scene[-_]?status|signal[-_]?status|scene[-_]?readout|signal[-_]?readout)[^"']*["'][^>]*>/i
+    );
+    assert.ok(sceneStatusTag, 'a dedicated scene status element is required');
+    assert.match(sceneStatusTag[0], /\brole=["']status["']/i);
+    assert.match(sceneStatusTag[0], /\baria-live=["']polite["']/i);
+
+    const sceneImageTag = APP_SOURCE.match(
+        /<img\b[^>]*(?:id|class)=["'][^"']*(?:signal[-_]?scene|scene[-_]?frame|dead[-_]?signal)[^"']*["'][^>]*>/i
+    );
+    assert.ok(sceneImageTag, 'the signal scene must be an identifiable image');
+    const altMatch = sceneImageTag[0].match(/\balt=["']([^"']+)["']/i);
+    assert.ok(altMatch?.[1].trim(), 'the signal scene image needs meaningful alt text');
+    assert.match(sceneImageTag[0], /\bdecoding=["']async["']/i);
 });
