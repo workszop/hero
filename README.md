@@ -9,7 +9,7 @@ The ordinary-life outcome is part of the joke and is intentionally common. The *
 - Each run selects 30 questions: two from each of 13 fictional story categories and four from the ordinary-life **Reality** category.
 - The question order is randomized, so no two runs need to have the same sequence.
 - “Yes” answers add trope points to the question’s category; “No” answers add none.
-- The interface tracks a tongue-in-cheek **Reality Integrity** value and a live genre prediction while the quiz is in progress.
+- The interface tracks a tongue-in-cheek **Reality Integrity** value and a deliberately randomized genre-signal display while the quiz is in progress. Its percentages and apparent prediction are unrelated to the final scoring, because the machine has opinions but no ethics.
 - The result screen includes the winning story type, a short narrative, category breakdowns and the intentionally misleading **Narrative Intelligence Engine v2.7.4** dashboard. Its confidence, gauges and session-style metrics are theatrical UI, not scientific measurements.
 
 This is entertainment, not psychological, medical or other professional diagnosis. It does not infer anything reliable about the person taking it.

@@ -1204,6 +1204,8 @@
           data-transitioning="false"
           data-reality-integrity="100"
           data-result-category=""
+          data-predictor-category=""
+          data-predictor-percent=""
           data-category=""
           data-scene=""
           data-scene-status="idle"
@@ -1341,13 +1343,13 @@
                     </aside>
                 </div>
 
-                <aside class="genre-predictor" id="genrePredictor" aria-labelledby="predictorLabel">
+                <aside class="genre-predictor" id="genrePredictor" aria-labelledby="predictorLabel" data-mode="random">
                     <div class="genre-predictor-label" id="predictorLabel">
                         <span class="signal-dot" aria-hidden="true"></span>
                         Genre Signal Detection // Live
                     </div>
-                    <div class="genre-predictor-bars" id="genrePredictorBars">
-                        <div class="genre-predictor-empty">Awaiting narrative data...</div>
+                    <div class="genre-predictor-bars" id="genrePredictorBars" role="list" aria-label="Randomized genre signals">
+                        <div class="genre-predictor-empty" role="listitem">Awaiting narrative data...</div>
                     </div>
                     <p class="visually-hidden" id="predictorSummary" aria-live="polite"></p>
                 </aside>
@@ -2121,6 +2123,27 @@
             return { categoryId, maxScore, ordinaryByThreshold: false };
         }
 
+        function generateMisleadingSignals(categoryIds, realityCategoryId, randomFn = Math.random) {
+            const signals = categoryIds.map(categoryId => {
+                const rawSample = Number(randomFn());
+                const sample = Number.isFinite(rawSample)
+                    ? Math.min(0.999999, Math.max(0, rawSample))
+                    : 0;
+                return {
+                    id: Number(categoryId),
+                    percentage: 7 + Math.floor(sample * 93)
+                };
+            });
+            const realitySignal = signals.find(signal => signal.id === realityCategoryId);
+            const selected = signals
+                .filter(signal => signal.id !== realityCategoryId)
+                .sort((a, b) => b.percentage - a.percentage || a.id - b.id)
+                .slice(0, realitySignal ? 4 : 5);
+
+            if (realitySignal) selected.push(realitySignal);
+            return selected.sort((a, b) => b.percentage - a.percentage || a.id - b.id);
+        }
+
         function validateModel(model) {
             const errors = [];
             const categoryIds = [...model.config.genreCategoryIds, model.config.realityCategoryId];
@@ -2195,8 +2218,10 @@
             dom.realityValue.classList.remove('critical');
             dom.realityWarning.textContent = 'Status: Nominal';
             dom.realityWarning.classList.remove('active');
-            dom.genrePredictorBars.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
+            dom.genrePredictorBars.innerHTML = '<div class="genre-predictor-empty" role="listitem">Awaiting narrative data...</div>';
             dom.predictorSummary.textContent = '';
+            dom.appRoot.dataset.predictorCategory = '';
+            dom.appRoot.dataset.predictorPercent = '';
             dom.timelineProgress.style.width = '0%';
             dom.timelinePlayhead.style.left = '0%';
             dom.progressTimeline.setAttribute('aria-valuenow', '0');
@@ -2466,51 +2491,34 @@
         }
 
         function updateGenrePredictor() {
-            // Gather categories with scores > 0, sorted descending
-            const scored = [];
-            for (let id = 1; id <= 14; id++) {
-                if (state.scores[id] > 0) {
-                    scored.push({ id: id, score: state.scores[id] });
-                }
-            }
-            scored.sort((a, b) => b.score - a.score);
-
-            // Show top 5 categories max
-            const top = scored.slice(0, 5);
-            const realityCategoryId = MODEL.config.realityCategoryId;
-            if (!top.some(entry => entry.id === realityCategoryId)) {
-                if (top.length === 5) top.pop();
-                top.push({ id: realityCategoryId, score: state.scores[realityCategoryId] || 0 });
-            }
-            const maxScore = top.length > 0 ? top[0].score : 0;
-
-            if (scored.length === 0) {
-                dom.genrePredictorBars.innerHTML = '<div class="genre-predictor-empty">Awaiting narrative data...</div>';
-                dom.predictorSummary.textContent = '';
-                return;
-            }
+            // This display is deliberately unrelated to the real scoring engine.
+            const categoryIds = Object.keys(MODEL.categories).map(Number);
+            const signals = generateMisleadingSignals(
+                categoryIds,
+                MODEL.config.realityCategoryId
+            );
 
             let html = '';
-            top.forEach(entry => {
-                const pct = Math.round((entry.score / Math.max(maxScore, 1)) * 100);
+            signals.forEach(entry => {
                 const color = MODEL.categoryBarColors[entry.id];
                 const name = MODEL.categoryShortNames[entry.id];
-                html += `<div class="genre-bar-row">
+                html += `<div class="genre-bar-row" role="listitem" aria-label="${name}: ${entry.percentage} percent">
                     <span class="genre-bar-name">${name}</span>
                     <div class="genre-bar-track">
-                        <div class="genre-bar-fill" style="width:${pct}%; background:${color};"></div>
+                        <div class="genre-bar-fill" style="width:${entry.percentage}%; background:${color};"></div>
                     </div>
-                    <span class="genre-bar-score">${entry.score}</span>
+                    <span class="genre-bar-score">${entry.percentage}%</span>
                 </div>`;
             });
 
-            // Add current prediction label
-            const leader = top[0];
+            const leader = signals[0];
             const leaderName = MODEL.categoryShortNames[leader.id];
             html += `<div class="genre-prediction-tag">Current prediction: ${leaderName}</div>`;
 
             dom.genrePredictorBars.innerHTML = html;
-            dom.predictorSummary.textContent = `Current prediction: ${leaderName}, score ${leader.score}.`;
+            dom.predictorSummary.textContent = `Current prediction: ${leaderName}, ${leader.percentage} percent.`;
+            dom.appRoot.dataset.predictorCategory = String(leader.id);
+            dom.appRoot.dataset.predictorPercent = String(leader.percentage);
         }
 
         function updateResultWaveform() {

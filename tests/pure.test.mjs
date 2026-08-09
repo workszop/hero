@@ -20,7 +20,7 @@ function loadPureHelpers() {
     vm.runInNewContext(
         `${match[1]}\nthis.helpers = {\n` +
         'shuffle, selectQuestionsFromModel, calculateRealityIntegrity, ' +
-        'determineWinner, validateModel, buildShareText\n};',
+        'determineWinner, generateMisleadingSignals, validateModel, buildShareText\n};',
         sandbox,
         { filename: APP_PATH }
     );
@@ -136,6 +136,26 @@ test('Reality wins tied scores deterministically, independent of score object or
     assert.equal(second.categoryId, 14);
     assert.equal(first.maxScore, 2);
     assert.equal(first.ordinaryByThreshold, false);
+});
+
+test('misleading genre signals are randomized percentages and always include Reality', () => {
+    const categoryIds = [1, 2, 3, 4, 5, 6, 14];
+    const first = helpers.generateMisleadingSignals(
+        categoryIds,
+        14,
+        sequenceRandom([0.05, 0.85, 0.2, 0.7, 0.4, 0.95, 0.1])
+    );
+    const second = helpers.generateMisleadingSignals(
+        categoryIds,
+        14,
+        sequenceRandom([0.9, 0.1, 0.75, 0.3, 0.65, 0.15, 0.8])
+    );
+
+    assert.equal(first.length, 5);
+    assert.ok(first.some(signal => signal.id === 14));
+    assert.ok(second.some(signal => signal.id === 14));
+    assert.ok(first.every(signal => signal.percentage >= 7 && signal.percentage <= 99));
+    assert.notDeepEqual(first, second);
 });
 
 test('reality integrity is always bounded between zero and one hundred', () => {
@@ -455,4 +475,13 @@ test('the signal scene publishes an accessible loading/error status contract', (
     const altMatch = sceneImageTag[0].match(/\balt=["']([^"']+)["']/i);
     assert.ok(altMatch?.[1].trim(), 'the signal scene image needs meaningful alt text');
     assert.match(sceneImageTag[0], /\bdecoding=["']async["']/i);
+});
+
+test('genre predictor declares random mode and renders percentage values', () => {
+    const rootMatch = APP_SOURCE.match(/<main\b[^>]*\bid=["']appRoot["'][^>]*>/i);
+    assert.ok(rootMatch);
+    assert.match(rootMatch[0], /\bdata-predictor-category\s*=/i);
+    assert.match(rootMatch[0], /\bdata-predictor-percent\s*=/i);
+    assert.match(APP_SOURCE, /id=["']genrePredictor["'][^>]*\bdata-mode=["']random["']/i);
+    assert.match(APP_SOURCE, /genre-bar-score[^\n]*\$\{entry\.percentage\}%/i);
 });
