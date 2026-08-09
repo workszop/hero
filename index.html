@@ -320,7 +320,7 @@
             display: grid;
             grid-template-columns: minmax(0, 0.82fr) minmax(360px, 1.18fr);
             gap: clamp(28px, 5vw, 72px);
-            align-items: center;
+            align-items: start;
             min-height: calc(100vh - 230px);
         }
 
@@ -333,7 +333,7 @@
         .boot-log {
             display: grid;
             gap: 3px;
-            margin-bottom: clamp(28px, 5vh, 56px);
+            margin-bottom: clamp(20px, 3vh, 32px);
             color: var(--ds-signal);
             font-size: var(--size-xs);
             text-transform: uppercase;
@@ -354,11 +354,29 @@
             text-shadow: 4px 4px 0 var(--ds-line-dim);
         }
 
-        .tagline {
-            max-width: 58ch;
+        .intro-copy {
+            display: grid;
+            gap: 14px;
+            max-width: 66ch;
             margin-bottom: 32px;
-            color: var(--ds-ink);
+        }
+
+        .intro-copy h2 {
+            color: var(--ds-phosphor);
+            font-family: var(--font-pixel);
             font-size: var(--size-lg);
+            line-height: 1.35;
+        }
+
+        .intro-copy p {
+            color: var(--ds-ink);
+            font-size: var(--size-sm);
+            line-height: 1.7;
+        }
+
+        .intro-copy p:last-child {
+            color: var(--ds-phosphor);
+            font-weight: 700;
         }
 
         #startButton {
@@ -1093,7 +1111,7 @@
                 margin-bottom: 0;
             }
 
-            .tagline {
+            .intro-copy {
                 order: 3;
                 margin-bottom: 0;
             }
@@ -1236,7 +1254,13 @@
                         <span>SYSTEM READY</span>
                     </div>
                     <h1 id="landingTitle">Am I in a Story?</h1>
-                    <p class="tagline">Are you a hero or is the struggle just real? Take this diagnostic to find out if you're living in a fictional narrative or just another regular miserable person.</p>
+                    <div id="introCopy" class="intro-copy">
+                        <h2>Are you living your own story?</h2>
+                        <p>Ever get the nagging feeling that your life is a little too structured? That the same things happen to you at the same time, every single day? That somewhere, somehow, someone might be watching - or worse, writing - what happens next?</p>
+                        <p>Two movies dared to ask a wild question: what if you weren't the author of your own life? What if you were just a character - in someone's novel, someone's screenplay, or maybe even someone's game - completely unaware of it?</p>
+                        <p>Before you dismiss that idea... take this quiz first. We'll ask you a few questions about how you see yourself, how you move through the world, and how you handle the unexpected. Your answers might reveal something surprising about the kind of story you're actually living in.</p>
+                        <p>Are you the hero? A side character? Or maybe... an NPC?</p>
+                    </div>
                     <button id="startButton" type="button" aria-keyshortcuts="Enter">
                         <span class="key-hint" aria-hidden="true">&gt;</span>
                         Run Diagnostic
