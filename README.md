@@ -10,7 +10,7 @@ The ordinary-life outcome is part of the joke and is intentionally common. The *
 - The question order is randomized, so no two runs need to have the same sequence.
 - “Yes” answers add trope points to the question’s category; “No” answers add none.
 - The interface tracks a tongue-in-cheek **Reality Integrity** value and a deliberately randomized genre-signal display while the quiz is in progress. Its percentages and apparent prediction are unrelated to the final scoring, because the machine has opinions but no ethics.
-- The result screen includes the winning story type, a short narrative, category breakdowns and the intentionally misleading **Narrative Intelligence Engine v2.7.4** dashboard. Its confidence, gauges and session-style metrics are theatrical UI, not scientific measurements.
+- The result screen includes the winning story type, a short narrative and the intentionally misleading **Narrative Intelligence Engine v2.7.4** dashboard. Its category percentages, confidence, gauges and session-style metrics are randomized theatrical UI, not scientific measurements. The selected diagnosis is always presented as the dominant fabricated signal.
 
 This is entertainment, not psychological, medical or other professional diagnosis. It does not infer anything reliable about the person taking it.
 
@@ -56,7 +56,7 @@ Input is locked during the short question transition, so repeated clicks or key 
 
 ## Dead Signal scenes
 
-Each category maps to one generated EGA-style screenshot under `assets/dead-signal/`. Production scenes follow these conventions:
+Each category maps to three generated EGA-style screenshots under `assets/dead-signal/`. Production scenes follow these conventions:
 
 - `960 × 720` pixels in 4:3 format
 - WebP files, normally below 350 KB each

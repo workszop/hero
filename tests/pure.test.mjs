@@ -20,7 +20,8 @@ function loadPureHelpers() {
     vm.runInNewContext(
         `${match[1]}\nthis.helpers = {\n` +
         'shuffle, selectQuestionsFromModel, buildSceneAssignments, calculateRealityIntegrity, ' +
-        'determineWinner, generateMisleadingSignals, validateModel, buildShareText\n};',
+        'determineWinner, generateMisleadingSignals, generateFakeResultSignals, ' +
+        'validateModel, buildShareText\n};',
         sandbox,
         { filename: APP_PATH }
     );
@@ -230,6 +231,28 @@ test('misleading genre signals are randomized percentages and always include Rea
     assert.ok(first.some(signal => signal.id === 14));
     assert.ok(second.some(signal => signal.id === 14));
     assert.ok(first.every(signal => signal.percentage >= 7 && signal.percentage <= 99));
+    assert.notDeepEqual(first, second);
+});
+
+test('fake result signals are randomized percentages with the diagnosis as a clear winner', () => {
+    const categoryIds = Array.from({ length: 14 }, (_, index) => index + 1);
+    const first = helpers.generateFakeResultSignals(
+        categoryIds,
+        8,
+        sequenceRandom([0.04, 0.82, 0.21, 0.67, 0.33, 0.94, 0.12])
+    );
+    const second = helpers.generateFakeResultSignals(
+        categoryIds,
+        8,
+        sequenceRandom([0.77, 0.16, 0.58, 0.29, 0.88, 0.45, 0.09])
+    );
+
+    assert.equal(first.length, 14);
+    assert.equal(first[0].id, 8);
+    assert.ok(first[0].percentage >= 90 && first[0].percentage < 99);
+    assert.ok(first.slice(1).every(signal => signal.percentage < 80));
+    assert.equal(new Set(first.map(signal => signal.percentage)).size, 14);
+    assert.ok(first.every(signal => Number.isInteger(signal.percentage * 10)));
     assert.notDeepEqual(first, second);
 });
 
@@ -596,6 +619,24 @@ test('genre predictor declares random mode and renders percentage values', () =>
     assert.match(rootMatch[0], /\bdata-predictor-percent\s*=/i);
     assert.match(APP_SOURCE, /id=["']genrePredictor["'][^>]*\bdata-mode=["']random["']/i);
     assert.match(APP_SOURCE, /genre-bar-score[^\n]*\$\{entry\.percentage\}%/i);
+});
+
+test('final genre distribution is fabricated percentage output with an explicit winner', () => {
+    const rootMatch = APP_SOURCE.match(/<main\b[^>]*\bid=["']appRoot["'][^>]*>/i);
+    assert.ok(rootMatch);
+    assert.match(rootMatch[0], /\bdata-result-signal-percent\s*=/i);
+    assert.match(
+        APP_SOURCE,
+        /id=["']genreBreakdownGrid["'][^>]*\bdata-mode=["']fabricated["']/i
+    );
+    const rendererMatch = APP_SOURCE.match(
+        /function renderGenreBreakdown\([\s\S]*?\n\s*function renderCrypticMetrics\(/i
+    );
+    assert.ok(rendererMatch, 'the final genre renderer must be present');
+    assert.doesNotMatch(rendererMatch[0], /state\.scores/);
+    assert.match(rendererMatch[0], /data-percent=["']\$\{percentage\}["']/);
+    assert.match(rendererMatch[0], /data-winner=["']\$\{isWinner\}["']/);
+    assert.match(rendererMatch[0], /breakdown-score[^\n]*\$\{percentage\}%/);
 });
 
 test('landing intro preserves the complete original copy', () => {
