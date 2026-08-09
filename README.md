@@ -64,7 +64,7 @@ Each category maps to one generated EGA-style screenshot under `assets/dead-sign
 - meaningful alternative text in the category model
 - lowercase descriptive filenames such as `space-opera.webp`
 
-The app loads the current category scene and preloads only the next selected scene. If a configured image is unavailable, `fallback.webp` replaces it and the failure is announced without interrupting the quiz.
+Each category has a three-scene pool. A randomized assignment exhausts that pool before reuse and prevents immediate same-category repeats. The app preloads only the exact scene assigned to the next question. If a configured image is unavailable, `fallback.webp` replaces it and the failure is announced without interrupting the quiz.
 
 ## Deploy
 
@@ -99,4 +99,4 @@ For browser verification, serve the app and check landing, 30-question completio
 | [`README.md`](./README.md) | Project overview and operating notes |
 | [`.gitignore`](./.gitignore) | Excludes local plans, reviews and scratch artifacts |
 | [`tests/pure.test.mjs`](./tests/pure.test.mjs) | Pure-logic, model-invariant and DOM-contract checks |
-| [`assets/dead-signal/`](./assets/dead-signal/) | Fourteen generated category scenes and the local fallback scene |
+| [`assets/dead-signal/`](./assets/dead-signal/) | Forty-two generated category scenes and the local fallback scene |

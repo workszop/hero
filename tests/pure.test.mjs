@@ -19,7 +19,7 @@ function loadPureHelpers() {
     const sandbox = {};
     vm.runInNewContext(
         `${match[1]}\nthis.helpers = {\n` +
-        'shuffle, selectQuestionsFromModel, calculateRealityIntegrity, ' +
+        'shuffle, selectQuestionsFromModel, buildSceneAssignments, calculateRealityIntegrity, ' +
         'determineWinner, generateMisleadingSignals, validateModel, buildShareText\n};',
         sandbox,
         { filename: APP_PATH }
@@ -36,7 +36,17 @@ function makeSyntheticModel({ missingCategory = null, shortQuestionCategory = nu
     const categories = Object.fromEntries(
         allCategoryIds
             .filter(id => id !== missingCategory)
-            .map(id => [id, { name: `Category ${id}`, result: `Result ${id}` }])
+            .map(id => [id, {
+                name: `Category ${id}`,
+                result: `Result ${id}`,
+                scene: `scene-${id}-01.webp`,
+                sceneAlt: `Scene ${id} one`,
+                sceneKey: `scene-${id}`,
+                sceneVariants: [
+                    { src: `scene-${id}-02.webp`, alt: `Scene ${id} two` },
+                    { src: `scene-${id}-03.webp`, alt: `Scene ${id} three` }
+                ]
+            }])
     );
     const categoryShortNames = Object.fromEntries(
         allCategoryIds.map(id => [id, `Short ${id}`])
@@ -71,6 +81,7 @@ function makeSyntheticModel({ missingCategory = null, shortQuestionCategory = nu
             genreQuestionsPerCategory: 2,
             realityQuestionCount: 2,
             ordinaryThreshold: 1,
+            sceneFallback: 'fallback.webp',
             tiePriority: [realityCategoryId, ...genreCategoryIds]
         },
         categories,
@@ -102,6 +113,70 @@ test('selectQuestionsFromModel is deterministic and preserves configured categor
         first.filter(question => question.categoryId === model.config.realityCategoryId).length,
         2
     );
+});
+
+test('buildSceneAssignments exhausts category pools before reuse without immediate repeats', () => {
+    const categories = {
+        1: {
+            scene: 'one.webp',
+            sceneAlt: 'Scene one',
+            sceneVariants: [
+                { src: 'two.webp', alt: 'Scene two' },
+                { src: 'three.webp', alt: 'Scene three' }
+            ]
+        }
+    };
+    const selectedQuestions = Array.from({ length: 7 }, () => ({ categoryId: 1 }));
+    const assignments = helpers.buildSceneAssignments(
+        selectedQuestions,
+        categories,
+        sequenceRandom([0.8, 0.2, 0.6, 0.9, 0.1, 0.7, 0.4, 0.3])
+    );
+    const paths = assignments.map(scene => scene.src);
+
+    assert.equal(new Set(paths.slice(0, 3)).size, 3, 'the first scene cycle must be unique');
+    assert.equal(new Set(paths.slice(3, 6)).size, 3, 'the second scene cycle must be unique');
+    for (let index = 1; index < paths.length; index += 1) {
+        assert.notEqual(paths[index], paths[index - 1], 'a scene must not repeat immediately');
+    }
+    assert.ok(assignments.every(scene => scene.categoryId === 1 && scene.alt));
+});
+
+test('the production category pools assign distinct scenes across an actual 30-question run', () => {
+    const categories = vm.runInNewContext(`({${extractCategoriesSource()}})`);
+    const selectedQuestions = [];
+    for (let categoryId = 1; categoryId <= 13; categoryId += 1) {
+        selectedQuestions.push({ categoryId }, { categoryId });
+    }
+    selectedQuestions.push(
+        { categoryId: 14 },
+        { categoryId: 14 },
+        { categoryId: 14 },
+        { categoryId: 14 }
+    );
+
+    const assignments = helpers.buildSceneAssignments(
+        selectedQuestions,
+        categories,
+        sequenceRandom([0.72, 0.18, 0.91, 0.44, 0.63, 0.27])
+    );
+    assert.equal(assignments.length, 30);
+
+    for (let categoryId = 1; categoryId <= 13; categoryId += 1) {
+        const paths = assignments
+            .filter(scene => scene.categoryId === categoryId)
+            .map(scene => scene.src);
+        assert.equal(paths.length, 2);
+        assert.equal(new Set(paths).size, 2, `category ${categoryId} must show two distinct scenes`);
+    }
+
+    const realityPaths = assignments
+        .filter(scene => scene.categoryId === 14)
+        .map(scene => scene.src);
+    assert.equal(new Set(realityPaths.slice(0, 3)).size, 3);
+    for (let index = 1; index < realityPaths.length; index += 1) {
+        assert.notEqual(realityPaths[index], realityPaths[index - 1]);
+    }
 });
 
 test('ordinary threshold deliberately favors the Reality diagnosis for low scores', () => {
@@ -179,6 +254,16 @@ test('validateModel accepts a complete synthetic model and reports missing data'
 
     const shortQuestionsModel = makeSyntheticModel({ shortQuestionCategory: 1 });
     assert.ok(helpers.validateModel(shortQuestionsModel).includes('Category 1 has 1/2 questions'));
+
+    const shortScenePoolModel = makeSyntheticModel();
+    shortScenePoolModel.categories[1].sceneVariants.pop();
+    assert.ok(
+        helpers.validateModel(shortScenePoolModel).includes('Category 1 needs two scene variants')
+    );
+
+    const duplicateSceneModel = makeSyntheticModel();
+    duplicateSceneModel.categories[1].sceneVariants[0].src = duplicateSceneModel.categories[1].scene;
+    assert.ok(helpers.validateModel(duplicateSceneModel).includes('Duplicate scene path 1'));
 });
 
 test('buildShareText includes the result title and canonical URL', () => {
@@ -345,7 +430,7 @@ test('Dead Signal semantic tokens and fonts are defined', () => {
     assert.match(APP_SOURCE, /Space\s+Mono/i, 'Space Mono must be referenced');
 });
 
-test('every category maps to a local signal scene with meaningful metadata', () => {
+test('every category maps to three unique local signal scenes with meaningful metadata', () => {
     const categoriesSource = extractCategoriesSource();
     const scenePaths = [];
 
@@ -354,30 +439,43 @@ test('every category maps to a local signal scene with meaningful metadata', () 
         const scenePath = getCategoryField(categorySource, 'scene', categoryId);
         const sceneAlt = getCategoryField(categorySource, 'sceneAlt', categoryId);
         getCategoryField(categorySource, 'sceneKey', categoryId);
+        const variantsMatch = categorySource.match(/sceneVariants\s*:\s*\[([\s\S]*?)\]/i);
+        assert.ok(variantsMatch, `category ${categoryId} must define sceneVariants`);
+        const variants = [...variantsMatch[1].matchAll(
+            /\{\s*src\s*:\s*["']([^"']+)["']\s*,\s*alt\s*:\s*["']([^"']+)["']\s*\}/gi
+        )].map(match => ({ src: match[1], alt: match[2] }));
+        assert.equal(variants.length, 2, `category ${categoryId} must have two scene variants`);
 
         assert.ok(sceneAlt.trim().length > 0, `category ${categoryId} sceneAlt must not be empty`);
-        const normalizedScenePath = scenePath.replace(/^\.\//, '');
-        assert.match(
-            normalizedScenePath,
-            /^assets\/dead-signal\/[^/]+\.webp$/i,
-            `category ${categoryId} scene must be a production WebP under assets/dead-signal`
-        );
-        const absoluteScenePath = path.resolve(HERO_DIR, normalizedScenePath);
-        assert.ok(
-            absoluteScenePath.startsWith(`${DEAD_SIGNAL_ASSET_DIR}${path.sep}`),
-            `category ${categoryId} scene must stay inside assets/dead-signal`
-        );
-        assert.ok(
-            fs.existsSync(absoluteScenePath),
-            `category ${categoryId} configured scene is missing: ${normalizedScenePath}`
-        );
-        scenePaths.push(normalizedScenePath);
+        const categoryScenes = [
+            { src: scenePath, alt: sceneAlt },
+            ...variants
+        ];
+        for (const scene of categoryScenes) {
+            assert.ok(scene.alt.trim().length > 0, `category ${categoryId} scene alt must not be empty`);
+            const normalizedScenePath = scene.src.replace(/^\.\//, '');
+            assert.match(
+                normalizedScenePath,
+                /^assets\/dead-signal\/[^/]+\.webp$/i,
+                `category ${categoryId} scene must be a production WebP under assets/dead-signal`
+            );
+            const absoluteScenePath = path.resolve(HERO_DIR, normalizedScenePath);
+            assert.ok(
+                absoluteScenePath.startsWith(`${DEAD_SIGNAL_ASSET_DIR}${path.sep}`),
+                `category ${categoryId} scene must stay inside assets/dead-signal`
+            );
+            assert.ok(
+                fs.existsSync(absoluteScenePath),
+                `category ${categoryId} configured scene is missing: ${normalizedScenePath}`
+            );
+            scenePaths.push(normalizedScenePath);
+        }
     }
 
     assert.equal(
         new Set(scenePaths).size,
-        14,
-        'each category must use its own production signal scene'
+        42,
+        'all category scene paths must be unique'
     );
 });
 
@@ -457,7 +555,7 @@ test('Dead Signal terminal chrome and signal scene elements are present', () => 
 test('the signal scene publishes an accessible loading/error status contract', () => {
     const rootMatch = APP_SOURCE.match(/<main\b[^>]*\bid=["']appRoot["'][^>]*>/i);
     assert.ok(rootMatch, 'appRoot main element is required');
-    for (const attribute of ['data-category', 'data-scene', 'data-scene-status']) {
+    for (const attribute of ['data-category', 'data-scene', 'data-scene-src', 'data-scene-status']) {
         assert.match(rootMatch[0], new RegExp(`\\b${attribute}\\s*=`), `${attribute} must be published on appRoot`);
     }
 
@@ -475,6 +573,20 @@ test('the signal scene publishes an accessible loading/error status contract', (
     const altMatch = sceneImageTag[0].match(/\balt=["']([^"']+)["']/i);
     assert.ok(altMatch?.[1].trim(), 'the signal scene image needs meaningful alt text');
     assert.match(sceneImageTag[0], /\bdecoding=["']async["']/i);
+});
+
+test('quiz rendering and preloading share the same assigned scene variant', () => {
+    assert.match(
+        APP_SOURCE,
+        /renderScene\(question\.categoryId,\s*state\.sceneAssignments\[state\.currentQuestionIndex\]\)/,
+        'the current question must render its preassigned scene'
+    );
+    assert.match(
+        APP_SOURCE,
+        /const nextScene = state\.sceneAssignments\[state\.currentQuestionIndex \+ 1\]/,
+        'preloading must read the next preassigned scene'
+    );
+    assert.match(APP_SOURCE, /preloadImage\.src = nextScene\.src/);
 });
 
 test('genre predictor declares random mode and renders percentage values', () => {

@@ -1226,6 +1226,7 @@
           data-predictor-percent=""
           data-category=""
           data-scene=""
+          data-scene-src=""
           data-scene-status="idle"
           data-model-valid=""
           data-visual-theme="dead-signal"
@@ -1483,6 +1484,7 @@
             questionTransitioning: false,
             advanceTimer: null,
             preloadImage: null,
+            sceneAssignments: [],
             sceneRequestId: 0,
             screen: 'landing',
             resultCategoryId: null
@@ -1705,6 +1707,10 @@
                 result: "You are the Chosen One. Stop ignoring the old man in the tavern; he has a quest for you. Also, check your attic for legendary swords.",
                 scene: "assets/dead-signal/fantasy.webp",
                 sceneAlt: "A lone traveler enters a candlelit tavern while patrons mutter.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/fantasy-02.webp", alt: "A lone adventurer crosses a moonlit forest bridge toward a ruined castle." },
+                    { src: "assets/dead-signal/fantasy-03.webp", alt: "An apprentice approaches a hovering crystal inside a ruined mountain observatory." }
+                ],
                 sceneKey: "fantasy"
             },
             2: {
@@ -1712,6 +1718,10 @@
                 result: "You are the protagonist of a YA Dystopian novel. You're likely wearing combat boots and are about to overthrow a government using only angst and a bow and arrow.",
                 scene: "assets/dead-signal/dystopian.webp",
                 sceneAlt: "A teenager stands at a guarded city wall facing an impossible landscape.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/dystopian-02.webp", alt: "Citizens wait inside an underground ration depot under surveillance." },
+                    { src: "assets/dead-signal/dystopian-03.webp", alt: "A lone pedestrian crosses a rain-soaked megacity walkway beneath a scanning drone." }
+                ],
                 sceneKey: "dystopian"
             },
             3: {
@@ -1719,6 +1729,10 @@
                 result: "You are a Shonen Protagonist. Your power level is rising. If you start glowing or screaming for more than 30 seconds, please move to an open field to avoid property damage.",
                 scene: "assets/dead-signal/anime.webp",
                 sceneAlt: "A student on a rooftop confronts a glowing transformation device.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/anime-02.webp", alt: "A young hero stages a rescue in an underground train bay as a radio signal glows." },
+                    { src: "assets/dead-signal/anime-03.webp", alt: "A lone radio operator stands inside a lighthouse lantern room." }
+                ],
                 sceneKey: "anime"
             },
             4: {
@@ -1726,6 +1740,10 @@
                 result: "You have Main Character Energy. Your life is a slow-burn indie film where small moments feel profound. Enjoy the aesthetic melancholy.",
                 scene: "assets/dead-signal/slice-of-life.webp",
                 sceneAlt: "Two people share a small everyday moment in a quiet morning corridor.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/slice-of-life-02.webp", alt: "Two people share breakfast in an ordinary apartment kitchen." },
+                    { src: "assets/dead-signal/slice-of-life-03.webp", alt: "Two neighbors repair a bicycle beside a rainy bus shelter." }
+                ],
                 sceneKey: "slice-of-life"
             },
             5: {
@@ -1733,6 +1751,10 @@
                 result: "You are a Superhero. Your double life is exhausting, your costume is impractical, and your loved ones are in constant danger. But at least you look cool.",
                 scene: "assets/dead-signal/superhero.webp",
                 sceneAlt: "An ordinary person discovers a restrained glowing power in a rainy alley.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/superhero-02.webp", alt: "A masked vigilante stands on a water tower as a green energy arc crosses the city at dawn." },
+                    { src: "assets/dead-signal/superhero-03.webp", alt: "An airborne hero projects a glowing shield over a collapsing suspension bridge." }
+                ],
                 sceneKey: "superhero"
             },
             6: {
@@ -1740,6 +1762,10 @@
                 result: "You are a Sitcom Character. Your problems are easily solved in 22 minutes, your apartment is inexplicably nice, and laugh tracks follow you everywhere.",
                 scene: "assets/dead-signal/sitcom.webp",
                 sceneAlt: "An awkward ensemble gathers in a cramped apartment living room.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/sitcom-02.webp", alt: "Four roommates and a dog cause a slapstick breakfast disaster in a tiny kitchen." },
+                    { src: "assets/dead-signal/sitcom-03.webp", alt: "Four adults and a dog scramble through a rooftop barbecue mishap." }
+                ],
                 sceneKey: "sitcom"
             },
             7: {
@@ -1747,6 +1773,10 @@
                 result: "You are in a Horror Movie. Stop investigating strange noises. Stop going into basements. Just leave. Now. While you still can.",
                 scene: "assets/dead-signal/horror.webp",
                 sceneAlt: "A lone figure descends into a dark basement after an unknown signal.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/horror-02.webp", alt: "A flashlight illuminates a locked hatch inside a lighthouse lantern room while a silhouette waits outside." },
+                    { src: "assets/dead-signal/horror-03.webp", alt: "A lone silhouette sits inside an abandoned movie theater beneath a blank screen." }
+                ],
                 sceneKey: "horror"
             },
             8: {
@@ -1754,6 +1784,10 @@
                 result: "You are a Detective. You see clues where others see trash. You probably look great in a trench coat, but your personal life is likely a shambles.",
                 scene: "assets/dead-signal/mystery.webp",
                 sceneAlt: "An investigator studies an evidence board and a strange key at a rain-soaked desk.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/mystery-02.webp", alt: "A locked suitcase, brass key and wet glove wait on a rainy railway platform." },
+                    { src: "assets/dead-signal/mystery-03.webp", alt: "Muddy footprints cross a midnight observatory toward a hidden trapdoor." }
+                ],
                 sceneKey: "mystery"
             },
             9: {
@@ -1761,6 +1795,10 @@
                 result: "You are in a Rom-Com. That clumsiness is charming, not dangerous. Prepare for a misunderstanding at the 60-minute mark, followed by a sprint through an airport.",
                 scene: "assets/dead-signal/romance.webp",
                 sceneAlt: "Two mutually interested adults meet across a rainy train platform.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/romance-02.webp", alt: "Two adults reunite in a quiet apartment kitchen before dawn." },
+                    { src: "assets/dead-signal/romance-03.webp", alt: "A couple shares a scarf inside a rooftop greenhouse at night." }
+                ],
                 sceneKey: "romance"
             },
             10: {
@@ -1768,6 +1806,10 @@
                 result: "You are in a Tarantino movie. Your life is cool, violent, and non-linear. Enjoy the witty dialogue, but watch out—statistically, you might not make it to the credits.",
                 scene: "assets/dead-signal/crime-dialogue.webp",
                 sceneAlt: "Two sharply dressed figures face a mysterious glowing briefcase in a roadside diner.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/crime-dialogue-02.webp", alt: "A detective questions an informant beside a cassette recorder in a police interview room." },
+                    { src: "assets/dead-signal/crime-dialogue-03.webp", alt: "Two figures exchange evidence inside a dim cinema projection booth." }
+                ],
                 sceneKey: "crime-dialogue"
             },
             11: {
@@ -1775,6 +1817,10 @@
                 result: "You are in a Spielberg Adventure. Look at the horizon with awe. Something magical is coming, and it's going to make grown men cry.",
                 scene: "assets/dead-signal/suburban-adventure.webp",
                 sceneAlt: "Children with bicycles discover a strange light at the edge of foggy woods.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/suburban-adventure-02.webp", alt: "Muddy footprints lead from a red wagon toward a storm drain in a rainy cul-de-sac." },
+                    { src: "assets/dead-signal/suburban-adventure-03.webp", alt: "A flashlight beam reveals a trapdoor inside a backyard treehouse clubhouse." }
+                ],
                 sceneKey: "suburban-adventure"
             },
             12: {
@@ -1782,6 +1828,10 @@
                 result: "You are in a Space Opera Myth. You have a grand destiny, daddy issues, and a high probability of losing a hand. May the Force be with you.",
                 scene: "assets/dead-signal/space-opera.webp",
                 sceneAlt: "A lone pilot faces an enormous ringed planet from a small spacecraft cockpit.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/space-opera-02.webp", alt: "A shuttle docks at an orbital salvage platform above a ringed planet." },
+                    { src: "assets/dead-signal/space-opera-03.webp", alt: "A grounded exploration craft faces an ancient glowing gateway in a moon canyon." }
+                ],
                 sceneKey: "space-opera"
             },
             13: {
@@ -1789,6 +1839,10 @@
                 result: "You are in a Mafia Family Drama. It's strictly business. Don't go fishing, don't accept favors on your daughter's wedding day, and stay away from the cannoli.",
                 scene: "assets/dead-signal/family-crime.webp",
                 sceneAlt: "A multigenerational family gathers tensely around a dining table and closed ledger.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/family-crime-02.webp", alt: "Members of a crime family conduct a tense exchange inside a riverside boathouse." },
+                    { src: "assets/dead-signal/family-crime-03.webp", alt: "A patriarch and two heirs stand around a sealed chest in a stone wine cellar." }
+                ],
                 sceneKey: "family-crime"
             },
             14: {
@@ -1796,6 +1850,10 @@
                 result: "You are an NPC in a Simulation. Or just a person. You have no plot armor, your dialogue is unscripted and awkward, and your 'character arc' is just you trying to pay off a credit card. Go drink some water.",
                 scene: "assets/dead-signal/reality.webp",
                 sceneAlt: "A tired person holds a mismatched plastic container lid in a dim ordinary kitchen.",
+                sceneVariants: [
+                    { src: "assets/dead-signal/reality-02.webp", alt: "A tired person waits alone for laundry in an ordinary laundromat." },
+                    { src: "assets/dead-signal/reality-03.webp", alt: "A weary shopper waits at an ordinary supermarket checkout." }
+                ],
                 sceneKey: "reality"
             }
         };
@@ -2124,6 +2182,38 @@
             return shuffle(selected, randomFn);
         }
 
+        function buildSceneAssignments(selectedQuestions, categories, randomFn = Math.random) {
+            const remainingScenes = new Map();
+            const lastSceneByCategory = new Map();
+
+            return selectedQuestions.map(question => {
+                const category = categories[question.categoryId];
+                let sceneQueue = remainingScenes.get(question.categoryId) ?? [];
+
+                if (sceneQueue.length === 0) {
+                    const fullPool = [
+                        { src: category.scene, alt: category.sceneAlt },
+                        ...(category.sceneVariants ?? [])
+                    ];
+                    sceneQueue = shuffle(fullPool, randomFn);
+
+                    const previousScene = lastSceneByCategory.get(question.categoryId);
+                    if (sceneQueue.length > 1 && sceneQueue[0].src === previousScene) {
+                        const replacementIndex = sceneQueue.findIndex(scene => scene.src !== previousScene);
+                        [sceneQueue[0], sceneQueue[replacementIndex]] = [
+                            sceneQueue[replacementIndex],
+                            sceneQueue[0]
+                        ];
+                    }
+                }
+
+                const scene = sceneQueue.shift();
+                remainingScenes.set(question.categoryId, sceneQueue);
+                lastSceneByCategory.set(question.categoryId, scene.src);
+                return { categoryId: question.categoryId, src: scene.src, alt: scene.alt };
+            });
+        }
+
         function calculateRealityIntegrity(totalTropePoints) {
             return Math.min(100, Math.max(0, 100 - (totalTropePoints * 3)));
         }
@@ -2175,9 +2265,24 @@
             for (const categoryId of categoryIds) {
                 if (!model.categories[categoryId]) errors.push(`Missing category ${categoryId}`);
                 if (model.config.sceneFallback) {
-                    if (!model.categories[categoryId]?.scene) errors.push(`Missing scene ${categoryId}`);
-                    if (!model.categories[categoryId]?.sceneAlt) errors.push(`Missing scene alt ${categoryId}`);
-                    if (!model.categories[categoryId]?.sceneKey) errors.push(`Missing scene key ${categoryId}`);
+                    const category = model.categories[categoryId];
+                    if (!category?.scene) errors.push(`Missing scene ${categoryId}`);
+                    if (!category?.sceneAlt) errors.push(`Missing scene alt ${categoryId}`);
+                    if (!category?.sceneKey) errors.push(`Missing scene key ${categoryId}`);
+                    if ((category?.sceneVariants?.length ?? 0) !== 2) {
+                        errors.push(`Category ${categoryId} needs two scene variants`);
+                    }
+                    for (const [variantIndex, variant] of (category?.sceneVariants ?? []).entries()) {
+                        if (!variant?.src) errors.push(`Missing scene variant ${categoryId}.${variantIndex + 2}`);
+                        if (!variant?.alt) errors.push(`Missing scene variant alt ${categoryId}.${variantIndex + 2}`);
+                    }
+                    const scenePaths = [
+                        category?.scene,
+                        ...(category?.sceneVariants ?? []).map(variant => variant?.src)
+                    ].filter(Boolean);
+                    if (new Set(scenePaths).size !== scenePaths.length) {
+                        errors.push(`Duplicate scene path ${categoryId}`);
+                    }
                 }
                 if (!model.categoryShortNames[categoryId]) errors.push(`Missing short name ${categoryId}`);
                 if (!model.categoryThemes[categoryId]) errors.push(`Missing theme ${categoryId}`);
@@ -2265,6 +2370,7 @@
             dom.chromeScene.textContent = 'SCENE: --';
             dom.appRoot.dataset.category = '';
             dom.appRoot.dataset.scene = '';
+            dom.appRoot.dataset.sceneSrc = '';
             dom.appRoot.dataset.sceneStatus = 'idle';
             dom.signalScene.onload = null;
             dom.signalScene.onerror = null;
@@ -2315,7 +2421,7 @@
                 updateProgress();
                 updateBackgroundTheme(question.categoryId);
                 updateStoryBox(question.categoryId);
-                renderScene(question.categoryId);
+                renderScene(question.categoryId, state.sceneAssignments[state.currentQuestionIndex]);
                 preloadNextScene();
                 state.questionTransitioning = false;
                 setAnswerButtonsDisabled(false);
@@ -2337,19 +2443,21 @@
             dom.storyPage.textContent = `LOG PAGE ${String(randomPage).padStart(3, '0')}`;
         }
 
-        function renderScene(categoryId) {
+        function renderScene(categoryId, assignedScene) {
             const category = MODEL.categories[categoryId];
+            const scene = assignedScene ?? { src: category.scene, alt: category.sceneAlt };
             const requestId = ++state.sceneRequestId;
             dom.appRoot.dataset.category = String(categoryId);
             dom.appRoot.dataset.scene = category.sceneKey;
+            dom.appRoot.dataset.sceneSrc = scene.src;
             dom.appRoot.dataset.sceneStatus = 'loading';
             dom.sceneReadout.textContent = 'LOADING';
             dom.sceneChannel.textContent = `CHANNEL ${String(categoryId).padStart(2, '0')}`;
             dom.sceneCaption.textContent = `${category.sceneKey.replaceAll('-', ' ')} // SIGNAL FRAME`;
-            dom.signalScene.alt = category.sceneAlt;
-            dom.signalScene.onload = () => handleSceneLoad(requestId, category.scene);
-            dom.signalScene.onerror = () => handleSceneError(requestId, category.scene);
-            dom.signalScene.src = category.scene;
+            dom.signalScene.alt = scene.alt;
+            dom.signalScene.onload = () => handleSceneLoad(requestId, scene.src);
+            dom.signalScene.onerror = () => handleSceneError(requestId, scene.src);
+            dom.signalScene.src = scene.src;
 
             if (requestId === state.sceneRequestId && dom.signalScene.complete && dom.signalScene.naturalWidth > 0) {
                 dom.appRoot.dataset.sceneStatus = 'loaded';
@@ -2362,10 +2470,11 @@
             state.preloadImage = null;
             if (!nextQuestion) return;
 
-            const nextCategory = MODEL.categories[nextQuestion.categoryId];
+            const nextScene = state.sceneAssignments[state.currentQuestionIndex + 1];
+            if (!nextScene) return;
             const preloadImage = new Image();
             preloadImage.decoding = 'async';
-            preloadImage.src = nextCategory.scene;
+            preloadImage.src = nextScene.src;
             state.preloadImage = preloadImage;
         }
 
@@ -2388,6 +2497,7 @@
             dom.sceneReadout.textContent = 'DEGRADED';
             dom.sceneCaption.textContent = 'SIGNAL LOST // FALLBACK ACTIVE';
             dom.signalScene.alt = 'An empty underground signal control room replaces a missing scene.';
+            dom.appRoot.dataset.sceneSrc = MODEL.config.sceneFallback;
             const fallbackRequestId = ++state.sceneRequestId;
             dom.signalScene.onload = () => {
                 if (fallbackRequestId === state.sceneRequestId) dom.sceneReadout.textContent = 'DEGRADED';
@@ -2415,6 +2525,7 @@
             if (state.screen !== 'landing' || dom.startButton.disabled) return;
             state.currentQuestionIndex = 0;
             state.selectedQuestions = selectQuestions();
+            state.sceneAssignments = buildSceneAssignments(state.selectedQuestions, MODEL.categories);
             state.scores = {};
             state.totalTropePoints = 0;
             state.realityIntegrity = 100;
@@ -2493,6 +2604,7 @@
             dom.signalScene.onerror = null;
             dom.appRoot.dataset.category = '';
             dom.appRoot.dataset.scene = '';
+            dom.appRoot.dataset.sceneSrc = '';
             dom.appRoot.dataset.sceneStatus = 'idle';
             updateBackgroundTheme(winningCategoryId);
             dom.resultText.textContent = resultText;
@@ -2752,6 +2864,7 @@
             switchScreen('resultScreen', 'landingScreen');
             state.currentQuestionIndex = 0;
             state.selectedQuestions = [];
+            state.sceneAssignments = [];
             state.scores = {};
             state.totalTropePoints = 0;
             state.realityIntegrity = 100;
