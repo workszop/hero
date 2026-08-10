@@ -878,180 +878,348 @@
         }
 
         .results-dashboard {
-            padding: clamp(18px, 3vw, 30px);
+            position: relative;
+            overflow: hidden;
+            border-color: var(--ds-amber);
+            background: var(--ds-black);
         }
 
-        .dashboard-title {
-            margin-bottom: 18px;
-            color: var(--ds-phosphor);
-            font-size: var(--size-lg);
+        .results-dashboard::before {
+            position: absolute;
+            inset: 0 auto auto 0;
+            z-index: 1;
+            width: 140px;
+            height: 3px;
+            content: '';
+            background: var(--ds-amber);
         }
 
-        .winner-section,
-        .genre-breakdown,
-        .cryptic-metrics,
-        .tension-scatter-section {
-            padding: 18px;
-            border: 1px solid var(--ds-line);
-            background: var(--ds-screen);
+        .collider-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 28px;
+            padding: clamp(20px, 3vw, 34px);
+            border-bottom: 1px solid var(--ds-amber);
+            background:
+                linear-gradient(100deg, rgba(224, 163, 75, 0.09), transparent 58%),
+                var(--ds-panel-dark);
         }
 
-        .winner-section,
-        .genre-breakdown,
-        .cryptic-metrics {
-            margin-bottom: 14px;
-        }
-
-        .winner-label {
-            color: var(--ds-signal);
-            font-size: var(--size-xs);
-            text-transform: uppercase;
-        }
-
-        .winner-genre {
-            margin: 10px 0;
-            color: var(--ds-phosphor);
+        .collider-header h3 {
+            margin-top: 8px;
+            color: var(--ds-amber);
             font-family: var(--font-pixel);
             font-size: var(--size-xl);
             line-height: 1.2;
+            text-transform: uppercase;
         }
 
-        .winner-score {
-            color: var(--ds-ink);
+        .collider-header p {
+            max-width: 72ch;
+            margin-top: 10px;
+            color: var(--ds-muted);
             font-size: var(--size-sm);
         }
 
-        .breakdown-bar-row {
-            grid-template-columns: minmax(130px, 0.7fr) minmax(140px, 2fr) 6ch;
-            padding: 6px;
-            border-left: 3px solid transparent;
-        }
-
-        .breakdown-bar-row.winner {
-            border-color: var(--ds-phosphor);
-            background: var(--ds-panel-dark);
-        }
-
-        .breakdown-bar-row.winner .breakdown-name,
-        .breakdown-bar-row.winner .breakdown-score {
-            color: var(--ds-phosphor);
-            font-weight: 700;
-        }
-
-        .metrics-gauges {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px 18px;
-        }
-
-        .gauge-card {
-            display: grid;
-            grid-template-columns: minmax(120px, 0.8fr) minmax(120px, 1.2fr) 3ch;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .gauge-name,
-        .gauge-center {
-            color: var(--ds-muted);
-            font-size: var(--size-xs);
-            text-transform: uppercase;
-        }
-
-        .gauge-center {
-            color: var(--ds-phosphor);
+        .winner-summary {
+            flex: 0 0 min(320px, 32vw);
+            padding-left: 20px;
+            border-left: 1px solid var(--ds-amber);
             text-align: right;
         }
 
-        .gauge-wrapper,
-        .gauge-svg {
-            display: none;
+        .winner-label,
+        .winner-genre,
+        .winner-score {
+            display: block;
         }
 
-        .metric-meter-track {
-            height: 11px;
+        .winner-label,
+        .collider-kicker,
+        .collider-metric-label,
+        .chart-kicker {
+            font-family: var(--font-pixel);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
         }
 
-        .scatter-container {
-            position: relative;
-            padding: 0 0 24px 24px;
-        }
-
-        .scatter-plot {
-            position: relative;
-            height: 190px;
-            overflow: hidden;
-            border: 1px solid var(--ds-line);
-            background: var(--ds-panel-dark);
-        }
-
-        .scatter-grid {
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(var(--ds-grid) 1px, transparent 1px),
-                linear-gradient(90deg, var(--ds-grid) 1px, transparent 1px);
-            background-size: 10% 20%;
-        }
-
-        .scatter-points,
-        .scatter-line {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .scatter-point {
-            position: absolute;
-            border: 1px solid var(--ds-screen);
-            background: var(--ds-phosphor);
-            transform: translate(-50%, -50%);
-        }
-
-        .scatter-line svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .scatter-line path {
-            fill: none;
-            stroke: var(--ds-signal);
-            stroke-width: 1.2;
-            vector-effect: non-scaling-stroke;
-        }
-
-        .scatter-axes {
+        .winner-label {
             color: var(--ds-muted);
             font-size: var(--size-2xs);
+        }
+
+        .winner-genre {
+            margin: 8px 0 5px;
+            color: var(--ds-phosphor);
+            font-family: var(--font-pixel);
+            font-size: clamp(1rem, 2vw, 1.55rem);
+            line-height: 1.2;
             text-transform: uppercase;
         }
 
-        .scatter-y-label {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: rotate(-90deg) translate(-50%, 0);
-            transform-origin: left top;
+        .winner-score {
+            color: var(--ds-amber);
+            font-size: var(--size-sm);
         }
 
-        .scatter-x-label {
+        .collider-kicker,
+        .chart-kicker {
+            color: var(--ds-amber);
+            font-size: var(--size-2xs);
+        }
+
+        .collider-metric-strip {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 1px;
+            border-bottom: 1px solid var(--ds-amber);
+            background: var(--ds-amber);
+        }
+
+        .collider-metric {
+            min-width: 0;
+            padding: 16px clamp(12px, 2vw, 24px);
+            background: var(--ds-screen);
+        }
+
+        .collider-metric-label,
+        .collider-metric-value {
+            display: block;
+        }
+
+        .collider-metric-label {
+            overflow: hidden;
+            color: var(--ds-muted);
+            font-size: var(--size-2xs);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .collider-metric-value {
+            margin-top: 6px;
+            color: var(--ds-ink);
+            font-size: var(--size-lg);
+        }
+
+        .collider-metric-value.hot {
+            color: var(--ds-amber);
+        }
+
+        .collider-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.22fr) minmax(340px, 0.78fr);
+            gap: 1px;
+            background: var(--ds-amber);
+        }
+
+        .collider-panel {
+            min-width: 0;
+            padding: clamp(18px, 2.6vw, 30px);
+            background: var(--ds-screen);
+        }
+
+        .collider-panel h4 {
+            margin-top: 7px;
+            color: var(--ds-ink);
+            font-family: var(--font-pixel);
+            font-size: var(--size-md);
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .chart-note {
+            margin-top: 7px;
+            color: var(--ds-muted);
+            font-size: var(--size-xs);
+        }
+
+        .collision-frame {
+            position: relative;
+            min-height: 420px;
+            margin-top: 20px;
+            border: 1px solid var(--ds-line);
+            background:
+                linear-gradient(rgba(224, 163, 75, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(224, 163, 75, 0.08) 1px, transparent 1px),
+                var(--ds-black);
+            background-size: 40px 40px;
+        }
+
+        .collision-frame svg,
+        .regression-frame svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .collider-legend {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 9px 16px;
+            margin-top: 16px;
+        }
+
+        .collider-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+            color: var(--ds-muted);
+            font-size: var(--size-2xs);
+        }
+
+        .collider-legend-dot {
+            flex: 0 0 7px;
+            width: 7px;
+            height: 7px;
+            background: var(--ds-signal);
+            box-shadow: 0 0 8px var(--ds-glow);
+        }
+
+        .collider-legend-item.winner,
+        .posterior-row[data-winner="true"] .posterior-name,
+        .posterior-row[data-winner="true"] .posterior-value {
+            color: var(--ds-phosphor);
+        }
+
+        .collider-legend-item.winner .collider-legend-dot {
+            background: var(--ds-phosphor);
+        }
+
+        .posterior-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .posterior-row {
+            display: grid;
+            grid-template-columns: minmax(110px, 0.9fr) minmax(110px, 1.5fr) 58px;
+            gap: 10px;
+            align-items: center;
+            min-height: 24px;
+        }
+
+        .posterior-name {
+            overflow: hidden;
+            color: var(--ds-muted);
+            font-size: var(--size-xs);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .posterior-track {
+            position: relative;
+            height: 13px;
+            border-right: 1px solid var(--ds-line);
+            border-left: 1px solid var(--ds-line);
+            background:
+                linear-gradient(90deg, transparent 24%, var(--ds-line-dim) 25%, transparent 26%, transparent 49%, var(--ds-line-dim) 50%, transparent 51%, transparent 74%, var(--ds-line-dim) 75%, transparent 76%),
+                var(--ds-black);
+        }
+
+        .posterior-whisker {
             position: absolute;
-            right: 0;
-            bottom: 0;
+            top: 5px;
+            height: 2px;
+            background: var(--ds-line);
+        }
+
+        .posterior-dot {
+            position: absolute;
+            top: 2px;
+            width: 9px;
+            height: 9px;
+            border: 1px solid var(--ds-screen);
+            background: var(--ds-signal);
+            box-shadow: 0 0 7px var(--ds-glow);
+            transform: translateX(-50%) rotate(45deg);
+        }
+
+        .posterior-value {
+            color: var(--ds-ink);
+            font-size: var(--size-xs);
+            text-align: right;
+        }
+
+        .posterior-row[data-winner="true"] .posterior-whisker,
+        .posterior-row[data-winner="true"] .posterior-dot {
+            background: var(--ds-phosphor);
+            box-shadow: 0 0 9px rgba(213, 220, 115, 0.5);
+        }
+
+        .regression-frame {
+            height: 250px;
+            margin-top: 20px;
+            border: 1px solid var(--ds-line);
+            background:
+                linear-gradient(var(--ds-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--ds-grid) 1px, transparent 1px),
+                var(--ds-black);
+            background-size: 40px 40px;
+        }
+
+        .coefficient-scroll {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .coefficient-table {
+            width: 100%;
+            min-width: 420px;
+            margin-top: 20px;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: var(--size-xs);
+        }
+
+        .coefficient-table th,
+        .coefficient-table td {
+            padding: 11px 8px;
+            border-bottom: 1px solid var(--ds-line-dim);
+            text-align: right;
+        }
+
+        .coefficient-table th:first-child,
+        .coefficient-table td:first-child {
+            width: 42%;
+            color: var(--ds-muted);
+            text-align: left;
+        }
+
+        .coefficient-table th {
+            color: var(--ds-muted);
+            font-family: var(--font-pixel);
+            font-size: var(--size-2xs);
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        .coefficient-table tr:first-child td {
+            color: var(--ds-phosphor);
         }
 
         .dashboard-footer {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             justify-content: space-between;
-            gap: 8px 24px;
-            margin-top: 18px;
-            padding-top: 14px;
-            border-top: 1px solid var(--ds-line);
+            gap: 10px 24px;
+            padding: 16px clamp(18px, 2.6vw, 30px);
+            border-top: 1px solid var(--ds-amber);
             color: var(--ds-muted);
+            background: var(--ds-panel-dark);
             font-size: var(--size-2xs);
             text-transform: uppercase;
+        }
+
+        .dashboard-footer button {
+            min-height: 42px;
+            padding: 8px 12px;
+            border-width: 1px;
+            font-family: var(--font-pixel);
+            font-size: var(--size-2xs);
         }
 
         @media (max-width: 1100px) {
@@ -1065,6 +1233,14 @@
 
             .landing-grid {
                 grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+            }
+
+            .collider-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .collider-legend {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
         }
 
@@ -1163,13 +1339,44 @@
                 min-height: auto;
             }
 
-            .metrics-gauges {
-                grid-template-columns: 1fr;
+            .collider-header,
+            .dashboard-footer {
+                align-items: flex-start;
+                flex-direction: column;
             }
 
-            .breakdown-bar-row,
-            .gauge-card {
-                grid-template-columns: minmax(100px, 0.8fr) minmax(90px, 1.2fr) 6ch;
+            .winner-summary {
+                width: 100%;
+                flex-basis: auto;
+                padding: 16px 0 0;
+                border-top: 1px solid var(--ds-amber);
+                border-left: 0;
+                text-align: left;
+            }
+
+            .collider-metric-strip {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .collider-metric:last-child {
+                grid-column: 1 / -1;
+            }
+
+            .collision-frame {
+                min-height: 330px;
+            }
+
+            .collider-legend {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .posterior-row {
+                grid-template-columns: minmax(96px, 0.95fr) minmax(90px, 1.2fr) 54px;
+                gap: 7px;
+            }
+
+            .dashboard-footer button {
+                width: 100%;
             }
         }
 
@@ -1197,8 +1404,6 @@
                 gap: 2px;
             }
 
-            .breakdown-bar-row,
-            .gauge-card,
             .genre-bar-row {
                 grid-template-columns: minmax(84px, 0.9fr) minmax(62px, 1.1fr) 6ch;
                 gap: 6px;
@@ -1229,6 +1434,10 @@
           data-reality-integrity="100"
           data-result-category=""
           data-result-signal-percent=""
+          data-analysis-layout="collider"
+          data-analysis-mode="fabricated"
+          data-analysis-seed=""
+          data-analysis-winner=""
           data-predictor-category=""
           data-predictor-percent=""
           data-category=""
@@ -1425,54 +1634,76 @@
                 </div>
                 <p id="appStatus" class="app-status" role="status" aria-live="polite"></p>
 
-                <section class="results-dashboard" id="resultsDashboard" aria-labelledby="dashboardTitle">
-                    <h3 class="dashboard-title" id="dashboardTitle">Narrative Analysis Complete</h3>
-
-                    <div class="winner-section">
-                        <div class="winner-badge">
-                            <div class="winner-label">Primary Signal // Dominant Narrative Pattern</div>
-                            <div class="winner-genre" id="winnerGenre">Fantasy Hero</div>
-                            <div class="winner-score" id="winnerScore">Confidence: 87%</div>
+                <section
+                    class="results-dashboard"
+                    id="resultsDashboard"
+                    aria-labelledby="dashboardTitle"
+                    data-analysis-layout="collider"
+                    data-mode="fabricated"
+                    data-winner=""
+                    data-seed="0"
+                >
+                    <header class="collider-header">
+                        <div>
+                            <div class="collider-kicker">APPENDIX C // COLLIDER FIT REPORT</div>
+                            <h3 id="dashboardTitle">Archetype Collider</h3>
+                            <p>Independent genre hypotheses projected through a fourteen-channel narrative collision model. Confidence intervals have been calibrated to look extremely defensible.</p>
                         </div>
+                        <div class="winner-summary" aria-label="Dominant signal">
+                            <span class="winner-label">Dominant Narrative Signal</span>
+                            <strong class="winner-genre" id="winnerGenre">Awaiting diagnosis</strong>
+                            <span class="winner-score" id="winnerScore">Signal confidence: --</span>
+                        </div>
+                    </header>
+
+                    <div class="collider-metric-strip" id="metricStrip" role="list" aria-label="Collider model diagnostics"></div>
+
+                    <div class="collider-grid">
+                        <section class="collider-panel" aria-labelledby="collisionHeading">
+                            <div class="chart-kicker">MODEL 04-A // LATENT COLLISION SPACE</div>
+                            <h4 id="collisionHeading">Archetype Collision Field</h4>
+                            <p class="chart-note">Marker area indicates trope mass. Distance from origin indicates narrative instability.</p>
+                            <div class="collision-frame">
+                                <svg id="collisionPlot" viewBox="0 0 760 420" role="img" aria-label="Archetype collision field"></svg>
+                            </div>
+                            <div class="collider-legend" id="colliderLegend" role="list" aria-label="Collider category legend"></div>
+                        </section>
+
+                        <section class="collider-panel" aria-labelledby="posteriorHeading">
+                            <div class="chart-kicker">MODEL 04-B // INDEPENDENT POSTERIOR</div>
+                            <h4 id="posteriorHeading">Genre Cross-Section</h4>
+                            <p class="chart-note">Whiskers represent an entirely proprietary uncertainty interval.</p>
+                            <div class="posterior-list" id="posteriorList" role="list" aria-label="Genre confidence percentages"></div>
+                        </section>
+
+                        <section class="collider-panel" aria-labelledby="regressionHeading">
+                            <div class="chart-kicker">MODEL 04-C // TEMPORAL FIT</div>
+                            <h4 id="regressionHeading">Narrative Energy Regression</h4>
+                            <p class="chart-note">Observed plot energy against predicted dramatic necessity across thirty answers.</p>
+                            <div class="regression-frame">
+                                <svg id="regressionPlot" viewBox="0 0 720 250" role="img" aria-label="Narrative energy regression with confidence envelope"></svg>
+                            </div>
+                        </section>
+
+                        <section class="collider-panel" aria-labelledby="coefficientHeading">
+                            <div class="chart-kicker">MODEL 04-D // EFFECT ESTIMATES</div>
+                            <h4 id="coefficientHeading">Coefficients</h4>
+                            <p class="chart-note">Standard errors corrected for montage bias and unreliable narration.</p>
+                            <div class="coefficient-scroll">
+                                <table class="coefficient-table">
+                                    <thead>
+                                        <tr><th>Predictor</th><th>β</th><th>SE</th><th>p</th></tr>
+                                    </thead>
+                                    <tbody id="coefficientBody"></tbody>
+                                </table>
+                            </div>
+                        </section>
                     </div>
 
-                    <section class="genre-breakdown" aria-labelledby="breakdownHeading">
-                        <h4 class="breakdown-header" id="breakdownHeading">
-                            <span class="indicator" aria-hidden="true"></span>
-                            Genre Signal Distribution
-                        </h4>
-                        <div class="genre-breakdown-grid" id="genreBreakdownGrid" role="list" aria-label="Genre signal distribution" data-mode="fabricated"></div>
-                    </section>
-
-                    <section class="cryptic-metrics" aria-labelledby="metricsHeading">
-                        <h4 class="metrics-header" id="metricsHeading">
-                            <span class="indicator" aria-hidden="true"></span>
-                            Protagonist Metrics Analysis
-                        </h4>
-                        <div class="metrics-gauges" id="metricsGauges" role="list" aria-label="Protagonist metrics"></div>
-                    </section>
-
-                    <section class="tension-scatter-section" aria-labelledby="scatterHeading">
-                        <h4 class="scatter-header" id="scatterHeading">
-                            <span class="indicator" aria-hidden="true"></span>
-                            Narrative Tension Mapping
-                        </h4>
-                        <div class="scatter-container">
-                            <div class="scatter-plot" id="scatterPlot" aria-hidden="true">
-                                <div class="scatter-grid" aria-hidden="true"></div>
-                                <div class="scatter-points" id="scatterPoints" aria-hidden="true"></div>
-                                <svg class="scatter-line" id="scatterLine" aria-hidden="true"></svg>
-                            </div>
-                            <div class="scatter-axes" aria-hidden="true">
-                                <span class="scatter-y-label">Intensity</span>
-                                <span class="scatter-x-label">Story Progression</span>
-                            </div>
-                        </div>
-                    </section>
-
                     <footer class="dashboard-footer">
-                        <div class="dashboard-footer-text">Analysis powered by Narrative Intelligence Engine v2.7.4</div>
-                        <div class="dashboard-id" id="dashboardId">Session ID: NRR-0000000</div>
+                        <span>Press R to recalibrate all readings</span>
+                        <span class="dashboard-id" id="dashboardId">Run ID: DS-000000</span>
+                        <button id="recalibrateButton" type="button" aria-keyshortcuts="R">Recalibrate Model</button>
                     </footer>
                 </section>
             </div>
@@ -1494,7 +1725,8 @@
             sceneAssignments: [],
             sceneRequestId: 0,
             screen: 'landing',
-            resultCategoryId: null
+            resultCategoryId: null,
+            analysisSeed: 0
         };
 
         // ─── DOM refs ───
@@ -1503,17 +1735,20 @@
             appStatus: document.getElementById('appStatus'),
             backgroundLayer: document.getElementById('backgroundLayer'),
             chromeScene: document.getElementById('chromeScene'),
+            coefficientBody: document.getElementById('coefficientBody'),
+            colliderLegend: document.getElementById('colliderLegend'),
+            collisionPlot: document.getElementById('collisionPlot'),
             dashboardId: document.getElementById('dashboardId'),
             finalReality: document.getElementById('finalReality'),
-            genreBreakdownGrid: document.getElementById('genreBreakdownGrid'),
             genrePredictorBars: document.getElementById('genrePredictorBars'),
             landingScreen: document.getElementById('landingScreen'),
             landingSceneStatus: document.getElementById('landingSceneStatus'),
             landingSignal: document.getElementById('landingSignal'),
             linkStatus: document.getElementById('linkStatus'),
-            metricsGauges: document.getElementById('metricsGauges'),
+            metricStrip: document.getElementById('metricStrip'),
             optionButtons: [...document.querySelectorAll('[data-answer]')],
             playAgainButton: document.getElementById('playAgainButton'),
+            posteriorList: document.getElementById('posteriorList'),
             progressText: document.getElementById('progressText'),
             progressTimeline: document.getElementById('progressTimeline'),
             predictorSummary: document.getElementById('predictorSummary'),
@@ -1529,8 +1764,9 @@
             resultScreen: document.getElementById('resultScreen'),
             resultStory: document.getElementById('resultStory'),
             resultText: document.getElementById('resultText'),
-            scatterLine: document.getElementById('scatterLine'),
-            scatterPoints: document.getElementById('scatterPoints'),
+            regressionPlot: document.getElementById('regressionPlot'),
+            resultsDashboard: document.getElementById('resultsDashboard'),
+            recalibrateButton: document.getElementById('recalibrateButton'),
             shareButton: document.getElementById('shareButton'),
             sceneCaption: document.getElementById('sceneCaption'),
             sceneChannel: document.getElementById('sceneChannel'),
@@ -2288,6 +2524,52 @@
             return signals.sort((a, b) => b.percentage - a.percentage || a.id - b.id);
         }
 
+        function createSeededRandom(seed) {
+            let value = Number(seed) >>> 0;
+            return function random() {
+                value += 0x6D2B79F5;
+                let next = value;
+                next = Math.imul(next ^ (next >>> 15), next | 1);
+                next ^= next + Math.imul(next ^ (next >>> 7), next | 61);
+                return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
+            };
+        }
+
+        function generateColliderRun(categoryIds, winningCategoryId, seed) {
+            const normalizedSeed = Number(seed) >>> 0;
+            const random = createSeededRandom(normalizedSeed);
+            const roundBetween = (min, max, decimals = 1) => Number(
+                (min + random() * (max - min)).toFixed(decimals)
+            );
+            const signals = generateFakeResultSignals(categoryIds, winningCategoryId, random)
+                .map(signal => ({
+                    ...signal,
+                    uncertainty: signal.id === winningCategoryId
+                        ? roundBetween(2.1, 3.7)
+                        : roundBetween(3.4, 9.7)
+                }));
+            const metrics = {
+                mcguffinDensity: roundBetween(0.71, 1.34, 2),
+                tropeBarns: roundBetween(38.2, 88.8),
+                residualAngst: roundBetween(61.1, 96.4),
+                colliderR2: roundBetween(0.931, 0.989, 3),
+                plotEntropy: roundBetween(7.4, 12.9)
+            };
+            const coefficients = Array.from({ length: 5 }, (_, index) => ({
+                beta: roundBetween(index === 0 ? 1.42 : -0.82, index === 0 ? 2.31 : 1.28, 2),
+                se: roundBetween(0.04, 0.29, 2),
+                p: index === 0 ? 0.0005 : roundBetween(0.002, 0.094, 3)
+            }));
+            const regression = Array.from({ length: 30 }, (_, index) => {
+                const x = Number((40 + index * 21.2).toFixed(1));
+                const baseY = 202 - index * 4.75;
+                const y = Number(Math.max(30, Math.min(220, baseY + roundBetween(-30, 30))).toFixed(1));
+                return { x, y };
+            });
+
+            return { seed: normalizedSeed, signals, metrics, coefficients, regression };
+        }
+
         function validateModel(model) {
             const errors = [];
             const categoryIds = [...model.config.genreCategoryIds, model.config.realityCategoryId];
@@ -2372,6 +2654,7 @@
             state.questionTransitioning = false;
             state.currentResult = null;
             state.resultCategoryId = null;
+            state.analysisSeed = 0;
             dom.realityValue.textContent = '100%';
             dom.realityMeterFill.style.width = '100%';
             dom.realityValue.classList.remove('critical');
@@ -2382,15 +2665,24 @@
             dom.appRoot.dataset.predictorCategory = '';
             dom.appRoot.dataset.predictorPercent = '';
             dom.appRoot.dataset.resultSignalPercent = '';
+            dom.appRoot.dataset.analysisSeed = '';
+            dom.appRoot.dataset.analysisWinner = '';
             dom.timelineProgress.style.width = '0%';
             dom.timelinePlayhead.style.left = '0%';
             dom.progressTimeline.setAttribute('aria-valuenow', '0');
             dom.resultText.textContent = '';
             dom.resultStory.textContent = '';
-            dom.genreBreakdownGrid.innerHTML = '';
-            dom.metricsGauges.innerHTML = '';
-            dom.scatterPoints.innerHTML = '';
-            dom.scatterLine.innerHTML = '';
+            dom.metricStrip.innerHTML = '';
+            dom.collisionPlot.innerHTML = '';
+            dom.colliderLegend.innerHTML = '';
+            dom.posteriorList.innerHTML = '';
+            dom.regressionPlot.innerHTML = '';
+            dom.coefficientBody.innerHTML = '';
+            dom.winnerGenre.textContent = 'Awaiting diagnosis';
+            dom.winnerScore.textContent = 'Signal confidence: --';
+            dom.dashboardId.textContent = 'Run ID: DS-000000';
+            dom.resultsDashboard.dataset.seed = '0';
+            dom.resultsDashboard.dataset.winner = '';
             document.querySelectorAll('.wave-bar').forEach(bar => {
                 bar.style.height = '10px';
             });
@@ -2698,17 +2990,35 @@
             });
         }
 
-        // Cryptic metric definitions
-        const crypticMetrics = [
-            { name: 'Luck Quotient', color: 'var(--color-green)' },
-            { name: 'Action Intelligence', color: 'var(--color-blue)' },
-            { name: 'Romantic Pull', color: 'var(--color-hot-pink)' },
-            { name: 'Chaos Compatibility', color: 'var(--color-purple)' },
-            { name: 'Plot Armor Index', color: 'var(--color-gold)' },
-            { name: 'Dramatic Timing', color: 'var(--color-teal)' },
-            { name: 'Sidekick Magnetism', color: 'var(--color-red)' },
-            { name: 'Exposition Density', color: 'var(--color-blue-gray)' },
-            { name: 'Cliffhanger Resilience', color: 'var(--color-teal-dark)' }
+        const COLLISION_POSITIONS = [
+            { x: 592, y: 92, label: true, dx: -54, dy: -42 },
+            { x: 191, y: 124, label: true, dx: -44, dy: -24 },
+            { x: 137, y: 289, label: true, dx: -46, dy: 29 },
+            { x: 436, y: 160 },
+            { x: 315, y: 92 },
+            { x: 529, y: 258 },
+            { x: 248, y: 210 },
+            { x: 614, y: 320 },
+            { x: 369, y: 316 },
+            { x: 480, y: 356 },
+            { x: 91, y: 188 },
+            { x: 329, y: 260 },
+            { x: 686, y: 198 },
+            { x: 223, y: 350 }
+        ];
+        const COLLIDER_METRIC_LABELS = [
+            'McGuffin density',
+            'Trope barns',
+            'Residual angst',
+            'Collider R²',
+            'Plot entropy'
+        ];
+        const COEFFICIENT_NAMES = [
+            'Reality leakage',
+            'Unpaid invoice load',
+            'Chosen-one resistance',
+            'Montage deficiency',
+            'Laundry recurrence'
         ];
 
         // ─── Model ───
@@ -2730,123 +3040,166 @@
             categories,
             questions,
             genreStories,
-            resultStories,
-            crypticMetrics
+            resultStories
         });
 
-        function renderResultsDashboard(winningCategoryId) {
-            // This entire display is deliberately fabricated around the real diagnosis.
-            const winnerName = MODEL.categoryShortNames[winningCategoryId] || 'Unknown';
-            const signals = generateFakeResultSignals(
+        function renderResultsDashboard(winningCategoryId, seed = null) {
+            const analysisSeed = seed === null
+                ? (Date.now() ^ Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0
+                : Number(seed) >>> 0;
+            const run = generateColliderRun(
                 Object.keys(MODEL.categories).map(Number),
-                winningCategoryId
+                winningCategoryId,
+                analysisSeed
             );
-            const winnerSignal = signals.find(signal => signal.id === winningCategoryId);
+            const winnerSignal = run.signals.find(signal => signal.id === winningCategoryId);
+            const winnerName = MODEL.categoryShortNames[winningCategoryId] || 'Unknown';
+            const winnerPercentage = winnerSignal.percentage.toFixed(1);
+
+            state.analysisSeed = run.seed;
             dom.winnerGenre.textContent = winnerName;
-            dom.winnerScore.textContent = `Signal confidence: ${winnerSignal.percentage.toFixed(1)}%`;
-            dom.appRoot.dataset.resultSignalPercent = winnerSignal.percentage.toFixed(1);
+            dom.winnerScore.textContent = `Signal confidence: ${winnerPercentage}%`;
+            dom.dashboardId.textContent = `Run ID: DS-${String(run.seed % 1000000).padStart(6, '0')}`;
+            dom.appRoot.dataset.resultSignalPercent = winnerPercentage;
+            dom.appRoot.dataset.analysisSeed = String(run.seed);
+            dom.appRoot.dataset.analysisWinner = String(winningCategoryId);
+            dom.resultsDashboard.dataset.seed = String(run.seed);
+            dom.resultsDashboard.dataset.winner = String(winningCategoryId);
+            dom.collisionPlot.setAttribute('aria-label', `Archetype collision field with ${winnerName} as the dominant signal`);
 
-            // Generate session ID
-            const sessionId = 'NRR-' + Math.random().toString(36).substr(2, 7).toUpperCase();
-            dom.dashboardId.textContent = `Session ID: ${sessionId}`;
-
-            // Render all dashboard components
-            renderGenreBreakdown(winningCategoryId, signals);
-            renderCrypticMetrics();
-            renderScatterPlot();
+            renderColliderMetrics(run.metrics);
+            renderCollisionField(winningCategoryId, run.signals, run.seed);
+            renderPosteriorCrossSection(winningCategoryId, run.signals);
+            renderNarrativeRegression(run.regression);
+            renderCoefficients(run.coefficients);
         }
 
-        function renderGenreBreakdown(winningId, signals) {
-            let html = '';
-            for (const signal of signals) {
-                const id = signal.id;
-                const percentage = signal.percentage.toFixed(1);
-                const color = MODEL.categoryBarColors[id];
-                const name = MODEL.categoryShortNames[id];
-                const isWinner = id === winningId;
+        function renderColliderMetrics(metrics) {
+            const values = [
+                `${metrics.mcguffinDensity.toFixed(2)} μg/q`,
+                `${metrics.tropeBarns.toFixed(1)} Tb`,
+                `${metrics.residualAngst.toFixed(1)}%`,
+                metrics.colliderR2.toFixed(3),
+                `${metrics.plotEntropy.toFixed(1)} bits`
+            ];
+            dom.metricStrip.innerHTML = COLLIDER_METRIC_LABELS.map((label, index) => `
+                <div class="collider-metric" role="listitem" data-metric="${label}">
+                    <span class="collider-metric-label">${label}</span>
+                    <strong class="collider-metric-value ${index === 3 ? 'hot' : ''}">${values[index]}</strong>
+                </div>
+            `).join('');
+        }
 
-                html += `<div class="breakdown-bar-row ${isWinner ? 'winner' : ''}"
+        function renderCollisionField(winningId, signals, seed) {
+            const parts = [
+                '<defs>',
+                '<radialGradient id="winnerGlow"><stop offset="0%" stop-color="var(--ds-phosphor)" stop-opacity="0.38"/><stop offset="100%" stop-color="var(--ds-phosphor)" stop-opacity="0"/></radialGradient>',
+                '</defs>',
+                '<line x1="52" y1="380" x2="730" y2="380" stroke="var(--ds-line)" stroke-width="1"/>',
+                '<line x1="52" y1="28" x2="52" y2="380" stroke="var(--ds-line)" stroke-width="1"/>',
+                '<line x1="390" y1="28" x2="390" y2="380" stroke="var(--ds-line-dim)" stroke-dasharray="4 7"/>',
+                '<line x1="52" y1="204" x2="730" y2="204" stroke="var(--ds-line-dim)" stroke-dasharray="4 7"/>',
+                '<text x="61" y="46" fill="var(--ds-muted)" font-family="Space Mono, monospace" font-size="9">HIGH REALITY LEAKAGE</text>',
+                '<text x="61" y="370" fill="var(--ds-muted)" font-family="Space Mono, monospace" font-size="9">LOW REALITY LEAKAGE</text>',
+                '<text x="718" y="370" fill="var(--ds-muted)" font-family="Space Mono, monospace" font-size="9" text-anchor="end">MAXIMUM PLOT PRESSURE</text>'
+            ];
+
+            signals.forEach((signal, index) => {
+                const point = COLLISION_POSITIONS[index];
+                const jitter = ((seed >>> (index % 16)) % 7) - 3;
+                const x = point.x + jitter;
+                const y = point.y - jitter;
+                const radius = Math.max(10, Math.min(31, 8 + signal.percentage * 0.23));
+                const isWinner = signal.id === winningId;
+                const name = MODEL.categoryShortNames[signal.id];
+
+                if (isWinner) {
+                    parts.push(`<circle cx="${x}" cy="${y}" r="61" fill="url(#winnerGlow)"/>`);
+                    parts.push(`<circle cx="${x}" cy="${y}" r="${radius}" fill="var(--ds-phosphor)" fill-opacity="0.18" stroke="var(--ds-phosphor)" stroke-width="2"/>`);
+                    parts.push(`<circle cx="${x}" cy="${y}" r="6" fill="var(--ds-phosphor)"/>`);
+                } else {
+                    parts.push(`<circle cx="${x}" cy="${y}" r="${radius}" fill="var(--ds-signal)" fill-opacity="0.1" stroke="var(--ds-signal)" stroke-width="1.2"/>`);
+                    parts.push(`<circle cx="${x}" cy="${y}" r="3" fill="var(--ds-signal-bright)"/>`);
+                }
+
+                if (point.label) {
+                    parts.push(`<text x="${x + point.dx}" y="${y + point.dy}" fill="${isWinner ? 'var(--ds-phosphor)' : 'var(--ds-ink)'}" font-family="Space Mono, monospace" font-size="${isWinner ? 12 : 10}" font-weight="${isWinner ? 700 : 400}">${name} ${signal.percentage.toFixed(1)}%</text>`);
+                }
+            });
+
+            dom.collisionPlot.innerHTML = parts.join('');
+            dom.colliderLegend.innerHTML = signals.map(signal => {
+                const isWinner = signal.id === winningId;
+                const name = MODEL.categoryShortNames[signal.id];
+                return `<div class="collider-legend-item ${isWinner ? 'winner' : ''}"
+                    role="listitem"
+                    data-category="${signal.id}"
+                    data-percent="${signal.percentage.toFixed(1)}"
+                    data-winner="${isWinner}">
+                    <span class="collider-legend-dot" aria-hidden="true"></span>
+                    <span>${name} ${signal.percentage.toFixed(1)}%</span>
+                </div>`;
+            }).join('');
+        }
+
+        function renderPosteriorCrossSection(winningId, signals) {
+            dom.posteriorList.innerHTML = signals.map(signal => {
+                const isWinner = signal.id === winningId;
+                const percentage = signal.percentage.toFixed(1);
+                const lower = Math.max(1, signal.percentage - signal.uncertainty);
+                const width = Math.min(99 - lower, signal.uncertainty * 2);
+                const name = MODEL.categoryShortNames[signal.id];
+                return `<div class="posterior-row"
                     role="listitem"
                     aria-label="${name}: ${percentage} percent${isWinner ? ', winner' : ''}"
-                    data-category="${id}"
+                    data-category="${signal.id}"
                     data-percent="${percentage}"
                     data-winner="${isWinner}"
                     ${isWinner ? 'aria-current="true"' : ''}>
-                    <span class="breakdown-name">${name}</span>
-                    <div class="breakdown-track">
-                        <div class="breakdown-fill" style="width:${percentage}%; background:${color};"></div>
-                    </div>
-                    <span class="breakdown-score">${percentage}%</span>
+                    <span class="posterior-name">${name}</span>
+                    <span class="posterior-track" aria-hidden="true">
+                        <span class="posterior-whisker" style="left:${lower.toFixed(1)}%;width:${width.toFixed(1)}%"></span>
+                        <span class="posterior-dot" style="left:${percentage}%"></span>
+                    </span>
+                    <strong class="posterior-value">${percentage}%</strong>
                 </div>`;
-            }
-            dom.genreBreakdownGrid.innerHTML = html;
-
-            // Animate bars in
-            setTimeout(() => {
-                dom.genreBreakdownGrid.querySelectorAll('.breakdown-fill').forEach(fill => {
-                    fill.style.width = fill.style.width; // Trigger reflow
-                });
-            }, 100);
+            }).join('');
         }
 
-        function renderCrypticMetrics() {
-            // The values remain deliberately theatrical and random.
-            const shuffled = shuffle(MODEL.crypticMetrics).slice(0, 6);
-
-            let html = '';
-            shuffled.forEach(metric => {
-                const value = Math.floor(Math.random() * 100);
-                html += `<div class="gauge-card" role="listitem" aria-label="${metric.name}: ${value}">
-                    <div class="gauge-name">${metric.name}</div>
-                    <div class="metric-meter-track" aria-hidden="true">
-                        <div class="metric-meter-fill" style="width:${value}%; background:${metric.color};"></div>
-                    </div>
-                    <div class="gauge-center">${String(value).padStart(2, '0')}</div>
-                </div>`;
-            });
-            dom.metricsGauges.innerHTML = html;
-        }
-
-        function renderScatterPlot() {
-            const pointCount = 12;
-
-            // Generate points along a narrative tension curve with some randomness
-            const points = [];
-            for (let i = 0; i < pointCount; i++) {
-                const progress = i / (pointCount - 1);
-                let baseY;
-                if (progress < 0.3) {
-                    baseY = 70 - progress * 80;
-                } else if (progress < 0.7) {
-                    const rise = (progress - 0.3) / 0.4;
-                    baseY = 46 - rise * 40;
-                } else {
-                    const fall = (progress - 0.7) / 0.3;
-                    baseY = 6 + fall * 50;
-                }
-                // Add randomness
-                const y = Math.max(5, Math.min(95, baseY + (Math.random() - 0.5) * 25));
-                const x = (progress * 90) + 5 + (Math.random() - 0.5) * 5;
-                points.push({ x, y });
-            }
-
-            // Render scatter points
-            const colors = ['var(--color-primary)', 'var(--color-secondary)', 'var(--color-coral)', 'var(--color-gold)', 'var(--color-green)', 'var(--color-blue)'];
-            let pointsHtml = '';
-            points.forEach((pt, idx) => {
-                const color = colors[idx % colors.length];
-                const size = 6 + Math.random() * 6;
-                pointsHtml += `<div class="scatter-point" style="left:${pt.x}%; top:${pt.y}%; width:${size}px; height:${size}px; background:${color}; animation-delay:${idx * 0.08}s;"></div>`;
-            });
-            dom.scatterPoints.innerHTML = pointsHtml;
-
-            // Render connecting line as SVG path
-            const pathPoints = points.map((pt, idx) => {
-                const cmd = idx === 0 ? 'M' : 'L';
-                return `${cmd} ${pt.x} ${pt.y}`;
+        function renderNarrativeRegression(points) {
+            const upper = points.map((point, index) => `${point.x},${Math.max(22, 184 - index * 4.45).toFixed(1)}`).join(' ');
+            const lower = [...points].reverse().map((point, reverseIndex) => {
+                const index = points.length - 1 - reverseIndex;
+                return `${point.x},${Math.min(228, 220 - index * 4.45).toFixed(1)}`;
             }).join(' ');
+            dom.regressionPlot.innerHTML = [
+                `<polygon points="${upper} ${lower}" fill="var(--ds-amber)" fill-opacity="0.09"/>`,
+                '<line x1="38" y1="210" x2="682" y2="72" stroke="var(--ds-amber)" stroke-width="2"/>',
+                '<line x1="38" y1="224" x2="682" y2="224" stroke="var(--ds-line)" stroke-width="1"/>',
+                '<line x1="38" y1="20" x2="38" y2="224" stroke="var(--ds-line)" stroke-width="1"/>',
+                ...points.map(point => `<circle cx="${point.x}" cy="${point.y}" r="3.2" fill="var(--ds-signal)" fill-opacity="0.72"/>`),
+                '<text x="52" y="38" fill="var(--ds-signal)" font-family="Space Mono, monospace" font-size="9">OBSERVED</text>',
+                '<text x="668" y="62" fill="var(--ds-amber)" font-family="Space Mono, monospace" font-size="10" text-anchor="end">β = +1.84</text>',
+                '<text x="680" y="242" fill="var(--ds-muted)" font-family="Space Mono, monospace" font-size="9" text-anchor="end">ANSWER INDEX</text>'
+            ].join('');
+        }
 
-            dom.scatterLine.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${pathPoints}"/></svg>`;
+        function renderCoefficients(coefficients) {
+            dom.coefficientBody.innerHTML = coefficients.map((coefficient, index) => `
+                <tr>
+                    <td>${COEFFICIENT_NAMES[index]}</td>
+                    <td>${coefficient.beta > 0 ? '+' : ''}${coefficient.beta.toFixed(2)}</td>
+                    <td>${coefficient.se.toFixed(2)}</td>
+                    <td>${coefficient.p < 0.001 ? '&lt;.001' : coefficient.p.toFixed(3)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function recalibrateCollider() {
+            if (state.screen !== 'result' || state.resultCategoryId === null) return;
+            const nextSeed = (Date.now() ^ state.analysisSeed ^ Math.floor(Math.random() * 0xFFFFFFFF)) >>> 0;
+            renderResultsDashboard(state.resultCategoryId, nextSeed);
+            setStatus('COLLIDER READINGS RECALIBRATED. DIAGNOSIS UNCHANGED.');
         }
 
         async function copyText(text) {
@@ -2920,6 +3273,7 @@
         });
         dom.shareButton.addEventListener('click', shareResult);
         dom.playAgainButton.addEventListener('click', playAgain);
+        dom.recalibrateButton.addEventListener('click', recalibrateCollider);
         dom.landingSignal.addEventListener('error', handleLandingSceneError);
         document.addEventListener('keydown', event => {
             if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
@@ -2927,6 +3281,12 @@
             if (state.screen === 'landing' && !dom.startButton.disabled && event.key === 'Enter') {
                 event.preventDefault();
                 startQuiz();
+                return;
+            }
+
+            if (state.screen === 'result' && event.key.toLowerCase() === 'r') {
+                event.preventDefault();
+                recalibrateCollider();
                 return;
             }
 

@@ -21,7 +21,7 @@ function loadPureHelpers() {
         `${match[1]}\nthis.helpers = {\n` +
         'shuffle, selectQuestionsFromModel, buildSceneAssignments, calculateRealityIntegrity, ' +
         'determineWinner, generateMisleadingSignals, generateFakeResultSignals, ' +
-        'validateModel, buildShareText\n};',
+        'createSeededRandom, generateColliderRun, validateModel, buildShareText\n};',
         sandbox,
         { filename: APP_PATH }
     );
@@ -256,6 +256,28 @@ test('fake result signals are randomized percentages with the diagnosis as a cle
     assert.notDeepEqual(first, second);
 });
 
+test('collider runs are seeded, complete and preserve every diagnosed winner', () => {
+    const categoryIds = Array.from({ length: 14 }, (_, index) => index + 1);
+    const first = helpers.generateColliderRun(categoryIds, 14, 123456);
+    const repeated = helpers.generateColliderRun(categoryIds, 14, 123456);
+    const second = helpers.generateColliderRun(categoryIds, 14, 654321);
+
+    assert.equal(JSON.stringify(first), JSON.stringify(repeated));
+    assert.notEqual(JSON.stringify(first), JSON.stringify(second));
+    assert.equal(first.signals.length, 14);
+    assert.equal(first.regression.length, 30);
+    assert.equal(first.coefficients.length, 5);
+    assert.ok(Object.values(first.metrics).every(Number.isFinite));
+
+    for (const winningId of categoryIds) {
+        const run = helpers.generateColliderRun(categoryIds, winningId, 9000 + winningId);
+        assert.equal(run.signals[0].id, winningId);
+        assert.ok(run.signals[0].percentage >= 90 && run.signals[0].percentage < 99);
+        assert.ok(run.signals.slice(1).every(signal => signal.percentage < 80));
+        assert.equal(run.signals.filter(signal => signal.id === winningId).length, 1);
+    }
+});
+
 test('reality integrity is always bounded between zero and one hundred', () => {
     for (const points of [-10, -1, 0, 1, 20, 34, 100]) {
         const value = helpers.calculateRealityIntegrity(points);
@@ -313,7 +335,12 @@ test('the root and interactive controls publish the DOM contract', () => {
         'data-quiz-length',
         'data-transitioning',
         'data-reality-integrity',
-        'data-result-category'
+        'data-result-category',
+        'data-result-signal-percent',
+        'data-analysis-layout',
+        'data-analysis-mode',
+        'data-analysis-seed',
+        'data-analysis-winner'
     ]) {
         assert.match(root, new RegExp(`\\b${attribute}\\s*=`), `${attribute} is required`);
     }
@@ -322,6 +349,18 @@ test('the root and interactive controls publish the DOM contract', () => {
     assert.match(APP_SOURCE, /data-answer="yes"/i);
     assert.match(APP_SOURCE, /data-answer="no"/i);
     assert.match(APP_SOURCE, /id="appStatus"[^>]*role="status"[^>]*aria-live="polite"/i);
+});
+
+test('every static DOM id reference resolves to markup', () => {
+    const referencedIds = [...APP_SOURCE.matchAll(/document\.getElementById\(['"]([^'"]+)['"]\)/g)]
+        .map(match => match[1]);
+    const markupIds = new Set(
+        [...APP_SOURCE.matchAll(/\bid=["']([^"']+)["']/g)].map(match => match[1])
+    );
+
+    for (const id of referencedIds) {
+        assert.ok(markupIds.has(id), `document.getElementById('${id}') needs matching markup`);
+    }
 });
 
 // ─── Dead Signal visual contract ───
@@ -621,22 +660,37 @@ test('genre predictor declares random mode and renders percentage values', () =>
     assert.match(APP_SOURCE, /genre-bar-score[^\n]*\$\{entry\.percentage\}%/i);
 });
 
-test('final genre distribution is fabricated percentage output with an explicit winner', () => {
+test('final Collider dashboard is fabricated percentage output with an explicit winner', () => {
     const rootMatch = APP_SOURCE.match(/<main\b[^>]*\bid=["']appRoot["'][^>]*>/i);
     assert.ok(rootMatch);
     assert.match(rootMatch[0], /\bdata-result-signal-percent\s*=/i);
+    assert.match(rootMatch[0], /\bdata-analysis-layout=["']collider["']/i);
+    assert.match(rootMatch[0], /\bdata-analysis-mode=["']fabricated["']/i);
     assert.match(
         APP_SOURCE,
-        /id=["']genreBreakdownGrid["'][^>]*\bdata-mode=["']fabricated["']/i
+        /id=["']resultsDashboard["'][^>]*\bdata-analysis-layout=["']collider["'][^>]*\bdata-mode=["']fabricated["']/i
     );
+    for (const id of [
+        'metricStrip',
+        'collisionPlot',
+        'colliderLegend',
+        'posteriorList',
+        'regressionPlot',
+        'coefficientBody',
+        'recalibrateButton'
+    ]) {
+        assert.match(APP_SOURCE, new RegExp(`id=["']${id}["']`, 'i'), `${id} is required`);
+    }
     const rendererMatch = APP_SOURCE.match(
-        /function renderGenreBreakdown\([\s\S]*?\n\s*function renderCrypticMetrics\(/i
+        /function renderPosteriorCrossSection\([\s\S]*?\n\s*function renderNarrativeRegression\(/i
     );
-    assert.ok(rendererMatch, 'the final genre renderer must be present');
+    assert.ok(rendererMatch, 'the Collider posterior renderer must be present');
     assert.doesNotMatch(rendererMatch[0], /state\.scores/);
     assert.match(rendererMatch[0], /data-percent=["']\$\{percentage\}["']/);
     assert.match(rendererMatch[0], /data-winner=["']\$\{isWinner\}["']/);
-    assert.match(rendererMatch[0], /breakdown-score[^\n]*\$\{percentage\}%/);
+    assert.match(rendererMatch[0], /posterior-value[^\n]*\$\{percentage\}%/);
+    assert.match(APP_SOURCE, /id=["']coefficientHeading["'][^>]*>Coefficients</i);
+    assert.doesNotMatch(APP_SOURCE, />\s*Fabricated Coefficients\s*</i);
 });
 
 test('landing intro preserves the complete original copy', () => {
