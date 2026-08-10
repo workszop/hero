@@ -463,22 +463,67 @@
         }
 
         .quiz-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
-            gap: 24px;
-            align-items: start;
+            min-height: calc(100vh - 220px);
         }
 
         .quiz-primary {
             display: grid;
-            grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1.08fr);
-            gap: 18px;
+            grid-template-columns: minmax(280px, 0.72fr) minmax(420px, 1.28fr);
+            grid-template-areas:
+                'telemetry predictor'
+                'question scene'
+                'story story';
+            gap: 10px 14px;
+            align-items: stretch;
         }
 
-        .hud-container,
-        .progress-shell,
+        #quizScreen {
+            padding: clamp(10px, 1.5vw, 18px);
+        }
+
         .story-box {
             grid-column: 1 / -1;
+        }
+
+        .quiz-telemetry {
+            display: grid;
+            grid-area: telemetry;
+            gap: 8px;
+        }
+
+        .quiz-telemetry .hud-container,
+        .quiz-telemetry .progress-shell {
+            display: block;
+            grid-column: auto;
+        }
+
+        .quiz-telemetry .reality-integrity,
+        .quiz-telemetry .progress-shell {
+            padding: 8px 10px;
+        }
+
+        .quiz-telemetry .integrity-meter {
+            height: 9px;
+            margin: 5px 0 3px;
+        }
+
+        .quiz-telemetry .progress-text {
+            margin-bottom: 3px;
+        }
+
+        .quiz-telemetry .progress-timeline {
+            height: 18px;
+        }
+
+        .quiz-telemetry .timeline-track,
+        .quiz-telemetry .timeline-notches {
+            inset: 5px 0 auto;
+            height: 9px;
+        }
+
+        .quiz-telemetry .timeline-playhead {
+            top: 2px;
+            height: 15px;
         }
 
         .hud-container {
@@ -658,10 +703,28 @@
 
         .question-panel {
             display: flex;
+            grid-area: question;
             min-height: 100%;
             padding: clamp(18px, 3vw, 30px);
             flex-direction: column;
             justify-content: center;
+        }
+
+        #quizScreen .question-panel {
+            padding: clamp(10px, 1.5vw, 16px);
+        }
+
+        #quizScreen .question-text {
+            min-height: 3.5em;
+            margin: 8px 0;
+        }
+
+        #quizScreen .response-required {
+            margin-bottom: 8px;
+        }
+
+        #quizScreen .quiz-status {
+            margin-top: 6px;
         }
 
         .question-text {
@@ -708,13 +771,46 @@
         }
 
         .signal-scene {
-            align-self: start;
+            grid-area: scene;
+            align-self: stretch;
+        }
+
+        #signalSceneFrame .signal-frame-header {
+            padding: 5px 8px;
+        }
+
+        #signalSceneFrame figcaption {
+            display: none;
         }
 
         .story-box {
+            grid-area: story;
             position: relative;
             padding: 18px;
             overflow: hidden;
+        }
+
+        #quizScreen .story-box {
+            padding: 10px 12px;
+        }
+
+        #quizScreen .story-label,
+        #quizScreen .story-genre {
+            margin-bottom: 6px;
+        }
+
+        #quizScreen .story-genre {
+            color: var(--ds-alert);
+            font-size: var(--size-md);
+        }
+
+        #quizScreen .story-content {
+            font-size: var(--size-md);
+            line-height: 1.5;
+        }
+
+        #quizScreen .story-page {
+            margin-top: 6px;
         }
 
         .story-box::before {
@@ -746,9 +842,23 @@
         }
 
         .genre-predictor {
-            position: sticky;
-            top: 18px;
-            padding: 16px;
+            grid-area: predictor;
+            position: static;
+            padding: 12px;
+            align-self: stretch;
+        }
+
+        #quizScreen .genre-predictor-label {
+            margin-bottom: 8px;
+        }
+
+        #quizScreen .genre-predictor-bars {
+            gap: 4px;
+        }
+
+        #quizScreen .genre-prediction-tag {
+            margin-top: 8px;
+            padding-top: 7px;
         }
 
         .genre-predictor-label,
@@ -1227,14 +1337,6 @@
         }
 
         @media (max-width: 1100px) {
-            .quiz-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .genre-predictor {
-                position: static;
-            }
-
             .landing-grid {
                 grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
             }
@@ -1245,6 +1347,18 @@
 
             .collider-legend {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .quiz-primary {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    'telemetry'
+                    'predictor'
+                    'question'
+                    'scene'
+                    'story';
             }
         }
 
@@ -1320,23 +1434,23 @@
                 grid-template-columns: 1fr;
             }
 
-            .progress-shell {
+            .quiz-telemetry {
                 order: 1;
             }
 
-            .question-panel {
+            .genre-predictor {
                 order: 2;
             }
 
-            .signal-scene {
+            .question-panel {
                 order: 3;
             }
 
-            .story-box {
+            .signal-scene {
                 order: 4;
             }
 
-            .genre-predictor {
+            .story-box {
                 order: 5;
             }
 
@@ -1509,44 +1623,49 @@
         <section id="quizScreen" class="screen" aria-labelledby="questionText" aria-hidden="true">
             <div class="quiz-grid">
                 <div class="quiz-primary">
-                    <div class="hud-container">
-                        <div class="reality-integrity">
-                            <div class="hud-label-row">
-                                <span class="reality-label">Reality Integrity</span>
-                                <span class="reality-value" id="realityValue">100%</span>
+                    <div class="quiz-telemetry">
+                        <div class="hud-container">
+                            <div class="reality-integrity">
+                                <div class="hud-label-row">
+                                    <span class="reality-label">Reality Integrity</span>
+                                    <span class="reality-value" id="realityValue">100%</span>
+                                </div>
+                                <div class="integrity-meter" aria-hidden="true">
+                                    <div class="integrity-meter-fill" id="realityMeterFill"></div>
+                                </div>
+                                <div class="reality-warning" id="realityWarning">Status: Nominal</div>
                             </div>
-                            <div class="integrity-meter" aria-hidden="true">
-                                <div class="integrity-meter-fill" id="realityMeterFill"></div>
-                            </div>
-                            <div class="reality-warning" id="realityWarning">Status: Nominal</div>
                         </div>
-                        <div class="narrative-tension">
-                            <div class="tension-label">Signal</div>
-                            <div class="waveform" id="waveform" aria-hidden="true">
-                                <div class="wave-bar"></div><div class="wave-bar"></div>
-                                <div class="wave-bar"></div><div class="wave-bar"></div>
-                                <div class="wave-bar"></div><div class="wave-bar"></div>
+
+                        <div class="progress-shell">
+                            <p id="progressText" class="progress-text">ACT I // SCENE 01 OF 20</p>
+                            <div class="progress-timeline"
+                                 id="progressTimeline"
+                                 role="progressbar"
+                                 aria-label="Quiz progress"
+                                 aria-describedby="progressText"
+                                 aria-valuemin="0"
+                                 aria-valuemax="20"
+                                 aria-valuenow="0">
+                                <div class="timeline-notches" id="timelineNotches" aria-hidden="true"></div>
+                                <div class="timeline-track">
+                                    <div class="timeline-progress" id="timelineProgress"></div>
+                                </div>
+                                <div class="timeline-playhead" id="timelinePlayhead" aria-hidden="true"></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="progress-shell">
-                        <p id="progressText" class="progress-text">ACT I // SCENE 01 OF 20</p>
-                        <div class="progress-timeline"
-                             id="progressTimeline"
-                             role="progressbar"
-                             aria-label="Quiz progress"
-                             aria-describedby="progressText"
-                             aria-valuemin="0"
-                             aria-valuemax="20"
-                             aria-valuenow="0">
-                            <div class="timeline-notches" id="timelineNotches" aria-hidden="true"></div>
-                            <div class="timeline-track">
-                                <div class="timeline-progress" id="timelineProgress"></div>
-                            </div>
-                            <div class="timeline-playhead" id="timelinePlayhead" aria-hidden="true"></div>
+                    <aside class="genre-predictor" id="genrePredictor" aria-labelledby="predictorLabel" data-mode="random">
+                        <div class="genre-predictor-label" id="predictorLabel">
+                            <span class="signal-dot" aria-hidden="true"></span>
+                            Genre Signal Detection // Live
                         </div>
-                    </div>
+                        <div class="genre-predictor-bars" id="genrePredictorBars" role="list" aria-label="Randomized genre signals">
+                            <div class="genre-predictor-empty" role="listitem">Awaiting narrative data...</div>
+                        </div>
+                        <p class="visually-hidden" id="predictorSummary" aria-live="polite"></p>
+                    </aside>
 
                     <div class="question-panel">
                         <div class="panel-kicker">INCOMING QUERY // <span id="questionNumber">SUBJECT 01</span></div>
@@ -1588,17 +1707,6 @@
                         <div class="story-page" id="storyPage">LOG PAGE 047</div>
                     </aside>
                 </div>
-
-                <aside class="genre-predictor" id="genrePredictor" aria-labelledby="predictorLabel" data-mode="random">
-                    <div class="genre-predictor-label" id="predictorLabel">
-                        <span class="signal-dot" aria-hidden="true"></span>
-                        Genre Signal Detection // Live
-                    </div>
-                    <div class="genre-predictor-bars" id="genrePredictorBars" role="list" aria-label="Randomized genre signals">
-                        <div class="genre-predictor-empty" role="listitem">Awaiting narrative data...</div>
-                    </div>
-                    <p class="visually-hidden" id="predictorSummary" aria-live="polite"></p>
-                </aside>
             </div>
         </section>
 
