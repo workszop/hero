@@ -6,7 +6,7 @@ The ordinary-life outcome is part of the joke and is intentionally common. The *
 
 ## How it works
 
-- Each run selects 30 questions: two from each of 13 fictional story categories and four from the ordinary-life **Reality** category.
+- Each run selects 20 questions from a 30-question pool: two from each of 13 fictional story categories and four from the ordinary-life **Reality** category.
 - The question order is randomized, so no two runs need to have the same sequence.
 - “Yes” answers add trope points to the question’s category; “No” answers add none.
 - The interface tracks a tongue-in-cheek **Reality Integrity** value and a deliberately randomized genre-signal display while the quiz is in progress. Its percentages and apparent prediction are unrelated to the final scoring, because the machine has opinions but no ethics.
@@ -89,7 +89,7 @@ node tests/pure.test.mjs
 node --test tests/pure.test.mjs
 ```
 
-For browser verification, serve the app and check landing, 30-question completion, replay, sharing, keyboard controls and the `390 × 844`, `768 × 1024`, `1024 × 768` and `1440 × 900` layouts. The root `data-*` attributes expose the current screen, question, scene, transition and result state for automated probes.
+For browser verification, serve the app and check landing, 20-question completion, replay, sharing, keyboard controls and the `390 × 844`, `768 × 1024`, `1024 × 768` and `1440 × 900` layouts. The root `data-*` attributes expose the current screen, question, scene, transition and result state for automated probes.
 
 ## Project contents
 
