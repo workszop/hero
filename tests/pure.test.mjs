@@ -597,6 +597,37 @@ test('mobile layout keeps the question and answers before story or evidence cont
     assert.ok(answerIndex < evidenceIndex, 'answers must precede story/evidence in the DOM');
 });
 
+test('question layout keeps the visual scene visible and removes the redundant signal waveform', () => {
+    const quizStart = APP_SOURCE.search(/<(?:div|section)\b[^>]*\bid=["']quizScreen["']/i);
+    const resultStart = APP_SOURCE.search(/<(?:div|section)\b[^>]*\bid=["']resultScreen["']/i);
+    assert.ok(quizStart >= 0 && resultStart > quizStart, 'quiz and result screens are required');
+    const quizMarkup = APP_SOURCE.slice(quizStart, resultStart);
+
+    assert.match(quizMarkup, /id=["']signalSceneFrame["']/i);
+    assert.match(quizMarkup, /id=["']signalScene["']/i);
+    assert.doesNotMatch(quizMarkup, /id=["']waveform["']/i);
+    assert.doesNotMatch(
+        STYLE_SOURCE,
+        /\.signal-scene\s*\{[^}]*\bdisplay\s*:\s*none/i,
+        'the question image must remain visible'
+    );
+    assert.match(
+        STYLE_SOURCE,
+        /#signalSceneFrame\s+figcaption\s*\{[^}]*\bdisplay\s*:\s*none/i,
+        'the redundant question-image caption must stay hidden'
+    );
+    assert.match(
+        STYLE_SOURCE,
+        /\.signal-image-wrap\s*\{[^}]*\baspect-ratio\s*:\s*4\s*\/\s*3/i,
+        'signal scenes must retain their original 4:3 ratio'
+    );
+    assert.doesNotMatch(
+        STYLE_SOURCE,
+        /#signalSceneFrame\s+\.signal-image-wrap\s*\{[^}]*\baspect-ratio\s*:/i,
+        'the question layout must not override the original scene ratio'
+    );
+});
+
 test('Dead Signal terminal chrome and signal scene elements are present', () => {
     assert.match(APP_SOURCE, /DEAD SIGNAL DOS/i, 'terminal chrome must name the Dead Signal system');
     assert.match(
