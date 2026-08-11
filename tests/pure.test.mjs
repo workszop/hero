@@ -4,17 +4,23 @@ import path from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
 
-const APP_PATH = path.resolve(import.meta.dirname, '..', 'index.html');
-const APP_SOURCE = fs.readFileSync(APP_PATH, 'utf8');
-const HERO_DIR = path.dirname(APP_PATH);
+const HERO_DIR = path.resolve(import.meta.dirname, '..');
+const APP_PATH = path.resolve(HERO_DIR, 'index.html');
+const SCRIPT_PATH = path.resolve(HERO_DIR, 'app.js');
+const STYLE_PATH = path.resolve(HERO_DIR, 'styles.css');
+const HTML_SOURCE = fs.readFileSync(APP_PATH, 'utf8');
+const SCRIPT_SOURCE = fs.readFileSync(SCRIPT_PATH, 'utf8');
+const STYLE_SOURCE = fs.readFileSync(STYLE_PATH, 'utf8');
+// Tests authored against the monolith inspect markup and logic together; the split
+// app keeps that contract by exposing one concatenated source view.
+const APP_SOURCE = `${HTML_SOURCE}\n${SCRIPT_SOURCE}\n${STYLE_SOURCE}`;
 const DEAD_SIGNAL_ASSET_DIR = path.resolve(HERO_DIR, 'assets', 'dead-signal');
-const STYLE_SOURCE = APP_SOURCE.match(/<style\b[^>]*>([\s\S]*?)<\/style>/i)?.[1] ?? '';
 
 function loadPureHelpers() {
-    const match = APP_SOURCE.match(
+    const match = SCRIPT_SOURCE.match(
         /\/\* pure-helpers-start \*\/([\s\S]*?)\/\* pure-helpers-end \*\//
     );
-    assert.ok(match, 'index.html must expose a pure helper block for headless checks');
+    assert.ok(match, 'app.js must expose a pure helper block for headless checks');
 
     const sandbox = {};
     vm.runInNewContext(
@@ -23,7 +29,7 @@ function loadPureHelpers() {
         'determineWinner, generateMisleadingSignals, generateFakeResultSignals, ' +
         'createSeededRandom, generateColliderRun, validateModel, buildShareText\n};',
         sandbox,
-        { filename: APP_PATH }
+        { filename: SCRIPT_PATH }
     );
     return sandbox.helpers;
 }

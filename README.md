@@ -76,9 +76,9 @@ No license file is currently included. Add one before inviting third parties to 
 
 ## Development notes
 
-- Keep the app self-contained in `index.html` unless a change genuinely requires another file.
+- The app is split into three files with no build step: markup in `index.html`, presentation in `styles.css`, behavior in `app.js`. Keep it dependency-free.
 - Preserve the intentionally theatrical tone and misleading-analysis presentation when changing the UI.
-- Keep quiz answers and result text in the source of truth inside `index.html`.
+- Keep quiz answers and result text in the source of truth inside `app.js`.
 - Test a fresh run, a replay, both answer buttons and the share action after behavior changes.
 - Do not add personal data collection or persistent tracking without an explicit product decision.
 
@@ -95,7 +95,9 @@ For browser verification, serve the app and check landing, 20-question completio
 
 | Path | Purpose |
 | --- | --- |
-| [`index.html`](./index.html) | The complete app: markup, styles and quiz logic |
+| [`index.html`](./index.html) | App markup and the DOM contract for the three screens |
+| [`styles.css`](./styles.css) | Dead Signal DOS theme, layouts and responsive rules |
+| [`app.js`](./app.js) | Quiz logic, category model, questions and story copy |
 | [`README.md`](./README.md) | Project overview and operating notes |
 | [`.gitignore`](./.gitignore) | Excludes local plans, reviews and scratch artifacts |
 | [`tests/pure.test.mjs`](./tests/pure.test.mjs) | Pure-logic, model-invariant and DOM-contract checks |
